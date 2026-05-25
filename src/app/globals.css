@@ -1,26 +1,210 @@
 @import "tailwindcss";
 
+/* ── Color Tokens ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --charcoal: #0D0D0D;
+  --off-white: #F2F0EB;
+  --amber: #F5A623;
+  --bone: #E0DDD5;
+
+  /* Semantic */
+  --background: var(--charcoal);
+  --foreground: var(--off-white);
+
+  --accent: var(--amber);
+  --accent-muted: rgba(245, 166, 35, 0.2);
+
+  --ink-deep: var(--off-white);
+  --ink-mid: #A09C94;
+  --ink-light: #6E6A62;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+}
+
+/* Light Mode Overrides */
+html.light {
+  --background: #F2F0EB;
+  --foreground: #0D0D0D;
+
+  --charcoal: #F2F0EB;
+  --off-white: #0D0D0D;
+  --bone: #1a1714;
+
+  --ink-deep: #0D0D0D;
+  --ink-mid: #54514D;
+  --ink-light: #8C8880;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(0, 0, 0, 0.03);
+}
+
+@font-face {
+  font-family: 'Akira Expanded';
+  src: url('/akira_expanded/Akira Expanded Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+  --color-accent-muted: var(--accent-muted);
+  --color-border-subtle: var(--border-subtle);
+  --color-glass-bg: var(--glass-bg);
+
+  --color-charcoal: var(--charcoal);
+  --color-off-white: var(--off-white);
+  --color-amber: var(--amber);
+  --color-bone: var(--bone);
+
+  --color-ink-deep: var(--ink-deep);
+  --color-ink-mid: var(--ink-mid);
+  --color-ink-light: var(--ink-light);
+
+  --font-display: "Syne", sans-serif;
+  --font-body: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-syne: "Syne", sans-serif;
+  --font-akira: "Akira Expanded", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Base Styles ──────────────────────────────────────────── */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Transition for smooth theme switching */
+body,
+nav,
+main,
+footer,
+.project-row,
+.detail-section,
+.tech-pill {
+  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Noise Overlay ────────────────────────────────────────── */
+.noise-overlay {
+  position: relative;
+  isolation: isolate;
+}
+
+.noise-overlay::after {
+  content: "";
+  position: fixed;
+  inset: -100%;
+  width: 300%;
+  height: 300%;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  animation: noise 0.2s steps(4) infinite;
+}
+
+@keyframes noise {
+  0% {
+    transform: translate(0, 0)
+  }
+
+  10% {
+    transform: translate(-5%, -5%)
+  }
+
+  20% {
+    transform: translate(-10%, 5%)
+  }
+
+  30% {
+    transform: translate(5%, -10%)
+  }
+
+  40% {
+    transform: translate(-5%, 15%)
+  }
+
+  50% {
+    transform: translate(-10%, 5%)
+  }
+
+  60% {
+    transform: translate(15%, 0)
+  }
+
+  70% {
+    transform: translate(0, 10%)
+  }
+
+  80% {
+    transform: translate(-15%, 0)
+  }
+
+  90% {
+    transform: translate(10%, 5%)
+  }
+
+  100% {
+    transform: translate(5%, 0)
   }
 }
 
-body {
+/* ── Animation Utilities ───────────────────────────────────── */
+
+
+.blur-in {
+  filter: blur(20px);
+  opacity: 0;
+  transition: filter 1.2s ease, opacity 1.2s ease;
+}
+
+.blur-in.active {
+  filter: blur(0px);
+  opacity: 1;
+}
+
+.marquee-track {
+  display: flex;
+  width: fit-content;
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+/* Cinematic Lines */
+.cinematic-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  width: 100%;
 }
