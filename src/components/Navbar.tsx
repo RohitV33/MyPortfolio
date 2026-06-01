@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import {
   motion,
   AnimatePresence,
@@ -29,7 +28,6 @@ const navLinks: NavLink[] = [
   { href: "/projects", label: "Work", sub: "Portfolio", index: "02" },
   { href: "/about", label: "About", sub: "Story", index: "03" },
   { href: "/resume", label: "Resume", sub: "CV", index: "04" },
-  { href: "/contact", label: "Contact", sub: "Inquire", index: "05" },
 ];
 
 const commandItems = [
@@ -184,10 +182,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
 
+  const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState("");
   const [isDark, setIsDark] = useState(true);
 
   // ── Theme Sync ──
@@ -199,6 +199,19 @@ export default function Navbar() {
       root.classList.add("light");
     }
   }, [isDark]);
+
+  // ── Clock ──
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      setCurrentTime(
+        now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })
+      );
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   // ── Keyboard shortcut ──
   useEffect(() => {
@@ -215,6 +228,7 @@ export default function Navbar() {
   // ── Scroll ──
   useEffect(() => {
     const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
       const docH = document.body.scrollHeight - window.innerHeight;
       setScrollProgress(docH > 0 ? (window.scrollY / docH) * 100 : 0);
     };
@@ -308,66 +322,58 @@ export default function Navbar() {
           </div>
         </motion.div> */}
 
-        {/* ── Main Bar ── */}
+        {/* ── Main Bar (Floating Glass Dock) ── */}
         <div
-          className={`mx-4 mt-3 rounded-2xl px-6 py-3.5 flex items-center justify-between transition-all duration-700 ${t.bar}`}
+          className={`mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative ${
+            scrolled ? "mt-3 py-2.5 px-6" : "mt-6 py-3.5 px-8"
+          }`}
+          style={{
+            background: isDark
+              ? "linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.005))"
+              : "linear-gradient(to bottom, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.001))",
+            boxShadow: isDark
+              ? scrolled
+                ? "0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
+                : "0 32px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+              : scrolled
+                ? "0 20px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)"
+                : "0 32px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
+          }}
         >
-          {/* ── LEFT: LOGO ── */}
+          {/* ── LEFT: BRAND / LOGO & HUD Clock ── */}
           <motion.div
             ref={logoRef}
             style={{ x: logoSx, y: logoSy }}
-            className="flex items-center"
+            className="flex items-center gap-3.5"
           >
-            <Link href="/" className="flex items-center gap-3 group shrink-0">
-              <div className="relative w-10 h-10 rounded-xl overflow-hidden">
-                {/* Animated background */}
-                <motion.div
-                  className="absolute inset-0"
-                  animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                  style={{
-                    background: "linear-gradient(135deg, #1a1714 0%, #2e2820 40%, #c4a87a 80%, #1a1714 100%)",
-                    backgroundSize: "300% 300%",
-                  }}
-                />
-
-                {/* Logo Image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Image
-                    src="/logoo.png"
-                    alt="Rohit Verma Logo"
-                    width={100}
-                    height={100}
-                    priority
-                    className="z-10 object-contain transition-transform duration-500 group-hover:scale-110"
-                    style={{
-                      filter: "drop-shadow(0 0 6px rgba(196,168,122,0.6))"
-                    }}
-                  />
-                </div>
-
-                {/* Gold corner pip */}
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#c4a87a] rounded-tl-md transition-all duration-500 group-hover:w-3 group-hover:h-3" />
-              </div>
-
-              {/* Text beside logo */}
-              <div>
-                <div
-                  className={`text-[15px] font-semibold tracking-[0.06em] leading-none ${t.text}`}
-                  style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
-                >
-                  Rohit
-                </div>
-                <div className={`text-[9px] tracking-[0.28em] uppercase mt-1 ${t.muted}`}>
-                  Dev &amp; Design
-                </div>
+            <Link href="/" className="flex items-center group shrink-0">
+              <div className={`relative w-8 h-8 rounded-full flex items-center justify-center border transition-colors duration-500 ${
+                isDark ? "border-white/10 bg-white/5 group-hover:border-[#c4a87a]/40" : "border-black/10 bg-black/5 group-hover:border-[#1a1714]/40"
+              }`}>
+                <svg viewBox="0 0 32 32" className="w-5 h-5 text-[#c4a87a]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  {/* Outer hexagon */}
+                  <polygon points="16,3 29,10 29,24 16,31 3,24 3,10" strokeWidth="1" stroke="rgba(196,168,122,0.3)" />
+                  {/* Inner stylized monogram R */}
+                  <path d="M 12 10 V 22 M 12 10 H 18 C 21 10, 21 15, 18 15 H 12 M 16 15 L 20 22" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                </svg>
               </div>
             </Link>
+
+            {/* HUD Status & Clock */}
+            <div className="hidden lg:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
+              <div className="flex items-center gap-1.5 text-emerald-500/80">
+                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                <span>SYS_ON // SECURE</span>
+              </div>
+              <div className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/30" : "text-foreground/45"}`}>
+                {currentTime || "11:53:38"}
+              </div>
+            </div>
           </motion.div>
 
           {/* ── CENTER: NAV LINKS ── */}
-          <motion.ul layout className="hidden md:flex items-center gap-0.5 relative">
-            {navLinks.map(({ href, label, index }) => {
+          <motion.ul layout className="hidden md:flex items-center gap-1.5 relative">
+            {navLinks.map(({ href, label }) => {
               const isActive = pathname === href;
               const isHov = hoveredLink === href;
               return (
@@ -376,8 +382,9 @@ export default function Navbar() {
                     href={href}
                     onMouseEnter={() => setHoveredLink(href)}
                     onMouseLeave={() => setHoveredLink(null)}
-                    className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-semibold tracking-[0.1em] uppercase transition-colors duration-300 ${isActive ? t.text : `${t.muted} hover:${t.text}`
-                      }`}
+                    className={`relative flex items-center px-4 py-2 rounded-xl text-[10px] font-mono font-medium tracking-[0.18em] uppercase transition-colors duration-300 ${
+                      isActive ? t.text : `${t.muted} hover:${t.text}`
+                    }`}
                   >
                     <AnimatePresence>
                       {(isActive || isHov) && (
@@ -391,71 +398,56 @@ export default function Navbar() {
                         />
                       )}
                     </AnimatePresence>
-                    <span className={`text-[9px] font-mono text-[#c4a87a] transition-opacity duration-300 ${isActive || isHov ? "opacity-70" : "opacity-0"}`}>
-                      {index}
-                    </span>
                     <span className="relative z-10">{label}</span>
-                    {isActive && (
-                      <motion.span
-                        layoutId="activeDot"
-                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#c4a87a]"
-                      />
-                    )}
                   </Link>
                 </li>
               );
             })}
           </motion.ul>
 
-          {/* ── RIGHT: TOOLS & CTA ── */}
-          <div className="flex items-center gap-2">
-            {/* Availability */}
-            <div className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[9px] font-black tracking-[0.2em] uppercase whitespace-nowrap">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-              Live
-            </div>
-
-            {/* Dark/light toggle */}
-            <button
+          {/* ── RIGHT: CTA & HAMBURGER ── */}
+          <div className="flex items-center gap-4">
+            {/* Custom Theme Switch Slider */}
+            <div
               onClick={() => setIsDark(!isDark)}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-300 ${t.toggle}`}
+              className={`relative w-11 h-6 rounded-full cursor-pointer flex items-center px-1 group transition-all duration-300 ${
+                isDark ? "bg-white/5 border border-white/10 hover:border-[#c4a87a]/40" : "bg-black/5 border border-black/10 hover:border-[#1a1714]/40"
+              }`}
+              role="button"
               aria-label="Toggle theme"
             >
-              <motion.span
-                key={isDark ? "sun" : "moon"}
-                initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="text-sm leading-none"
+              <motion.div
+                className="w-4 h-4 rounded-full bg-[#c4a87a] flex items-center justify-center text-[7px] font-bold text-[#0D0D0D] select-none shadow-md"
+                animate={{ x: isDark ? 18 : 0 }}
+                transition={{ type: "spring", stiffness: 450, damping: 22 }}
               >
-                {isDark ? "☀" : "◑"}
-              </motion.span>
-            </button>
+                {isDark ? "☾" : "☀"}
+              </motion.div>
+            </div>
 
-            {/* Magnetic CTA */}
+            {/* Sleek Outlined CTA */}
             <MotionLink
               ref={ctaRef}
               href="/contact"
-              className="group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[12px] font-bold tracking-[0.08em] uppercase cursor-pointer"
-              whileHover={{ y: -2 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              className={`group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full border text-[10px] font-mono font-bold tracking-[0.15em] uppercase cursor-pointer transition-all duration-500 ${
+                isDark
+                  ? "border-[#c4a87a]/30 hover:border-[#c4a87a] bg-white/5 hover:bg-[#c4a87a] hover:text-[#0D0D0D] text-[#f2f0eb]"
+                  : "border-[#1a1714]/30 hover:border-[#1a1714] bg-black/5 hover:bg-[#1a1714] hover:text-[#fcfaf6] text-[#1a1714]"
+              }`}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
               style={{
-                background: t.ctaBg,
-                color: t.ctaColor,
-                boxShadow: t.ctaShadow,
                 x: ctaSx,
                 y: ctaSy,
               }}
             >
-              <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
-              <span className="relative">{"Let's Talk"}</span>
+              <span className="relative z-10">{"Let's Talk"}</span>
               <svg
-                className="relative w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                className="relative z-10 w-3 h-3 transition-transform duration-500 group-hover:translate-x-1"
                 fill="none"
                 viewBox="0 0 14 14"
               >
-                <path d="M1 7h10M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1 7h12M9 3l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </MotionLink>
 
