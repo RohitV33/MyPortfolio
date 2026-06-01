@@ -81,10 +81,11 @@ export async function POST(request: Request) {
       simulated: false,
       message: "Your message has been successfully transmitted.",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in contact route handler:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to transmit message.";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to transmit message." },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }

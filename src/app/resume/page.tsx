@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function ResumePage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -229,7 +230,7 @@ export default function ResumePage() {
       {/* Footer link back */}
       <footer className="max-w-4xl mx-auto border-t border-warm-stone/20 pt-12 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase text-ink-light">
         <span>© 2024 Rohit Verma</span>
-        <a href="/" className="hover:text-ink-deep transition-colors">Back to Home</a>
+        <Link href="/" className="hover:text-ink-deep transition-colors">Back to Home</Link>
       </footer>
     </main>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 const MARQUEE = "ROHIT VERMA · FULL STACK DEVELOPER · OPEN TO WORK · INDIA · ";
 
@@ -38,7 +37,7 @@ export default function Footer() {
           
           {/* CTA */}
           <div>
-            <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6">Let's build together</p>
+            <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6">{"Let's build together"}</p>
             <h2 className="font-display font-bold text-5xl md:text-7xl leading-[0.9] tracking-tighter text-off-white mb-10">
               Got a project <br />in mind? <span className="text-amber italic">Talk to me.</span>
             </h2>

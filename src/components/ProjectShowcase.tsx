@@ -543,7 +543,7 @@ function ProjectItem({
           </div>
 
           <div className="absolute bottom-8 right-8 z-20">
-            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-white/40">{project.slug} // protocol</span>
+            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-white/40">{project.slug} {"// protocol"}</span>
           </div>
         </div>
 

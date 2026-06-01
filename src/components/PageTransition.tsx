@@ -2,13 +2,13 @@
 
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { ReactNode, useContext, useRef } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { LayoutRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 // Prevents Next.js App Router from updating the children immediately during exit animations
 function FrozenRouter(props: { children: ReactNode }) {
   const context = useContext(LayoutRouterContext);
-  const frozen = useRef(context).current;
+  const [frozen] = useState(() => context);
 
   return (
     <LayoutRouterContext.Provider value={frozen}>

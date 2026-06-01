@@ -29,7 +29,7 @@ export default function HomePage() {
         { y: 100, rotateX: -30, opacity: 0 },
         { y: 0, rotateX: 0, opacity: 1, duration: 1.5, stagger: 0.1, ease: "expo.out" }
       ).fromTo(
-        introRef.current?.querySelector(".decorative-line") as any,
+        introRef.current?.querySelector(".decorative-line") as HTMLElement | null,
         { scaleX: 0, opacity: 0 },
         { scaleX: 1, opacity: 1, duration: 2, ease: "power4.out" },
         "-=1"
@@ -147,10 +147,10 @@ export default function HomePage() {
           
           <div className="space-y-4">
             <h3 className="credo-line font-display text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[1.1] tracking-tight italic">
-              "The space between moments
+              {"\"The space between moments"}
             </h3>
             <h3 className="credo-line font-display text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[1.1] tracking-tight italic text-foreground/30">
-              is where experience lives."
+              {"is where experience lives.\""}
             </h3>
           </div>
 

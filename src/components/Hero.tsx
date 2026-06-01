@@ -4,14 +4,6 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { Space_Grotesk } from "next/font/google";
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["700"],
-  variable: "--font-space",
-});
-
 const heading = ["ROHIT", "VERMA"];
 
 export default function Hero() {
@@ -20,7 +12,6 @@ export default function Hero() {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
 
   // Parallax elements
   const shape1Ref = useRef<HTMLDivElement>(null);
@@ -108,6 +99,19 @@ export default function Hero() {
         }
       });
 
+      // Scroll Hint fade out
+      gsap.to(scrollHintRef.current, {
+        opacity: 0,
+        y: 30,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "20% top",
+          scrub: true,
+        }
+      });
+
       // Shape parallax
       gsap.to(shape1Ref.current, {
         y: -150,
@@ -161,7 +165,7 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20 pb-36"
     >
       {/* ── Background Elements ── */}
 
@@ -267,7 +271,7 @@ export default function Hero() {
       {/* Scroll Indicator */}
       <div
         ref={scrollHintRef}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-20"
+        className="scroll-hint absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-20"
       >
         <span className="font-mono text-[9px] tracking-[0.4em] uppercase opacity-40">
           Scroll to explore
@@ -284,6 +288,11 @@ export default function Hero() {
         @keyframes scrollLine {
           0% { transform: translateY(-100%); }
           100% { transform: translateY(100%); }
+        }
+        @media (max-height: 720px) {
+          .scroll-hint {
+            display: none !important;
+          }
         }
       `}</style>
     </section>

@@ -86,13 +86,13 @@ export default function AboutPage() {
           <div className="sticky top-48">
             <div className="w-12 h-px bg-accent mb-12" />
             <h2 className="font-display text-4xl font-bold italic text-foreground/40">
-              "The goal isn't just to solve problems, but to create experiences that linger."
+              {"\"The goal isn't just to solve problems, but to create experiences that linger.\""}
             </h2>
           </div>
           
           <div className="space-y-12">
             <p className="font-body text-2xl font-light text-foreground/70 leading-relaxed">
-              I am a Full Stack Developer and Creative Designer based in India. My journey began at the intersection of technical logic and visual storytelling, leading me to specialize in high-performance web systems that don't compromise on aesthetic soul.
+              I am a Full Stack Developer and Creative Designer based in India. My journey began at the intersection of technical logic and visual storytelling, leading me to specialize in high-performance web systems that {"don't"} compromise on aesthetic soul.
             </p>
             <p className="font-body text-xl font-light text-foreground/50 leading-relaxed">
               I believe that the web is a cinematic medium. Every transition is a camera move, every scroll is a narrative beat. I spend my time obsessing over the physics of motion and the architecture of clean, scalable APIs.
@@ -141,7 +141,7 @@ export default function AboutPage() {
         </div>
         <div className="relative z-10 text-center max-w-4xl px-8">
           <h2 className="font-display text-[clamp(2.5rem,6vw,5rem)] font-bold italic leading-tight">
-            "We build for humans, <br /> not just browsers."
+            {"\"We build for humans,"} <br /> {"not just browsers.\""}
           </h2>
           <div className="mt-16 w-px h-32 bg-foreground/20 mx-auto" />
         </div>
@@ -150,7 +150,7 @@ export default function AboutPage() {
       {/* ─── Contact Footer ─── */}
       <footer className="py-24 px-8 md:px-24">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
-          <h3 className="font-display text-4xl font-bold tracking-tight">Let's talk about your next mission.</h3>
+          <h3 className="font-display text-4xl font-bold tracking-tight">{"Let's"} talk about your next mission.</h3>
           <a 
             href="mailto:hello@rohit.dev"
             className="px-12 py-6 rounded-full bg-accent text-[#0D0D0D] font-mono font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-105 transition-transform"

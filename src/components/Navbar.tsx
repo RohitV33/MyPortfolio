@@ -11,6 +11,8 @@ import {
 } from "framer-motion";
 import gsap from "gsap";
 
+const MotionLink = motion.create(Link);
+
 
 
 /* ─── Types ─────────────────────────────────────────── */
@@ -41,8 +43,8 @@ const commandItems = [
 ];
 
 /* ─── Magnetic Hook ──────────────────────────────────── */
-function useMagnetic(strength = 0.35) {
-  const ref = useRef<HTMLElement>(null);
+function useMagnetic<T extends HTMLElement>(strength = 0.35) {
+  const ref = useRef<T>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 200, damping: 18 });
@@ -84,8 +86,10 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 
   useEffect(() => {
     if (open) {
-      setQuery("");
-      setTimeout(() => inputRef.current?.focus(), 80);
+      setTimeout(() => {
+        setQuery("");
+        inputRef.current?.focus();
+      }, 80);
     }
   }, [open]);
 
@@ -180,13 +184,10 @@ export default function Navbar() {
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
 
-  const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState("");
-  const [currentDate, setCurrentDate] = useState("");
   const [isDark, setIsDark] = useState(true);
 
   // ── Theme Sync ──
@@ -211,26 +212,9 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", h);
   }, []);
 
-  // ── Clock ──
-  useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })
-      );
-      setCurrentDate(
-        now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-      );
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
-
   // ── Scroll ──
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
       const docH = document.body.scrollHeight - window.innerHeight;
       setScrollProgress(docH > 0 ? (window.scrollY / docH) * 100 : 0);
     };
@@ -249,7 +233,7 @@ export default function Navbar() {
   }, []);
 
   // ── Magnetic CTA ──
-  const { ref: ctaRef, sx: ctaSx, sy: ctaSy } = useMagnetic(0.4);
+  const { ref: ctaRef, sx: ctaSx, sy: ctaSy } = useMagnetic<HTMLAnchorElement>(0.4);
 
   const light = {
     bar: "bg-background/80 border-border-subtle shadow-xl backdrop-blur-xl",
@@ -280,7 +264,7 @@ export default function Navbar() {
   const t = isDark ? dark : light;
 
   // ── Magnetic Logo ──
-  const { ref: logoRef, sx: logoSx, sy: logoSy } = useMagnetic(0.2);
+  const { ref: logoRef, sx: logoSx, sy: logoSy } = useMagnetic<HTMLDivElement>(0.2);
 
   return (
     <>
@@ -330,7 +314,7 @@ export default function Navbar() {
         >
           {/* ── LEFT: LOGO ── */}
           <motion.div
-            ref={logoRef as any}
+            ref={logoRef}
             style={{ x: logoSx, y: logoSy }}
             className="flex items-center"
           >
@@ -450,31 +434,30 @@ export default function Navbar() {
             </button>
 
             {/* Magnetic CTA */}
-            <Link href="/contact" passHref legacyBehavior>
-              <motion.a
-                ref={ctaRef as any}
-                className="group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[12px] font-bold tracking-[0.08em] uppercase cursor-pointer"
-                whileHover={{ y: -2 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                style={{
-                  background: t.ctaBg,
-                  color: t.ctaColor,
-                  boxShadow: t.ctaShadow,
-                  x: ctaSx,
-                  y: ctaSy,
-                }}
+            <MotionLink
+              ref={ctaRef}
+              href="/contact"
+              className="group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[12px] font-bold tracking-[0.08em] uppercase cursor-pointer"
+              whileHover={{ y: -2 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              style={{
+                background: t.ctaBg,
+                color: t.ctaColor,
+                boxShadow: t.ctaShadow,
+                x: ctaSx,
+                y: ctaSy,
+              }}
+            >
+              <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
+              <span className="relative">{"Let's Talk"}</span>
+              <svg
+                className="relative w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                fill="none"
+                viewBox="0 0 14 14"
               >
-                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
-                <span className="relative">Let's Talk</span>
-                <svg
-                  className="relative w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path d="M1 7h10M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </motion.a>
-            </Link>
+                <path d="M1 7h10M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </MotionLink>
 
             {/* Mobile hamburger */}
             <button
