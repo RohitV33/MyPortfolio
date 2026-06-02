@@ -261,7 +261,7 @@ export default function ContactPage() {
                           required
                           value={formData.name}
                           onChange={handleChange}
-                          placeholder="Rohit Verma"
+                          placeholder="ABC"
                           disabled={status === "sending"}
                           className="w-full bg-background/30 border border-border-subtle rounded-xl px-5 py-4 text-sm text-foreground placeholder-foreground/20 outline-none transition-all duration-300 focus:border-accent/40 focus:ring-1 focus:ring-accent/10 disabled:opacity-50"
                         />
@@ -279,7 +279,7 @@ export default function ContactPage() {
                           required
                           value={formData.email}
                           onChange={handleChange}
-                          placeholder="rohit@example.com"
+                          placeholder="abc@example.com"
                           disabled={status === "sending"}
                           className="w-full bg-background/30 border border-border-subtle rounded-xl px-5 py-4 text-sm text-foreground placeholder-foreground/20 outline-none transition-all duration-300 focus:border-accent/40 focus:ring-1 focus:ring-accent/10 disabled:opacity-50"
                         />
