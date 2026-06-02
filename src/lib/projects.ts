@@ -19,7 +19,7 @@ export const projects: Project[] = [
     slug: "nazara",
     title: "Nazara",
     subtitle: "Full-stack e-commerce platform",
-    year: "2024",
+    year: "2025 — 2026",
     tags: ["React", "Node.js", "MongoDB", "Express", "JWT", "Stripe"],
     description:
       "A production-ready e-commerce platform with cart management, secure auth, payment integration, and an admin dashboard — built end-to-end from scratch.",
@@ -36,12 +36,12 @@ export const projects: Project[] = [
     slug: "bartr",
     title: "Bartr",
     subtitle: "Real-time skill exchange platform",
-    year: "2024",
-    tags: ["Next.js", "Socket.io", "PostgreSQL", "Prisma", "WebSockets"],
+    year: "2026",
+    tags: ["Next.js", "Socket.io", "PostgreSQL", "Prisma", "WebSockets", "JWT", "MongoDB"],
     description:
       "A peer-to-peer skill exchange platform where users trade expertise in real time — matched by skill, connected by chat, rated by community.",
     longDescription:
-      "Bartr reimagines the gig economy as a barter system — no money, just skills traded fairly. Users list what they can offer and what they need; a matching algorithm surfaces compatible pairs. Real-time negotiation and session scheduling happen through Socket.io-powered chat rooms with typing indicators, read receipts, and file sharing. PostgreSQL with Prisma manages the relational data model: users, skill listings, match requests, sessions, and ratings. Next.js App Router handles server-side rendering for SEO-optimised profile pages. A trust score system aggregates session ratings and response times to surface reliable traders.",
+      "Bartr reimagines the gig economy as a barter system — no money, just skills traded fairly. Users list what they can offer and what they need; a matching algorithm surfaces compatible pairs. Real-time negotiation and session scheduling happen through Socket.io-powered chat rooms with typing indicators, read receipts, and file sharing. PostgreSQL and MongoDB with Prisma manage the relational and chat data models: users, skill listings, match requests, sessions, and ratings. Next.js App Router handles server-side rendering for SEO-optimised profile pages. A trust score system aggregates session ratings and response times to surface reliable traders.",
     color: "#8BA8C4",
     accentColor: "#2D4A6B",
     liveUrl: "https://bartr-blond.vercel.app/",
@@ -51,14 +51,14 @@ export const projects: Project[] = [
   },
   {
     slug: "fuzzr",
-    title: "Fuzzr",
+    title: "Web Fuzzing Tool",
     subtitle: "CLI web fuzzing & recon tool",
-    year: "2023",
-    tags: ["Node.js", "CLI", "Security", "HTTP", "Wordlists"],
+    year: "2025 — 2026",
+    tags: ["Node.js", "CLI", "Security", "HTTP", "Wordlists", "React", "Tailwind CSS"],
     description:
-      "A fast, configurable command-line tool for web directory fuzzing, endpoint discovery, and HTTP response analysis — built for security researchers.",
+      "A fast, configurable command-line and web fuzzing tool for directory brute-forcing, endpoint discovery, and SQLi/XSS vulnerability scanning.",
     longDescription:
-      "Fuzzr is a developer-grade web fuzzing tool built entirely in Node.js for the CLI. It performs concurrent HTTP requests against target URLs using customisable wordlists, filtering responses by status code, content length, or response time. Features include rate limiting to avoid detection, custom header injection for authenticated scans, recursive directory discovery, and colour-coded terminal output for instant triage. Results export to JSON or CSV for integration with other recon pipelines. Designed with async concurrency controls to maximise throughput without overwhelming targets. Used for CTF challenges, bug bounty recon, and internal security audits.",
+      "Fuzzr is a developer-grade web security and fuzzing tool. It performs concurrent HTTP requests against target URLs using customisable wordlists to detect directory traversal, SQL injection, and XSS vulnerabilities. Features include a concurrent fuzzer engine built in Node.js for automated payload injection (improving scan efficiency by 40%), custom header controls, rate limiting, and color-coded reporting. Additionally features a responsive React + Tailwind interface for real-time scan control and detailed vulnerability results reporting.",
     color: "#A8B8A0",
     accentColor: "#3A4A32",
     liveUrl: "https://github.com/RohitV33/Web-Fuzzing-Tool",

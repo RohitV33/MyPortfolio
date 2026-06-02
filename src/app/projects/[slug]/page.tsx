@@ -102,13 +102,13 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
         />
 
         <div className="container mx-auto px-6 md:px-12 relative z-20" ref={headerRef}>
-          <div className="hero-element mb-6 inline-block">
-            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber py-2 px-4 rounded-full border border-amber/30 bg-amber/5">
+          <div className="hero-element mb-4 md:mb-6 inline-block">
+            <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.4em] uppercase text-amber py-1.5 px-3.5 rounded-full border border-amber/30 bg-amber/5">
               Project Archive · {project.year}
             </span>
           </div>
           
-          <h1 className="font-display font-bold leading-[0.88] tracking-tighter mb-8" style={{ fontSize: "clamp(4rem, 12vw, 10rem)", color: "var(--off-white)" }}>
+          <h1 className="font-display font-bold leading-[0.88] tracking-tighter mb-6 md:mb-8" style={{ fontSize: "clamp(2.5rem, 10vw, 8rem)", color: "var(--off-white)" }}>
             {project.title.split("").map((c, i) => (
               <span key={i} className="char inline-block" style={{ opacity: 0 }}>
                 {c === " " ? "\u00A0" : c}
@@ -116,22 +116,22 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
             ))}
           </h1>
 
-          <p className="hero-element font-body text-xl md:text-3xl font-light max-w-3xl leading-relaxed text-off-white/60 mb-12">
+          <p className="hero-element font-body text-lg md:text-3xl font-light max-w-3xl leading-relaxed text-off-white/60 mb-8 md:mb-12">
             {project.subtitle}
           </p>
 
-          <div className="hero-element flex flex-wrap gap-12">
-             <div className="flex flex-col gap-2">
+          <div className="hero-element flex flex-wrap gap-6 sm:gap-12">
+             <div className="flex flex-col gap-1">
                <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/40">Role</span>
-               <span className="font-body text-lg text-off-white">Full Stack Development</span>
+               <span className="font-body text-base md:text-lg text-off-white">Full Stack Development</span>
              </div>
-             <div className="flex flex-col gap-2">
+             <div className="flex flex-col gap-1">
                <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/40">Duration</span>
-               <span className="font-body text-lg text-off-white">4 Months</span>
+               <span className="font-body text-base md:text-lg text-off-white">4 Months</span>
              </div>
-             <div className="flex flex-col gap-2">
+             <div className="flex flex-col gap-1">
                <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/40">Launch</span>
-               <span className="font-body text-lg text-off-white">{project.year}</span>
+               <span className="font-body text-base md:text-lg text-off-white">{project.year}</span>
              </div>
           </div>
         </div>
@@ -144,14 +144,14 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
       </section>
 
       {/* ── CONTENT SECTION ── */}
-      <section className="py-32 px-6 md:px-12" ref={contentRef}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-24">
+      <section className="py-20 md:py-32 px-6 md:px-12" ref={contentRef}>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-24">
           
           {/* Left Side: Descriptions */}
-          <div className="space-y-24">
+          <div className="space-y-16 md:space-y-24">
             <div className="detail-section">
-              <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-8">The Story</p>
-              <h2 className="font-display font-bold text-4xl md:text-5xl mb-8 leading-tight">
+              <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6 md:mb-8">The Story</p>
+              <h2 className="font-display font-bold text-2xl sm:text-4xl md:text-5xl mb-6 md:mb-8 leading-tight">
                 Crafting a seamless <br /><span className="italic">digital ecosystem.</span>
               </h2>
               <div className="space-y-6 text-lg font-light leading-relaxed text-ink-mid">
@@ -162,15 +162,15 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
             </div>
 
             <div className="detail-section">
-              <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-8">The Impact</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div className="p-10 rounded-3xl border border-charcoal/5 bg-bone/30">
-                  <span className="font-syne font-black text-4xl text-amber block mb-4">99.9%</span>
-                  <p className="font-body text-sm text-ink-light">Uptime achieved through robust backend architecture and error handling.</p>
+              <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6 md:mb-8">The Impact</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                <div className="p-6 sm:p-10 rounded-3xl border border-charcoal/5 bg-bone/30">
+                  <span className="font-syne font-black text-3xl sm:text-4xl text-amber block mb-2 sm:mb-4">99.9%</span>
+                  <p className="font-body text-xs sm:text-sm text-ink-light">Uptime achieved through robust backend architecture and error handling.</p>
                 </div>
-                <div className="p-10 rounded-3xl border border-charcoal/5 bg-bone/30">
-                  <span className="font-syne font-black text-4xl text-amber block mb-4">&lt; 200ms</span>
-                  <p className="font-body text-sm text-ink-light">Average response time for mission-critical API endpoints.</p>
+                <div className="p-6 sm:p-10 rounded-3xl border border-charcoal/5 bg-bone/30">
+                  <span className="font-syne font-black text-3xl sm:text-4xl text-amber block mb-2 sm:mb-4">&lt; 200ms</span>
+                  <p className="font-body text-xs sm:text-sm text-ink-light">Average response time for mission-critical API endpoints.</p>
                 </div>
               </div>
             </div>
@@ -189,9 +189,9 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
               </div>
             </div>
 
-            <div className="detail-section p-10 rounded-3xl bg-charcoal text-off-white">
-              <h3 className="font-display font-bold text-2xl mb-6 text-amber">Ready to see it live?</h3>
-              <p className="text-sm font-light mb-8 text-off-white/60 leading-relaxed">
+            <div className="detail-section p-6 sm:p-10 rounded-3xl bg-charcoal text-off-white">
+              <h3 className="font-display font-bold text-xl sm:text-2xl mb-4 sm:mb-6 text-amber">Ready to see it live?</h3>
+              <p className="text-xs sm:text-sm font-light mb-6 sm:mb-8 text-off-white/60 leading-relaxed">
                 Experience the project in its natural habitat. Check out the live deployment or the source code on GitHub.
               </p>
               <div className="flex flex-col gap-4">
@@ -219,11 +219,11 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
       </section>
 
       {/* ── NEXT PROJECT BANNER ── */}
-      <section className="py-40 px-6 md:px-12 bg-bone/20 border-t border-charcoal/5">
+      <section className="py-24 md:py-40 px-6 md:px-12 bg-bone/20 border-t border-charcoal/5">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-8">Next up</p>
+          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6 md:mb-8">Next up</p>
           <Link href="/projects" className="group">
-             <h2 className="font-display font-bold text-6xl md:text-8xl leading-none mb-12 tracking-tighter transition-all group-hover:italic group-hover:text-amber">
+             <h2 className="font-display font-bold text-4xl sm:text-6xl md:text-8xl leading-none mb-8 md:mb-12 tracking-tighter transition-all group-hover:italic group-hover:text-amber">
                View All <br />Archive
              </h2>
           </Link>

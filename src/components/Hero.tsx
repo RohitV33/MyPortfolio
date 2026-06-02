@@ -207,26 +207,26 @@ export default function Hero() {
       <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
 
       {/* ── Main Content ── */}
-      <div className="relative z-20 max-w-7xl mx-auto px-8 text-center perspective-1000">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8 text-center perspective-1000">
 
         {/* Eyebrow */}
         <div className="overflow-hidden mb-6">
           <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent animate-pulse">
-            System Online // Creative Developer
+            System Online // Full Stack Developer // CSE
           </p>
         </div>
 
         {/* Heading */}
         {/* Heading */}
-        <h1 className="hero-heading font-akira text-[clamp(3.5rem,10vw,10rem)] font-bold leading-[0.9] tracking-tighter mb-12 flex justify-center items-center gap-4">
+        <h1 className="hero-heading font-display text-[clamp(1.8rem,6.5vw,5.5rem)] font-extrabold leading-none tracking-tight mb-8 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
           {heading.map((word, i) => (
             <span
               key={word}
               ref={(el) => { wordsRef.current[i] = el; }}
-              className="inline-block opacity-0 will-change-transform mx-8"
+              className="inline-block opacity-0 will-change-transform"
               style={{
                 color: i === 1 ? "var(--accent)" : "var(--foreground)",
-                textShadow: i === 1 ? "0 0 40px var(--accent-muted)" : "none",
+                textShadow: i === 1 ? "0 0 45px var(--accent-muted)" : "none",
               }}
             >
               {word}
@@ -237,20 +237,20 @@ export default function Hero() {
         {/* Subtitle */}
         <p
           ref={subtitleRef}
-          className="font-body text-lg md:text-2xl font-light text-foreground max-w-2xl mx-auto leading-relaxed opacity-0 mb-16"
+          className="font-body text-base md:text-xl font-light text-foreground max-w-2xl mx-auto leading-relaxed opacity-0 mb-12"
           style={{ letterSpacing: "-0.01em" }}
         >
-          Engineering digital experiences where <span className="text-foreground font-medium">precision</span> meets <span className="italic font-display">poetry</span>. Specializing in high-performance web systems and cinematic motion design.
+          Engineering high-performance web systems and dynamic digital experiences. B.Tech Computer Science & Engineering student at <span className="text-foreground font-medium">KIET Group of Institutions</span>.
         </p>
 
         {/* CTAs */}
-        <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-8 opacity-0">
+        <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 opacity-0">
           <Link
             href="/projects"
-            className="group relative px-10 py-5 rounded-full overflow-hidden transition-all duration-500 hover:scale-105"
+            className="group relative px-6 py-4 sm:px-10 sm:py-5 rounded-full overflow-hidden transition-all duration-500 hover:scale-105"
           >
             <div className="absolute inset-0 bg-accent transition-transform duration-500 group-hover:scale-110" />
-            <span className="relative z-10 font-mono font-bold text-[11px] tracking-[0.2em] uppercase text-[#0D0D0D] flex items-center gap-3">
+            <span className="relative z-10 font-mono font-bold text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#0D0D0D] flex items-center gap-2 sm:gap-3">
               Explore Projects
               <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" fill="none" viewBox="0 0 14 14">
                 <path d="M1 7h12M9 3l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -260,7 +260,7 @@ export default function Hero() {
 
           <Link
             href="/about"
-            className="group font-mono text-[11px] tracking-[0.2em] uppercase text-foreground/60 hover:text-foreground transition-colors py-4"
+            className="group font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-foreground/60 hover:text-foreground transition-colors py-3 sm:py-4"
           >
             Read the story
             <div className="h-px w-0 group-hover:w-full bg-accent transition-all duration-500 mt-1" />
@@ -281,20 +281,6 @@ export default function Hero() {
         </div>
       </div>
 
-      <style jsx>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        @keyframes scrollLine {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
-        }
-        @media (max-height: 720px) {
-          .scroll-hint {
-            display: none !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

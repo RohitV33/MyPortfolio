@@ -106,7 +106,7 @@ export default function ContactPage() {
   };
 
   return (
-    <main ref={containerRef} className="bg-background pt-32 lg:pt-48 pb-32 min-h-screen relative overflow-hidden">
+    <main ref={containerRef} className="bg-background pt-28 md:pt-32 lg:pt-48 pb-16 md:pb-32 min-h-screen relative overflow-hidden">
       {/* Background visual ticks */}
       <div className="absolute inset-0 pointer-events-none opacity-5">
         <div className="absolute top-24 left-12 w-px h-16 bg-foreground" />
@@ -118,18 +118,18 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Header Section */}
-        <section className="mb-20">
-          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-6 contact-reveal">
+        <section className="mb-12 md:mb-20">
+          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-4 md:mb-6 contact-reveal">
             Transmission Protocol // 005
           </p>
-          <h1 className="font-display text-[clamp(2.5rem,8vw,7rem)] font-bold leading-[0.85] tracking-tighter text-foreground perspective-1000">
+          <h1 className="font-display text-[clamp(2.2rem,8vw,6.5rem)] font-bold leading-[0.85] tracking-tighter text-foreground perspective-1000">
             <span className="block contact-reveal">Establish a</span>
             <span className="block contact-reveal text-accent italic font-light">Direct Connection.</span>
           </h1>
         </section>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-16 xl:gap-24 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-12 lg:gap-16 xl:gap-24 items-start">
           
           {/* Left Column: Info & Diagnostic */}
           <div className="space-y-12 contact-fade-in">
@@ -196,7 +196,7 @@ export default function ContactPage() {
 
           {/* Right Column: Form Container */}
           <div className="contact-fade-in relative">
-            <div className="rounded-3xl border border-border-subtle bg-glass-bg p-8 md:p-12 relative overflow-hidden shadow-2xl">
+            <div className="rounded-3xl border border-border-subtle bg-glass-bg p-6 sm:p-8 md:p-12 relative overflow-hidden shadow-2xl">
               
               <AnimatePresence mode="wait">
                 {status === "success" ? (
@@ -349,7 +349,7 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={status === "sending"}
-                        className={`w-full sm:w-auto min-w-[180px] group relative overflow-hidden flex items-center justify-center gap-3 px-8 py-4.5 rounded-2xl font-mono text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-300 active:scale-[0.98] ${
+                        className={`w-full sm:w-auto min-w-[180px] group relative overflow-hidden flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4.5 rounded-2xl font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-300 active:scale-[0.98] ${
                           status === "sending"
                             ? "bg-foreground/5 text-foreground/40 border border-border-subtle cursor-wait"
                             : "bg-accent text-charcoal shadow-xl shadow-accent/10 hover:scale-[1.02]"

@@ -6,17 +6,25 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Link from "next/link";
 
-// ─── Utility: split text into char spans ───────────────────────────────────
+// ─── Utility: split text into char spans, wrapping at word boundaries ───────
 function SplitText({ text, className }: { text: string; className?: string }) {
   return (
     <span className={className} aria-label={text}>
-      {text.split("").map((char, i) => (
+      {text.split(" ").map((word, wordIndex) => (
         <span
-          key={i}
-          className="char inline-block will-change-transform"
-          style={{ display: char === " " ? "inline" : "inline-block" }}
+          key={wordIndex}
+          className="inline-block whitespace-nowrap"
         >
-          {char === " " ? "\u00A0" : char}
+          {word.split("").map((char, charIndex) => (
+            <span
+              key={charIndex}
+              className="char inline-block will-change-transform"
+            >
+              {char}
+            </span>
+          ))}
+          {/* Add a space after the word, unless it's the last word */}
+          {wordIndex < text.split(" ").length - 1 && "\u00A0"}
         </span>
       ))}
     </span>
@@ -147,7 +155,7 @@ export default function ProjectShowcase() {
         />
         {cursorVisible && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-mono text-[1px] text-white tracking-widest uppercase">View</span>
+            <span className="font-mono text-[9px] text-white tracking-widest uppercase">View</span>
           </div>
         )}
       </div>
@@ -159,14 +167,14 @@ export default function ProjectShowcase() {
         {/* ── Background atmosphere ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden bg-background">
           {/* Grid lines */}
-          <div 
+          <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage: `linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)`,
               backgroundSize: "100px 100px",
             }}
           />
-          
+
           {/* Soft ambient blobs */}
           <div
             className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full opacity-20"
@@ -210,7 +218,7 @@ export default function ProjectShowcase() {
                 <h2
                   className="font-display font-bold leading-[0.85] tracking-tighter"
                   style={{
-                    fontSize: "clamp(4rem, 12vw, 10rem)",
+                    fontSize: "clamp(2.5rem, 12vw, 10rem)",
                     color: "var(--foreground)",
                   }}
                 >
@@ -296,23 +304,6 @@ export default function ProjectShowcase() {
         </div>
       </section>
 
-      <style jsx global>{`
-        @keyframes blobFloat1 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(5%, 10%) scale(1.1); }
-          66% { transform: translate(-3%, 5%) scale(0.9); }
-        }
-        @keyframes blobFloat2 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(-8%, -5%) scale(1.15); }
-          66% { transform: translate(4%, -10%) scale(0.85); }
-        }
-        @keyframes scrollDot {
-          0% { transform: translateY(0); opacity: 1; }
-          80% { transform: translateY(12px); opacity: 0; }
-          100% { transform: translateY(0); opacity: 0; }
-        }
-      `}</style>
     </>
   );
 }
@@ -336,13 +327,123 @@ function ProjectItem({
   const visualRef = useRef<HTMLDivElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
 
+  const localCursorRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (localCursorRef.current) {
+      gsap.set(localCursorRef.current, {
+        xPercent: 0,
+        yPercent: 0,
+        scale: 0,
+        opacity: 0,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (isActive) {
       videoRef.current?.play().catch(() => { });
     } else {
       videoRef.current?.pause();
     }
+
+    if (videoRef.current) {
+      gsap.to(videoRef.current, {
+        scale: isActive ? 1.0 : 1.02,
+        duration: 1.5,
+        ease: "power2.out",
+      });
+    }
   }, [isActive]);
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!visualRef.current || !localCursorRef.current) return;
+    
+    // Hide global custom cursor while hovering the video container
+    onHover(false);
+
+    const rect = visualRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    gsap.set(localCursorRef.current, {
+      x: x,
+      y: y,
+    });
+
+    gsap.to(localCursorRef.current, {
+      scale: 1,
+      opacity: 0.75,
+      duration: 0.3,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+
+    if (videoRef.current) {
+      gsap.to(videoRef.current, {
+        scale: isActive ? 1.03 : 1.05,
+        duration: 0.4,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+
+    if (overlayRef.current) {
+      gsap.to(overlayRef.current, {
+        opacity: 0.75,
+        duration: 0.4,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!localCursorRef.current || !visualRef.current) return;
+
+    const rect = visualRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    gsap.to(localCursorRef.current, {
+      x: x,
+      y: y,
+      duration: 0.2,
+      ease: "power2.out",
+      overwrite: "auto",
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (localCursorRef.current) {
+      gsap.to(localCursorRef.current, {
+        scale: 0,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.inOut",
+        overwrite: "auto",
+      });
+    }
+
+    if (videoRef.current) {
+      gsap.to(videoRef.current, {
+        scale: isActive ? 1.0 : 1.02,
+        duration: 0.4,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+
+    if (overlayRef.current) {
+      gsap.to(overlayRef.current, {
+        opacity: 0.6,
+        duration: 0.4,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+  };
 
   useEffect(() => {
     if (!itemRef.current) return;
@@ -362,18 +463,18 @@ function ProjectItem({
         { y: "110%", rotateX: -40, opacity: 0 },
         { y: "0%", rotateX: 0, opacity: 1, duration: 1.2, stagger: 0.02, ease: "power4.out" }
       )
-      .fromTo(
-        descRef.current,
-        { y: 30, opacity: 0, filter: "blur(10px)" },
-        { y: 0, opacity: 0.6, filter: "blur(0px)", duration: 1, ease: "power3.out" },
-        "-=0.8"
-      )
-      .fromTo(
-        tagsRef.current?.querySelectorAll(".tag-pill") || [],
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" },
-        "-=1"
-      );
+        .fromTo(
+          descRef.current,
+          { y: 30, opacity: 0, filter: "blur(10px)" },
+          { y: 0, opacity: 0.6, filter: "blur(0px)", duration: 1, ease: "power3.out" },
+          "-=0.8"
+        )
+        .fromTo(
+          tagsRef.current?.querySelectorAll(".tag-pill") || [],
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" },
+          "-=1"
+        );
 
       // Visual reveal
       gsap.fromTo(
@@ -393,16 +494,19 @@ function ProjectItem({
         }
       );
 
-      // Parallax
-      gsap.to(visualRef.current, {
-        y: -100,
-        ease: "none",
-        scrollTrigger: {
-          trigger: itemRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
-        },
+      // Parallax (only on desktop where columns are side-by-side)
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px)", () => {
+        gsap.to(visualRef.current, {
+          y: -100,
+          ease: "none",
+          scrollTrigger: {
+            trigger: itemRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
       });
     }, itemRef);
 
@@ -416,7 +520,7 @@ function ProjectItem({
     >
       {/* ── Content column ── */}
       <div className="relative z-10 flex flex-col gap-10 perspective-1000">
-        
+
         {/* Index & Year */}
         <div className="flex items-center gap-6 font-mono text-[10px] tracking-[0.4em] uppercase opacity-40">
           <span>{String(index + 1).padStart(2, "0")} / 03</span>
@@ -430,7 +534,7 @@ function ProjectItem({
             ref={titleRef}
             className="font-display font-bold leading-[0.85] tracking-tighter"
             style={{
-              fontSize: "clamp(3rem, 7vw, 6rem)",
+              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
               color: "var(--foreground)",
             }}
           >
@@ -495,9 +599,11 @@ function ProjectItem({
       {/* ── Visual column ── */}
       <div
         ref={visualRef}
-        className="relative group opacity-0"
-        onMouseEnter={() => onHover(true)}
-        onMouseLeave={() => onHover(false)}
+        className="relative group opacity-0 cursor-none"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+        onClick={() => window.open(project.liveUrl, "_blank", "noopener,noreferrer")}
       >
         {/* Glow */}
         <div
@@ -510,7 +616,7 @@ function ProjectItem({
 
         {/* Main visual frame */}
         <div
-          className="relative rounded-[32px] overflow-hidden border border-white/10"
+          className="relative rounded-[32px] overflow-hidden border border-white/10 pointer-events-none"
           style={{
             aspectRatio: "16/10",
             boxShadow: isActive ? "0 60px 120px -20px rgba(0,0,0,0.5)" : "0 30px 60px -10px rgba(0,0,0,0.3)",
@@ -526,15 +632,17 @@ function ProjectItem({
             loop
             muted
             playsInline
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] cubic-bezier(0.2, 1, 0.3, 1)"
-            style={{ transform: isActive ? "scale(1.05)" : "scale(1.15)" }}
+            className="absolute inset-0 w-full h-full object-cover"
           >
             <source src={project.videoUrl} type="video/mp4" />
           </video>
 
           {/* Overlay info */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
-          
+          <div
+            ref={overlayRef}
+            className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none opacity-60"
+          />
+
           <div className="absolute top-8 left-8 z-20">
             <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/10">
               <span className={`w-2 h-2 rounded-full animate-pulse`} style={{ background: project.color }} />
@@ -544,6 +652,38 @@ function ProjectItem({
 
           <div className="absolute bottom-8 right-8 z-20">
             <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-white/40">{project.slug} {"// protocol"}</span>
+          </div>
+        </div>
+
+        {/* Custom Local Follow Cursor */}
+        <div
+          ref={localCursorRef}
+          className="absolute top-0 left-0 pointer-events-none z-[50] opacity-0 scale-0"
+        >
+          <div className="relative flex items-start">
+            {/* Pulsing Ripples centered at the cursor tip (top-left) */}
+            <div 
+              className="absolute flex items-center justify-center pointer-events-none"
+              style={{ left: "3px", top: "2px" }}
+            >
+              {/* Ripple 1 */}
+              <span className="absolute w-8 h-8 rounded-full border border-white/60 animate-ping opacity-60" style={{ animationDuration: '1.2s' }} />
+              {/* Ripple 2 */}
+              <span className="absolute w-12 h-12 rounded-full border border-accent/40 animate-ping opacity-30" style={{ animationDuration: '1.6s', animationDelay: '0.4s' }} />
+            </div>
+
+            {/* The Yellow Arrow pointing to (2.5, 1.5) */}
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] pointer-events-none">
+              <path
+                d="M2.5 1.5 L16.5 8.5 L9.5 10 L13 16.5 L11 17.5 L7.5 11 L3.5 14 Z"
+                fill="var(--accent)"
+              />
+            </svg>
+
+            {/* The "CLICK!" Text */}
+            <span className="ml-1 -mt-2.5 font-display font-black text-[10px] tracking-wider text-white bg-[#0D0D0D]/60 px-2 py-0.5 rounded-full border border-white/10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] whitespace-nowrap">
+              CLICK!
+            </span>
           </div>
         </div>
 

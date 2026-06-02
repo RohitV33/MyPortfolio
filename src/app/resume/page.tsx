@@ -48,40 +48,60 @@ export default function ResumePage() {
 
   const experiences = [
     {
-      company: "Creative Studio",
-      role: "Senior Creative Developer",
-      period: "2022 — Present",
-      description: "Leading the development of high-end immersive web experiences for global brands. Focusing on performance, motion design, and cutting-edge frontend technologies.",
-      skills: ["Next.js", "GSAP", "Three.js", "Framer Motion"],
+      company: "Freelance",
+      role: "Freelance Video Editor",
+      period: "2024 — Present",
+      description: "Delivering high-quality client video projects using DaVinci Resolve and After Effects. Creating engaging digital narratives, visual effects, and post-production assets.",
+      skills: ["DaVinci Resolve", "After Effects", "Motion Design", "Video Editing"],
     },
     {
-      company: "Digital Agency X",
-      role: "Frontend Developer",
-      period: "2020 — 2022",
-      description: "Developed responsive and interactive web applications. Collaborated closely with designers to implement pixel-perfect interfaces.",
-      skills: ["React", "TypeScript", "Tailwind CSS", "Redux"],
-    },
-    {
-      company: "Tech Start-up Y",
-      role: "Junior Web Developer",
-      period: "2018 — 2020",
-      description: "Built and maintained various client websites and internal tools. Gained experience in full-stack development and agile methodologies.",
-      skills: ["JavaScript", "HTML/CSS", "Node.js", "MongoDB"],
+      company: "Innotech 2024",
+      role: "Social Content Creator",
+      period: "2024",
+      description: "Managed social media content creation and audience engagement strategies. Promoted technological innovations and campus tech activities through digital content creation.",
+      skills: ["Content Creation", "Public Relations", "Digital Media", "Audience Engagement"],
     },
   ];
 
   const education = [
     {
-      institution: "University of Design & Tech",
-      degree: "B.Sc. in Computer Science",
-      period: "2014 — 2018",
+      institution: "KIET Group of Institutions, Ghaziabad",
+      degree: "Bachelor of Technology (B.Tech) in Computer Science and Engineering",
+      period: "2023 — 2027",
+      details: "CGPA: 7.5 / 10",
+    },
+    {
+      institution: "Scottish International School",
+      degree: "Senior Secondary (Class XII)",
+      period: "2022",
+      details: "Score: 86.2%",
+    },
+    {
+      institution: "Silver Bells Public School",
+      degree: "Secondary (Class X)",
+      period: "2020",
+      details: "Score: 85.6%",
     },
   ];
 
   const skillGroups = [
-    { category: "Design", items: ["UI/UX Design", "Motion Design", "Visual Storytelling", "Prototyping"] },
-    { category: "Development", items: ["React / Next.js", "TypeScript", "GSAP / Framer Motion", "WebGL / Three.js"] },
-    { category: "Tools", items: ["Figma", "Adobe Creative Cloud", "VS Code", "Git / GitHub"] },
+    { category: "Languages", items: ["Java", "JavaScript", "Python", "SQL", "C"] },
+    { category: "Web & Backend", items: ["HTML", "CSS", "React.js", "Tailwind CSS", "Node.js", "Express.js"] },
+    { category: "Databases & Tools", items: ["MongoDB", "MySQL", "Git & GitHub", "VS Code", "IntelliJ IDEA", "Postman"] },
+    { category: "Core CS", items: ["Data Structures & Algorithms", "OOP", "DBMS", "Operating Systems"] },
+  ];
+
+  const certifications = [
+    {
+      title: "AWS Certified Cloud Practitioner",
+      issuer: "Amazon Web Services (AWS)",
+      date: "Feb 2026",
+    },
+    {
+      title: "SQL (Intermediate)",
+      issuer: "HackerRank",
+      date: "Nov 2025",
+    },
   ];
 
   return (
@@ -99,51 +119,83 @@ export default function ResumePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="inline-block px-3 py-1 rounded-full bg-ink-deep text-warm-cream text-[10px] font-mono tracking-[0.2em] uppercase mb-6"
+            className="inline-block px-3 py-1 rounded-full bg-accent-muted text-accent text-[10px] font-mono tracking-[0.2em] uppercase mb-6"
           >
             Curriculum Vitae
           </motion.div>
-          <h1 className="font-display text-5xl md:text-7xl font-light text-ink-deep mb-4 leading-tight">
-            Rohit <span className="italic text-ink-light">Verma</span>
+          <h1 className="font-display text-4xl sm:text-6xl md:text-8xl font-bold text-foreground mb-4 leading-tight">
+            Rohit <span className="italic text-accent font-light">Verma</span>
           </h1>
-          <p className="font-body text-xl text-ink-mid font-light max-w-2xl mb-8">
-            Creative Developer & Designer specializing in building cinematic digital experiences where motion meets narrative.
+          <p className="font-body text-lg md:text-xl text-foreground/60 font-light max-w-2xl mb-8">
+            Full Stack Developer & B.Tech Computer Science student specializing in building high-performance digital systems and clean visual interfaces.
           </p>
-          <div className="flex flex-wrap justify-center md:justify-start gap-6 text-sm font-mono tracking-wide text-ink-light">
-            <a href="mailto:rohitverma@example.com" className="hover:text-ink-deep transition-colors">rohitverma@example.com</a>
+          <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-6 text-xs sm:text-sm font-mono tracking-wide text-foreground/50">
+            <a href="mailto:verma61421st@gmail.com" className="hover:text-accent transition-colors">verma61421st@gmail.com</a>
             <span className="opacity-30">|</span>
-            <span>India, IN</span>
+            <span>Shamli, UP, IN</span>
             <span className="opacity-30">|</span>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-ink-deep transition-colors">GitHub</a>
+            <a href="https://github.com/RohitV33" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">GitHub</a>
+            <span className="opacity-30">|</span>
+            <a href="https://linkedin.com/in/rawhit01" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">LinkedIn</a>
+            <span className="opacity-30">|</span>
+            <a href="https://leetcode.com/u/RohitV33/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">LeetCode</a>
           </div>
         </header>
 
         <div ref={sectionsRef} className="space-y-24">
-          {/* Experience Section */}
+          {/* Education Section */}
           <section className="resume-section">
-            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-ink-light mb-12 flex items-center gap-4">
-              <span>01. Experience</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-warm-stone/30 to-transparent" />
+            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-accent mb-12 flex items-center gap-4">
+              <span>01. Education</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-accent/20 to-transparent" />
+            </h2>
+            <div className="space-y-12">
+              {education.map((edu, i) => (
+                <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 md:gap-12">
+                  <div className="font-mono text-xs text-foreground/45 pt-1">
+                    {edu.period}
+                  </div>
+                  <div>
+                    <h3 className="font-display text-2xl font-bold text-foreground mb-2">
+                      {edu.degree}
+                    </h3>
+                    <p className="font-body text-base text-foreground/60 mb-1">
+                      {edu.institution}
+                    </p>
+                    <p className="font-mono text-[11px] text-accent">
+                      {edu.details}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Experience & Activities Section */}
+          <section className="resume-section">
+            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-accent mb-12 flex items-center gap-4">
+              <span>02. Activities & Projects</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-accent/20 to-transparent" />
             </h2>
             <div className="space-y-16">
               {experiences.map((exp, i) => (
                 <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 md:gap-12 group">
-                  <div className="font-mono text-xs text-ink-light pt-1">
+                  <div className="font-mono text-xs text-foreground/45 pt-1">
                     {exp.period}
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl font-medium text-ink-deep mb-2 group-hover:text-ink-mid transition-colors">
+                    <h3 className="font-display text-2xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors">
                       {exp.role}
                     </h3>
-                    <p className="font-body text-sm font-semibold text-warm-stone tracking-widest uppercase mb-4">
+                    <p className="font-body text-xs font-semibold text-accent/80 tracking-widest uppercase mb-4">
                       {exp.company}
                     </p>
-                    <p className="font-body text-base text-ink-light leading-relaxed mb-6">
+                    <p className="font-body text-base text-foreground/60 leading-relaxed mb-6">
                       {exp.description}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {exp.skills.map((skill) => (
-                        <span key={skill} className="px-3 py-1 rounded-full bg-warm-sand/20 border border-warm-sand/30 text-[10px] font-mono text-ink-mid">
+                        <span key={skill} className="px-3.5 py-1.5 rounded-full border border-white/10 bg-glass-bg text-[10px] font-mono text-foreground/70">
                           {skill}
                         </span>
                       ))}
@@ -156,20 +208,20 @@ export default function ResumePage() {
 
           {/* Skills Section */}
           <section className="resume-section">
-            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-ink-light mb-12 flex items-center gap-4">
-              <span>02. Expertise</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-warm-stone/30 to-transparent" />
+            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-accent mb-12 flex items-center gap-4">
+              <span>03. Expertise</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-accent/20 to-transparent" />
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {skillGroups.map((group, i) => (
-                <div key={i}>
-                  <h3 className="font-display text-lg font-medium text-ink-deep mb-6 italic">
+                <div key={i} className="p-6 rounded-2xl border border-white/5 bg-glass-bg">
+                  <h3 className="font-display text-lg font-bold text-foreground mb-6 italic">
                     {group.category}
                   </h3>
                   <ul className="space-y-3">
                     {group.items.map((skill) => (
-                      <li key={skill} className="flex items-center gap-3 font-body text-sm text-ink-light">
-                        <span className="w-1 h-1 rounded-full bg-warm-stone" />
+                      <li key={skill} className="flex items-center gap-3 font-body text-sm text-foreground/60">
+                        <span className="w-1 h-1 rounded-full bg-accent" />
                         {skill}
                       </li>
                     ))}
@@ -179,25 +231,25 @@ export default function ResumePage() {
             </div>
           </section>
 
-          {/* Education Section */}
+          {/* Certifications Section */}
           <section className="resume-section">
-            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-ink-light mb-12 flex items-center gap-4">
-              <span>03. Education</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-warm-stone/30 to-transparent" />
+            <h2 className="font-mono text-xs tracking-[0.3em] uppercase text-accent mb-12 flex items-center gap-4">
+              <span>04. Certifications</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-accent/20 to-transparent" />
             </h2>
-            <div className="space-y-12">
-              {education.map((edu, i) => (
-                <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 md:gap-12">
-                  <div className="font-mono text-xs text-ink-light pt-1">
-                    {edu.period}
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {certifications.map((cert, i) => (
+                <div key={i} className="p-6 rounded-2xl border border-white/5 bg-glass-bg flex flex-col justify-between">
                   <div>
-                    <h3 className="font-display text-2xl font-medium text-ink-deep mb-2">
-                      {edu.degree}
+                    <h3 className="font-display text-xl font-bold text-foreground mb-2">
+                      {cert.title}
                     </h3>
-                    <p className="font-body text-base text-ink-light">
-                      {edu.institution}
+                    <p className="font-body text-sm text-foreground/50">
+                      {cert.issuer}
                     </p>
+                  </div>
+                  <div className="mt-6 font-mono text-[10px] text-accent uppercase tracking-widest">
+                    {cert.date}
                   </div>
                 </div>
               ))}
@@ -206,15 +258,15 @@ export default function ResumePage() {
 
           {/* Download CTA */}
           <section className="resume-section pt-12 pb-24 text-center">
-            <div className="inline-block p-[1px] rounded-2xl bg-gradient-to-br from-warm-stone/40 via-ink-deep/5 to-warm-stone/40">
-              <div className="bg-background rounded-2xl px-12 py-10">
-                <h3 className="font-display text-2xl font-light text-ink-deep mb-6">
-                  Need a offline version?
+            <div className="inline-block p-[1px] rounded-3xl bg-gradient-to-br from-accent/30 via-white/5 to-accent/30">
+              <div className="bg-background rounded-[23px] px-12 py-10">
+                <h3 className="font-display text-2xl font-light text-foreground mb-6">
+                  Need an offline version?
                 </h3>
                 <a
-                  href="/cv.pdf"
+                  href="/Resume.pdf"
                   download
-                  className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-ink-deep text-warm-cream font-mono text-xs tracking-widest uppercase transition-all duration-500 hover:scale-105 hover:shadow-xl"
+                  className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-accent text-[#0D0D0D] font-mono text-xs tracking-widest uppercase transition-all duration-500 hover:scale-105 hover:shadow-xl"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a2 2 0 002 2h12 a2 2 0 002-2v-1M7 10l5 5 5-5M12 15V3" />
@@ -228,9 +280,9 @@ export default function ResumePage() {
       </div>
 
       {/* Footer link back */}
-      <footer className="max-w-4xl mx-auto border-t border-warm-stone/20 pt-12 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase text-ink-light">
-        <span>© 2024 Rohit Verma</span>
-        <Link href="/" className="hover:text-ink-deep transition-colors">Back to Home</Link>
+      <footer className="max-w-4xl mx-auto border-t border-white/10 pt-12 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase text-foreground/30">
+        <span>© 2026 Rohit Verma</span>
+        <Link href="/" className="hover:text-accent transition-colors">Back to Home</Link>
       </footer>
     </main>
   );

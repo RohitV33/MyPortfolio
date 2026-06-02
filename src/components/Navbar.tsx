@@ -11,6 +11,7 @@ import {
 import gsap from "gsap";
 
 const MotionLink = motion.create(Link);
+import { useLenis } from "@/components/SmoothScrollProvider";
 
 
 
@@ -36,8 +37,10 @@ const commandItems = [
   { label: "About Me", href: "/about", icon: "◉" },
   { label: "View Resume", href: "/resume", icon: "📄" },
   { label: "Contact Form", href: "/contact", icon: "✉" },
-  { label: "Download CV", href: "/cv.pdf", icon: "↓" },
+  { label: "Download Resume", href: "/Resume.pdf", icon: "↓" },
   { label: "GitHub", href: "https://github.com/RohitV33", icon: "◎" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/rawhit01", icon: "◎" },
+  { label: "LeetCode", href: "https://leetcode.com/u/RohitV33/", icon: "◎" },
 ];
 
 /* ─── Magnetic Hook ──────────────────────────────────── */
@@ -181,6 +184,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
 export default function Navbar() {
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
+  const { lenis } = useLenis();
 
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -287,10 +291,10 @@ export default function Navbar() {
       <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50" style={{ opacity: 0 }}>
         {/* ── Scroll progress bar ── */}
         <div
-          className="absolute top-0 left-0 h-[2px] z-10 transition-all duration-100 rounded-r-full"
+          suppressHydrationWarning
+          className="absolute top-0 left-0 h-[2px] z-10 transition-all duration-100 rounded-r-full bg-gradient-to-r from-[#c4a87a] via-[#e8c99a] to-[#f0d4a8]"
           style={{
             width: `${scrollProgress}%`,
-            background: "linear-gradient(90deg, #c4a87a, #e8c99a, #f0d4a8)",
           }}
         />
 
@@ -324,21 +328,10 @@ export default function Navbar() {
 
         {/* ── Main Bar (Floating Glass Dock) ── */}
         <div
-          className={`mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative ${
-            scrolled ? "mt-3 py-2.5 px-6" : "mt-6 py-3.5 px-8"
-          }`}
-          style={{
-            background: isDark
-              ? "linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.005))"
-              : "linear-gradient(to bottom, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.001))",
-            boxShadow: isDark
-              ? scrolled
-                ? "0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)"
-                : "0 32px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
-              : scrolled
-                ? "0 20px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)"
-                : "0 32px 60px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
-          }}
+          suppressHydrationWarning
+          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative ${
+            scrolled ? "mt-3 py-2.5 px-6 scrolled" : "mt-6 py-3.5 px-8"
+          } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
         >
           {/* ── LEFT: BRAND / LOGO & HUD Clock ── */}
           <motion.div
@@ -346,7 +339,17 @@ export default function Navbar() {
             style={{ x: logoSx, y: logoSy }}
             className="flex items-center gap-3.5"
           >
-            <Link href="/" className="flex items-center group shrink-0">
+            <Link 
+              href="/" 
+              onClick={(e) => {
+                if (pathname === "/") {
+                  e.preventDefault();
+                  if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+                  else window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+              className="flex items-center group shrink-0"
+            >
               <div className={`relative w-8 h-8 rounded-full flex items-center justify-center border transition-colors duration-500 ${
                 isDark ? "border-white/10 bg-white/5 group-hover:border-[#c4a87a]/40" : "border-black/10 bg-black/5 group-hover:border-[#1a1714]/40"
               }`}>
@@ -360,13 +363,13 @@ export default function Navbar() {
             </Link>
 
             {/* HUD Status & Clock */}
-            <div className="hidden lg:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
+            <div className="hidden md:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
               <div className="flex items-center gap-1.5 text-emerald-500/80">
-                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                <span>SYS_ON // SECURE</span>
+                
+                <span>Rohit Verma</span>
               </div>
               <div className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/30" : "text-foreground/45"}`}>
-                {currentTime || "11:53:38"}
+                {currentTime || "--:--:--"}
               </div>
             </div>
           </motion.div>
@@ -382,6 +385,13 @@ export default function Navbar() {
                     href={href}
                     onMouseEnter={() => setHoveredLink(href)}
                     onMouseLeave={() => setHoveredLink(null)}
+                    onClick={(e) => {
+                      if (isActive) {
+                        e.preventDefault();
+                        if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+                        else window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
                     className={`relative flex items-center px-4 py-2 rounded-xl text-[10px] font-mono font-medium tracking-[0.18em] uppercase transition-colors duration-300 ${
                       isActive ? t.text : `${t.muted} hover:${t.text}`
                     }`}
@@ -465,14 +475,9 @@ export default function Navbar() {
                       ? i === 0 ? { rotate: 45, y: 6 } : i === 1 ? { opacity: 0, scaleX: 0 } : { rotate: -45, y: -6 }
                       : { rotate: 0, y: 0, opacity: 1 }
                   }
-                  style={{
-                    width: i === 1 ? "12px" : "18px",
-                    height: "1.5px",
-                    background: isDark ? "#c4a87a" : "#1a1714",
-                    display: "block",
-                    borderRadius: "2px",
-                    transformOrigin: "center",
-                  }}
+                  className={`h-[1.5px] block rounded-[2px] origin-center transition-colors duration-300 ${
+                    i === 1 ? "w-3" : "w-[18px]"
+                  } ${isDark ? "bg-[#c4a87a]" : "bg-[#1a1714]"}`}
                 />
               ))}
             </button>
@@ -487,7 +492,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.97 }}
               transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-              className={`md:hidden mx-4 mt-1 rounded-2xl border shadow-2xl overflow-hidden backdrop-blur-2xl ${isDark
+              className={`md:hidden w-[calc(100%-2rem)] mx-auto mt-1 rounded-2xl border shadow-2xl overflow-hidden backdrop-blur-2xl ${isDark
                   ? "bg-[#0f0d0b]/95 border-[rgba(255,255,255,0.07)]"
                   : "bg-[rgba(252,249,244,0.97)] border-[rgba(0,0,0,0.07)]"
                 }`}
@@ -504,7 +509,14 @@ export default function Navbar() {
                     >
                       <Link
                         href={href}
-                        onClick={() => setMenuOpen(false)}
+                        onClick={(e) => {
+                          setMenuOpen(false);
+                          if (isActive) {
+                            e.preventDefault();
+                            if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+                            else window.scrollTo({ top: 0, behavior: "smooth" });
+                          }
+                        }}
                         className={`flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 ${isActive
                             ? isDark ? "bg-[#c4a87a] text-[#1a1714]" : "bg-[#1a1714] text-[#f0e9dc]"
                             : isDark ? "hover:bg-[rgba(255,255,255,0.05)] text-[#c8bfb4]" : "hover:bg-[#f0ebe3] text-[#3a3530]"

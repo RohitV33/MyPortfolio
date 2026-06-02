@@ -66,14 +66,14 @@ export default function AboutPage() {
   ];
 
   return (
-    <main ref={containerRef} className="bg-background pt-32 lg:pt-48">
+    <main ref={containerRef} className="bg-background pt-28 md:pt-32 lg:pt-48">
       {/* ─── Hero Section ─── */}
-      <section className="px-8 md:px-24 mb-48">
+      <section className="px-6 md:px-24 mb-24 md:mb-48">
         <div className="max-w-7xl mx-auto">
-          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-8 about-hero-text">
+          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-6 md:mb-8 about-hero-text">
             System Origin // Rohit Verma
           </p>
-          <h1 className="font-display text-[clamp(3.5rem,12vw,10rem)] font-bold leading-[0.85] tracking-tighter text-foreground perspective-1000">
+          <h1 className="font-display text-[clamp(2.5rem,10vw,8rem)] font-bold leading-[0.85] tracking-tighter text-foreground perspective-1000">
             <span className="block about-hero-text">Building the</span>
             <span className="block about-hero-text text-accent italic font-light">Digital Atmospheric.</span>
           </h1>
@@ -81,30 +81,30 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Story Section ─── */}
-      <section className="px-8 md:px-24 mb-64 reveal-section">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+      <section className="px-6 md:px-24 mb-32 md:mb-64 reveal-section">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
           <div className="sticky top-48">
-            <div className="w-12 h-px bg-accent mb-12" />
-            <h2 className="font-display text-4xl font-bold italic text-foreground/40">
+            <div className="w-12 h-px bg-accent mb-8 md:mb-12" />
+            <h2 className="font-display text-2xl md:text-4xl font-bold italic text-foreground/40">
               {"\"The goal isn't just to solve problems, but to create experiences that linger.\""}
             </h2>
           </div>
           
           <div className="space-y-12">
             <p className="font-body text-2xl font-light text-foreground/70 leading-relaxed">
-              I am a Full Stack Developer and Creative Designer based in India. My journey began at the intersection of technical logic and visual storytelling, leading me to specialize in high-performance web systems that {"don't"} compromise on aesthetic soul.
+              I am a Full Stack Developer and Computer Science & Engineering student at KIET Group of Institutions, Ghaziabad (2023—2027). I work at the intersection of technical systems architecture and motion design—building digital ecosystems that run with security and high efficiency.
             </p>
             <p className="font-body text-xl font-light text-foreground/50 leading-relaxed">
-              I believe that the web is a cinematic medium. Every transition is a camera move, every scroll is a narrative beat. I spend my time obsessing over the physics of motion and the architecture of clean, scalable APIs.
+              From engineering concurrent security engines to developing full-featured e-commerce architectures, I specialize in core JavaScript/TypeScript and Java. I spend my time mastering Data Structures & Algorithms, database optimization, and designing systems that offer premium interactions.
             </p>
             <div className="grid grid-cols-2 gap-12 pt-12">
               <div>
-                <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent mb-4">Experience</p>
-                <p className="font-display text-4xl font-bold">3+ Years</p>
+                <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent mb-4">Focus</p>
+                <p className="font-display text-2xl md:text-3xl font-bold">Full Stack & DSA</p>
               </div>
               <div>
-                <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent mb-4">Projects</p>
-                <p className="font-display text-4xl font-bold">20+</p>
+                <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-accent mb-4">KIET CSE</p>
+                <p className="font-display text-2xl md:text-3xl font-bold">Class of 2027</p>
               </div>
             </div>
           </div>
@@ -112,11 +112,11 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Tech Stack Section ─── */}
-      <section className="px-8 md:px-24 mb-64 reveal-section">
+      <section className="px-6 md:px-24 mb-32 md:mb-64 reveal-section">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
+          <div className="mb-10 md:mb-16">
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-4">The Toolkit</p>
-            <h2 className="font-display text-6xl font-bold tracking-tight">Diagnostic // Stack</h2>
+            <h2 className="font-display text-3xl md:text-6xl font-bold tracking-tight">Diagnostic // Stack</h2>
           </div>
           
           <div className="tech-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -148,12 +148,12 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Contact Footer ─── */}
-      <footer className="py-24 px-8 md:px-24">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
-          <h3 className="font-display text-4xl font-bold tracking-tight">{"Let's"} talk about your next mission.</h3>
+      <footer className="py-16 md:py-24 px-6 md:px-24">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+          <h3 className="font-display text-2xl md:text-4xl font-bold tracking-tight">{"Let's"} talk about your next mission.</h3>
           <a 
-            href="mailto:hello@rohit.dev"
-            className="px-12 py-6 rounded-full bg-accent text-[#0D0D0D] font-mono font-bold text-[12px] tracking-[0.2em] uppercase hover:scale-105 transition-transform"
+            href="mailto:verma61421st@gmail.com"
+            className="px-8 py-4 sm:px-12 sm:py-6 rounded-full bg-accent text-[#0D0D0D] font-mono font-bold text-[11px] sm:text-[12px] tracking-[0.2em] uppercase hover:scale-105 transition-transform"
           >
             Get in Touch
           </a>

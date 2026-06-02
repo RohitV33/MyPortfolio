@@ -20,12 +20,12 @@ function FrozenRouter(props: { children: ReactNode }) {
 const variants: Variants = {
   initial: {
     opacity: 0,
-    x: 40,
+    y: 20,
     filter: "blur(12px)",
   },
   animate: {
     opacity: 1,
-    x: 0,
+    y: 0,
     filter: "blur(0px)",
     transition: {
       duration: 1.2,
@@ -34,7 +34,7 @@ const variants: Variants = {
   },
   exit: {
     opacity: 0,
-    x: -40,
+    y: -20,
     filter: "blur(12px)",
     transition: {
       duration: 0.8,

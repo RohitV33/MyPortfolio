@@ -7,6 +7,7 @@ const MARQUEE = "ROHIT VERMA · FULL STACK DEVELOPER · OPEN TO WORK · INDIA ·
 const socials = [
   { label: "GitHub", href: "https://github.com/RohitV33", icon: "↗" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/rawhit01", icon: "↗" },
+  { label: "LeetCode", href: "https://leetcode.com/u/RohitV33/", icon: "↗" },
   { label: "Email", href: "mailto:verma61421st@gmail.com", icon: "→" },
 ];
 
@@ -38,7 +39,7 @@ export default function Footer() {
           {/* CTA */}
           <div>
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6">{"Let's build together"}</p>
-            <h2 className="font-display font-bold text-5xl md:text-7xl leading-[0.9] tracking-tighter text-off-white mb-10">
+            <h2 className="font-display font-bold text-3xl sm:text-5xl md:text-7xl leading-[0.9] tracking-tighter text-off-white mb-10">
               Got a project <br />in mind? <span className="text-amber italic">Talk to me.</span>
             </h2>
             <Link 
@@ -82,7 +83,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-16 md:mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-syne font-bold text-xs text-amber">R</div>
             <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/20">© 2026 Rohit Verma</span>
