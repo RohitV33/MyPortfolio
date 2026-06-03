@@ -7,7 +7,7 @@ const MARQUEE = "ROHIT VERMA · FULL STACK DEVELOPER · OPEN TO WORK · INDIA ·
 const socials = [
   { label: "GitHub", href: "https://github.com/RohitV33", icon: "↗" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/rawhit01", icon: "↗" },
-  { label: "LeetCode", href: "https://leetcode.com/u/RohitV33/", icon: "↗" },
+  { label: "LeetCode", href: "https://leetcode.com/u/rohit6142/", icon: "↗" },
   { label: "Email", href: "mailto:verma61421st@gmail.com", icon: "→" },
 ];
 

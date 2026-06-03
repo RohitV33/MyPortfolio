@@ -13,7 +13,7 @@ const commandItems = [
   { label: "Download Resume", href: "/Resume.pdf", icon: "↓" },
   { label: "GitHub", href: "https://github.com/RohitV33", icon: "◎" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/rawhit01", icon: "◎" },
-  { label: "LeetCode", href: "https://leetcode.com/u/RohitV33/", icon: "◎" },
+  { label: "LeetCode", href: "https://leetcode.com/u/rohit6142/", icon: "◎" },
 ];
 
 interface CommandPaletteProps {

@@ -138,7 +138,7 @@ export default function ResumePage() {
             <span className="opacity-30">|</span>
             <a href="https://linkedin.com/in/rawhit01" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">LinkedIn</a>
             <span className="opacity-30">|</span>
-            <a href="https://leetcode.com/u/RohitV33/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">LeetCode</a>
+            <a href="https://leetcode.com/u/rohit6142/" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">LeetCode</a>
           </div>
         </header>
 
