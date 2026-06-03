@@ -116,7 +116,7 @@ export default function ContactPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        
+
         {/* Header Section */}
         <section className="mb-12 md:mb-20">
           <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-4 md:mb-6 contact-reveal">
@@ -130,7 +130,7 @@ export default function ContactPage() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-12 lg:gap-16 xl:gap-24 items-start">
-          
+
           {/* Left Column: Info & Diagnostic */}
           <div className="space-y-12 contact-fade-in">
             <div className="border-l border-accent/20 pl-6 space-y-6">
@@ -174,17 +174,17 @@ export default function ContactPage() {
                 External Relays
               </p>
               <div className="flex flex-wrap gap-4">
-                <a 
-                  href="https://github.com/RohitV33" 
-                  target="_blank" 
+                <a
+                  href="https://github.com/RohitV33"
+                  target="_blank"
                   rel="noreferrer"
                   className="px-5 py-2.5 rounded-xl border border-border-subtle bg-glass-bg font-mono text-[10px] tracking-widest uppercase text-foreground/60 hover:border-accent/40 hover:text-accent transition-all duration-300"
                 >
                   GitHub ↗
                 </a>
-                <a 
-                  href="https://www.linkedin.com/in/rawhit01" 
-                  target="_blank" 
+                <a
+                  href="https://www.linkedin.com/in/rawhit01"
+                  target="_blank"
                   rel="noreferrer"
                   className="px-5 py-2.5 rounded-xl border border-border-subtle bg-glass-bg font-mono text-[10px] tracking-widest uppercase text-foreground/60 hover:border-accent/40 hover:text-accent transition-all duration-300"
                 >
@@ -197,11 +197,11 @@ export default function ContactPage() {
           {/* Right Column: Form Container */}
           <div className="contact-fade-in relative">
             <div className="rounded-3xl border border-border-subtle bg-glass-bg p-6 sm:p-8 md:p-12 relative overflow-hidden shadow-2xl">
-              
+
               <AnimatePresence mode="wait">
                 {status === "success" ? (
                   /* Success State Overlay */
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
@@ -216,7 +216,7 @@ export default function ContactPage() {
                         Transmission Transmitted
                       </h3>
                       <p className="font-body text-sm text-foreground/60 max-w-sm mx-auto">
-                        Your message has successfully bypassed network gateways and reached my terminal. 
+                        Your message has successfully bypassed network gateways and reached my terminal.
                       </p>
                     </div>
 
@@ -240,7 +240,7 @@ export default function ContactPage() {
                   </motion.div>
                 ) : (
                   /* Standard Form State */
-                  <motion.form 
+                  <motion.form
                     ref={formRef}
                     onSubmit={handleSubmit}
                     className="space-y-8"
@@ -349,11 +349,10 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={status === "sending"}
-                        className={`w-full sm:w-auto min-w-[180px] group relative overflow-hidden flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4.5 rounded-2xl font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-300 active:scale-[0.98] ${
-                          status === "sending"
+                        className={`w-full sm:w-auto min-w-[180px] group relative overflow-hidden flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4.5 rounded-2xl font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase transition-all duration-300 active:scale-[0.98] ${status === "sending"
                             ? "bg-foreground/5 text-foreground/40 border border-border-subtle cursor-wait"
                             : "bg-accent text-charcoal shadow-xl shadow-accent/10 hover:scale-[1.02]"
-                        }`}
+                          }`}
                       >
                         {status === "sending" ? (
                           <>
@@ -363,11 +362,11 @@ export default function ContactPage() {
                         ) : (
                           <>
                             <span>Transmit Signal</span>
-                            <svg 
-                              width="12" 
-                              height="12" 
-                              viewBox="0 0 14 14" 
-                              fill="none" 
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 14 14"
+                              fill="none"
                               className="transition-transform duration-300 group-hover:translate-x-1"
                             >
                               <path d="M1 7h12M9 3l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

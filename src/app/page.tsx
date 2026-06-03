@@ -16,7 +16,7 @@ export default function HomePage() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    
+
     const ctx = gsap.context(() => {
       // ─── Intro Section Animations ───
       const introTl = gsap.timeline({
@@ -116,7 +116,7 @@ export default function HomePage() {
       <Hero />
 
       {/* ─── Intro Section ─── */}
-      <section 
+      <section
         ref={introRef}
         className="relative py-24 md:py-48 px-6 md:px-24 overflow-hidden bg-background"
       >
@@ -131,12 +131,12 @@ export default function HomePage() {
             </h2>
             <div className="decorative-line h-px w-full bg-accent/20 origin-left" />
           </div>
-          
+
           <div className="pt-4 lg:pt-32">
             <p className="reveal-text font-body text-lg md:text-2xl font-light text-foreground/60 leading-relaxed mb-8 md:mb-10">
               I am a Full Stack Developer and Computer Science & Engineering student at KIET Group of Institutions. I work at the intersection of robust backend engineering and intuitive frontend design, building digital solutions that perform with speed and absolute precision.
             </p>
-            <Link 
+            <Link
               href="/about"
               className="group inline-flex items-center gap-4 font-mono text-[10px] sm:text-[11px] tracking-[0.3em] uppercase text-foreground"
             >
@@ -152,7 +152,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── Technical Skills Section ─── */}
-      <section 
+      <section
         ref={skillsRef}
         className="py-24 px-6 md:px-24 border-t border-white/5 relative overflow-hidden bg-background"
       >
@@ -163,7 +163,7 @@ export default function HomePage() {
           <h2 className="font-display text-[clamp(2.2rem,8vw,4.5rem)] font-bold leading-[0.9] tracking-tighter text-foreground mb-16">
             Technical <span className="text-accent italic font-light">Capabilities.</span>
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="skill-card-anim p-8 rounded-3xl border border-white/5 bg-glass-bg backdrop-blur-xl group hover:border-accent/20 transition-all duration-500">
               <span className="text-accent font-mono text-xs uppercase tracking-widest block mb-6">01 // Languages</span>
@@ -173,7 +173,7 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-            
+
             <div className="skill-card-anim p-8 rounded-3xl border border-white/5 bg-glass-bg backdrop-blur-xl group hover:border-accent/20 transition-all duration-500">
               <span className="text-accent font-mono text-xs uppercase tracking-widest block mb-6">02 // Web Development</span>
               <div className="flex flex-wrap gap-2.5">
@@ -207,7 +207,7 @@ export default function HomePage() {
       <ProjectShowcase />
 
       {/* ─── Education Timeline Section ─── */}
-      <section 
+      <section
         ref={timelineRef}
         className="py-24 px-6 md:px-24 border-t border-white/5 bg-background relative overflow-hidden"
       >
@@ -218,7 +218,7 @@ export default function HomePage() {
           <h2 className="font-display text-[clamp(2.2rem,8vw,4.5rem)] font-bold leading-[0.9] tracking-tighter text-foreground mb-16">
             Education <span className="text-accent italic font-light">Timeline.</span>
           </h2>
-          
+
           <div className="relative pl-8 md:pl-12 border-l border-white/10 space-y-16 max-w-4xl">
             {/* KIET */}
             <div className="timeline-card-anim relative group">
@@ -264,7 +264,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── Certifications & Achievements Section ─── */}
-      <section 
+      <section
         ref={certRef}
         className="py-24 px-6 md:px-24 border-t border-white/5 bg-background relative overflow-hidden"
       >
@@ -275,7 +275,7 @@ export default function HomePage() {
           <h2 className="font-display text-[clamp(2.2rem,8vw,4.5rem)] font-bold leading-[0.9] tracking-tighter text-foreground mb-16">
             Credentials & <span className="text-accent italic font-light">Milestones.</span>
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="cert-card-anim p-8 rounded-3xl border border-white/5 bg-glass-bg backdrop-blur-xl group hover:border-accent/20 transition-all duration-500 flex flex-col justify-between">
               <div>
@@ -330,7 +330,7 @@ export default function HomePage() {
 
       {/* ─── CTA Section ─── */}
       <section className="py-20 md:py-36 px-6 md:px-24 border-t border-white/5">
-        <div 
+        <div
           ref={ctaRef}
           className="max-w-7xl mx-auto rounded-[32px] md:rounded-[48px] overflow-hidden relative group p-8 md:p-24"
           style={{ background: "var(--charcoal)" }}
@@ -351,9 +351,9 @@ export default function HomePage() {
                 <span className="text-accent italic font-light">Quietly Powerful?</span>
               </h2>
             </div>
-            
+
             <div className="flex flex-col items-start gap-6 md:gap-8">
-              <Link 
+              <Link
                 href="/contact"
                 className="group relative inline-flex items-center gap-4 sm:gap-6 px-8 py-4 sm:px-12 sm:py-6 rounded-full bg-off-white text-charcoal font-mono font-bold text-[11px] sm:text-[12px] tracking-[0.2em] uppercase transition-all duration-500 hover:bg-accent hover:text-[#0D0D0D]"
               >

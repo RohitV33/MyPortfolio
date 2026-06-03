@@ -359,7 +359,7 @@ function ProjectItem({
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!visualRef.current || !localCursorRef.current) return;
-    
+
     // Hide global custom cursor while hovering the video container
     onHover(false);
 
@@ -662,7 +662,7 @@ function ProjectItem({
         >
           <div className="relative flex items-start">
             {/* Pulsing Ripples centered at the cursor tip (top-left) */}
-            <div 
+            <div
               className="absolute flex items-center justify-center pointer-events-none"
               style={{ left: "3px", top: "2px" }}
             >

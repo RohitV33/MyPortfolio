@@ -329,9 +329,8 @@ export default function Navbar() {
         {/* ── Main Bar (Floating Glass Dock) ── */}
         <div
           suppressHydrationWarning
-          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative ${
-            scrolled ? "mt-3 py-2.5 px-6 scrolled" : "mt-6 py-3.5 px-8"
-          } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
+          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative ${scrolled ? "mt-3 py-2.5 px-6 scrolled" : "mt-6 py-3.5 px-8"
+            } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
         >
           {/* ── LEFT: BRAND / LOGO & HUD Clock ── */}
           <motion.div
@@ -339,8 +338,8 @@ export default function Navbar() {
             style={{ x: logoSx, y: logoSy }}
             className="flex items-center gap-3.5"
           >
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               onClick={(e) => {
                 if (pathname === "/") {
                   e.preventDefault();
@@ -350,9 +349,8 @@ export default function Navbar() {
               }}
               className="flex items-center group shrink-0"
             >
-              <div className={`relative w-8 h-8 rounded-full flex items-center justify-center border transition-colors duration-500 ${
-                isDark ? "border-white/10 bg-white/5 group-hover:border-[#c4a87a]/40" : "border-black/10 bg-black/5 group-hover:border-[#1a1714]/40"
-              }`}>
+              <div className={`relative w-8 h-8 rounded-full flex items-center justify-center border transition-colors duration-500 ${isDark ? "border-white/10 bg-white/5 group-hover:border-[#c4a87a]/40" : "border-black/10 bg-black/5 group-hover:border-[#1a1714]/40"
+                }`}>
                 <svg viewBox="0 0 32 32" className="w-5 h-5 text-[#c4a87a]" fill="none" stroke="currentColor" strokeWidth="1.5">
                   {/* Outer hexagon */}
                   <polygon points="16,3 29,10 29,24 16,31 3,24 3,10" strokeWidth="1" stroke="rgba(196,168,122,0.3)" />
@@ -365,7 +363,7 @@ export default function Navbar() {
             {/* HUD Status & Clock */}
             <div className="hidden md:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
               <div className="flex items-center gap-1.5 text-emerald-500/80">
-                
+
                 <span>Rohit Verma</span>
               </div>
               <div className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/30" : "text-foreground/45"}`}>
@@ -392,9 +390,8 @@ export default function Navbar() {
                         else window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className={`relative flex items-center px-4 py-2 rounded-xl text-[10px] font-mono font-medium tracking-[0.18em] uppercase transition-colors duration-300 ${
-                      isActive ? t.text : `${t.muted} hover:${t.text}`
-                    }`}
+                    className={`relative flex items-center px-4 py-2 rounded-xl text-[10px] font-mono font-medium tracking-[0.18em] uppercase transition-colors duration-300 ${isActive ? t.text : `${t.muted} hover:${t.text}`
+                      }`}
                   >
                     <AnimatePresence>
                       {(isActive || isHov) && (
@@ -420,9 +417,8 @@ export default function Navbar() {
             {/* Custom Theme Switch Slider */}
             <div
               onClick={() => setIsDark(!isDark)}
-              className={`relative w-11 h-6 rounded-full cursor-pointer flex items-center px-1 group transition-all duration-300 ${
-                isDark ? "bg-white/5 border border-white/10 hover:border-[#c4a87a]/40" : "bg-black/5 border border-black/10 hover:border-[#1a1714]/40"
-              }`}
+              className={`relative w-11 h-6 rounded-full cursor-pointer flex items-center px-1 group transition-all duration-300 ${isDark ? "bg-white/5 border border-white/10 hover:border-[#c4a87a]/40" : "bg-black/5 border border-black/10 hover:border-[#1a1714]/40"
+                }`}
               role="button"
               aria-label="Toggle theme"
             >
@@ -439,11 +435,10 @@ export default function Navbar() {
             <MotionLink
               ref={ctaRef}
               href="/contact"
-              className={`group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full border text-[10px] font-mono font-bold tracking-[0.15em] uppercase cursor-pointer transition-all duration-500 ${
-                isDark
+              className={`group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full border text-[10px] font-mono font-bold tracking-[0.15em] uppercase cursor-pointer transition-all duration-500 ${isDark
                   ? "border-[#c4a87a]/30 hover:border-[#c4a87a] bg-white/5 hover:bg-[#c4a87a] hover:text-[#0D0D0D] text-[#f2f0eb]"
                   : "border-[#1a1714]/30 hover:border-[#1a1714] bg-black/5 hover:bg-[#1a1714] hover:text-[#fcfaf6] text-[#1a1714]"
-              }`}
+                }`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               style={{
@@ -475,9 +470,8 @@ export default function Navbar() {
                       ? i === 0 ? { rotate: 45, y: 6 } : i === 1 ? { opacity: 0, scaleX: 0 } : { rotate: -45, y: -6 }
                       : { rotate: 0, y: 0, opacity: 1 }
                   }
-                  className={`h-[1.5px] block rounded-[2px] origin-center transition-colors duration-300 ${
-                    i === 1 ? "w-3" : "w-[18px]"
-                  } ${isDark ? "bg-[#c4a87a]" : "bg-[#1a1714]"}`}
+                  className={`h-[1.5px] block rounded-[2px] origin-center transition-colors duration-300 ${i === 1 ? "w-3" : "w-[18px]"
+                    } ${isDark ? "bg-[#c4a87a]" : "bg-[#1a1714]"}`}
                 />
               ))}
             </button>
@@ -493,8 +487,8 @@ export default function Navbar() {
               exit={{ opacity: 0, y: -10, scale: 0.97 }}
               transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
               className={`md:hidden w-[calc(100%-2rem)] mx-auto mt-1 rounded-2xl border shadow-2xl overflow-hidden backdrop-blur-2xl ${isDark
-                  ? "bg-[#0f0d0b]/95 border-[rgba(255,255,255,0.07)]"
-                  : "bg-[rgba(252,249,244,0.97)] border-[rgba(0,0,0,0.07)]"
+                ? "bg-[#0f0d0b]/95 border-[rgba(255,255,255,0.07)]"
+                : "bg-[rgba(252,249,244,0.97)] border-[rgba(0,0,0,0.07)]"
                 }`}
             >
               <ul className="p-3 space-y-1">
@@ -518,8 +512,8 @@ export default function Navbar() {
                           }
                         }}
                         className={`flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 ${isActive
-                            ? isDark ? "bg-[#c4a87a] text-[#1a1714]" : "bg-[#1a1714] text-[#f0e9dc]"
-                            : isDark ? "hover:bg-[rgba(255,255,255,0.05)] text-[#c8bfb4]" : "hover:bg-[#f0ebe3] text-[#3a3530]"
+                          ? isDark ? "bg-[#c4a87a] text-[#1a1714]" : "bg-[#1a1714] text-[#f0e9dc]"
+                          : isDark ? "hover:bg-[rgba(255,255,255,0.05)] text-[#c8bfb4]" : "hover:bg-[#f0ebe3] text-[#3a3530]"
                           }`}
                       >
                         <div className="flex items-center gap-3">

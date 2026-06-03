@@ -58,14 +58,14 @@ export default function ProjectsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 border-t border-white/10">
             {projects.map((project, i) => (
-              <Link 
+              <Link
                 key={project.slug}
                 href={`/projects/${project.slug}`}
                 className="project-row group relative grid grid-cols-1 md:grid-cols-[80px_1fr_auto] gap-8 items-center py-10 md:py-16 border-b border-white/5 transition-all duration-500 md:hover:px-8"
               >
                 {/* Background Hover Effect */}
                 <div className="absolute inset-0 bg-accent translate-y-[101%] transition-transform duration-500 group-hover:translate-y-0" />
-                
+
                 {/* Index */}
                 <div className="relative z-10 font-display text-4xl font-thin opacity-20 group-hover:opacity-100 group-hover:text-[#0D0D0D] transition-all">
                   {String(i + 1).padStart(2, "0")}

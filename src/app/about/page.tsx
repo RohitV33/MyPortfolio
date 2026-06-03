@@ -6,10 +6,10 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    
+
     const ctx = gsap.context(() => {
       // Hero reveal
       gsap.fromTo(
@@ -89,7 +89,7 @@ export default function AboutPage() {
               {"\"The goal isn't just to solve problems, but to create experiences that linger.\""}
             </h2>
           </div>
-          
+
           <div className="space-y-12">
             <p className="font-body text-2xl font-light text-foreground/70 leading-relaxed">
               I am a Full Stack Developer and Computer Science & Engineering student at KIET Group of Institutions, Ghaziabad (2023—2027). I work at the intersection of technical systems architecture and motion design—building digital ecosystems that run with security and high efficiency.
@@ -118,10 +118,10 @@ export default function AboutPage() {
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-4">The Toolkit</p>
             <h2 className="font-display text-3xl md:text-6xl font-bold tracking-tight">Diagnostic // Stack</h2>
           </div>
-          
+
           <div className="tech-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {techStack.map((tech) => (
-              <div 
+              <div
                 key={tech}
                 className="tech-pill p-6 rounded-2xl border border-white/5 bg-glass-bg backdrop-blur-xl group hover:border-accent/30 transition-all duration-500"
               >
@@ -151,7 +151,7 @@ export default function AboutPage() {
       <footer className="py-16 md:py-24 px-6 md:px-24">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
           <h3 className="font-display text-2xl md:text-4xl font-bold tracking-tight">{"Let's"} talk about your next mission.</h3>
-          <a 
+          <a
             href="mailto:verma61421st@gmail.com"
             className="px-8 py-4 sm:px-12 sm:py-6 rounded-full bg-accent text-[#0D0D0D] font-mono font-bold text-[11px] sm:text-[12px] tracking-[0.2em] uppercase hover:scale-105 transition-transform"
           >

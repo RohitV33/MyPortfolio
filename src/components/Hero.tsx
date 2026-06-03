@@ -212,7 +212,7 @@ export default function Hero() {
         {/* Eyebrow */}
         <div className="overflow-hidden mb-6">
           <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent animate-pulse">
-            System Online // Full Stack Developer // CSE
+            FULL-STACK DEVELOPER • AI ENTHUSIAST
           </p>
         </div>
 
