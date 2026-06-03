@@ -12,6 +12,7 @@ export interface Project {
   gradient: string;
   svgPattern: string;
   videoUrl?: string;
+  posterUrl?: string;
 }
 
 export const projects: Project[] = [
@@ -31,6 +32,7 @@ export const projects: Project[] = [
     gradient: "from-[#E8D5B8] to-[#C8D8C0]",
     svgPattern: "M10 30 Q30 10 50 30 Q70 50 90 30",
     videoUrl: "/videos/project1.mp4",
+    posterUrl: "/images/nazara_poster.png",
   },
   {
     slug: "bartr",
@@ -48,6 +50,7 @@ export const projects: Project[] = [
     gradient: "from-[#C5D8E8] to-[#D8C5E8]",
     svgPattern: "M10 70 Q30 20 50 60 Q70 90 90 40",
     videoUrl: "/videos/project2.mp4",
+    posterUrl: "/images/bartr_poster.png",
   },
   {
     slug: "fuzzr",
@@ -65,5 +68,6 @@ export const projects: Project[] = [
     gradient: "from-[#C8D8C0] to-[#D8C8B0]",
     svgPattern: "M10 50 L30 20 L50 60 L10 50 L30 20 L50 60 L70 15 L90 50",
     videoUrl: "/videos/project3.mp4",
+    posterUrl: "/images/fuzzr_poster.png",
   }
 ];

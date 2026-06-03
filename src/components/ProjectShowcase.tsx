@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, memo, forwardRef } from "react";
 import { projects, Project } from "@/lib/projects";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Link from "next/link";
+import Image from "next/image";
 
 // ─── Utility: split text into char spans, wrapping at word boundaries ───────
-function SplitText({ text, className }: { text: string; className?: string }) {
+const SplitText = memo(function SplitText({ text, className }: { text: string; className?: string }) {
   return (
     <span className={className} aria-label={text}>
       {text.split(" ").map((word, wordIndex) => (
@@ -29,10 +30,10 @@ function SplitText({ text, className }: { text: string; className?: string }) {
       ))}
     </span>
   );
-}
+});
 
 // ─── Scroll Mouse Indicator ────────────────────────────────────────────────
-function ScrollMouse() {
+const ScrollMouse = memo(function ScrollMouse() {
   return (
     <div className="flex flex-col items-center gap-2 opacity-40 group">
       <div
@@ -52,7 +53,106 @@ function ScrollMouse() {
       </span>
     </div>
   );
-}
+});
+
+// ─── Lazy Loaded Video Component with Poster & Captions ───────────────────
+const LazyVideo = forwardRef<HTMLVideoElement, {
+  src: string;
+  poster?: string;
+  color: string;
+  isActive: boolean;
+  slug: string;
+  className?: string;
+}>(({ src, poster, color, isActive, slug, className }, ref) => {
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const localRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoad(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { rootMargin: "200px" }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (shouldLoad && localRef.current) {
+      if (isActive) {
+        localRef.current.play().catch(() => {});
+      } else {
+        localRef.current.pause();
+      }
+    }
+  }, [isActive, shouldLoad]);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 w-full h-full bg-charcoal">
+      {/* Poster Image */}
+      {poster && (
+        <div
+          className={`absolute inset-0 z-20 transition-opacity duration-700 pointer-events-none ${
+            isPlaying ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <Image
+            src={poster}
+            alt={`${slug} poster`}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
+            priority={false}
+          />
+        </div>
+      )}
+
+      {/* Video element */}
+      {shouldLoad && (
+        <video
+          ref={(el) => {
+            localRef.current = el;
+            if (typeof ref === "function") {
+              ref(el);
+            } else if (ref) {
+              ref.current = el;
+            }
+          }}
+          loop
+          muted
+          playsInline
+          preload="none"
+          onPlaying={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          className={className}
+        >
+          <source src={src} type="video/mp4" />
+          <track
+            kind="captions"
+            srcLang="en"
+            label="English"
+            src="/videos/captions.vtt"
+            default
+          />
+        </video>
+      )}
+    </div>
+  );
+});
+
+LazyVideo.displayName = "LazyVideo";
 
 // ─── Main Showcase ─────────────────────────────────────────────────────────
 export default function ProjectShowcase() {
@@ -104,12 +204,12 @@ export default function ProjectShowcase() {
       }
     );
 
-    // Eyebrow line
+    // Eyebrow line (composited)
     gsap.fromTo(
       ".showcase-eyebrow",
-      { width: 0, opacity: 0 },
+      { scaleX: 0, opacity: 0 },
       {
-        width: "4rem",
+        scaleX: 1,
         opacity: 1,
         duration: 1.2,
         ease: "power4.out",
@@ -205,8 +305,8 @@ export default function ProjectShowcase() {
               {/* Eyebrow */}
               <div className="flex items-center gap-6 mb-10">
                 <div
-                  className="showcase-eyebrow h-px bg-accent opacity-0"
-                  style={{ width: 0 }}
+                  className="showcase-eyebrow h-px bg-accent opacity-0 origin-left"
+                  style={{ width: "4rem" }}
                 />
                 <p className="font-mono text-[11px] tracking-[0.5em] uppercase text-accent">
                   Selected Works // 01—03
@@ -627,15 +727,15 @@ function ProjectItem({
           <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.05] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px]" />
 
           {/* Video */}
-          <video
+          <LazyVideo
             ref={videoRef}
-            loop
-            muted
-            playsInline
+            src={project.videoUrl || ""}
+            poster={project.posterUrl}
+            color={project.color}
+            isActive={isActive}
+            slug={project.slug}
             className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src={project.videoUrl} type="video/mp4" />
-          </video>
+          />
 
           {/* Overlay info */}
           <div

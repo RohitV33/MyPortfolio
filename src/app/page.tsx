@@ -4,8 +4,12 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Hero from "@/components/Hero";
-import ProjectShowcase from "@/components/ProjectShowcase";
+import dynamic from "next/dynamic";
 import Link from "next/link";
+
+const ProjectShowcase = dynamic(() => import("@/components/ProjectShowcase"), {
+  ssr: false,
+});
 
 export default function HomePage() {
   const introRef = useRef<HTMLDivElement>(null);
@@ -133,7 +137,7 @@ export default function HomePage() {
           </div>
 
           <div className="pt-4 lg:pt-32">
-            <p className="reveal-text font-body text-lg md:text-2xl font-light text-foreground/60 leading-relaxed mb-8 md:mb-10">
+            <p className="reveal-text font-body text-lg md:text-2xl font-light text-foreground/75 leading-relaxed mb-8 md:mb-10">
               I am a Full Stack Developer and Computer Science & Engineering student at KIET Group of Institutions. I work at the intersection of robust backend engineering and intuitive frontend design, building digital solutions that perform with speed and absolute precision.
             </p>
             <Link
@@ -224,11 +228,11 @@ export default function HomePage() {
             <div className="timeline-card-anim relative group">
               <div className="absolute left-[-37px] md:left-[-53px] top-1.5 w-3 h-3 rounded-full bg-accent border-4 border-background transition-transform duration-500 group-hover:scale-150 shadow-[0_0_15px_var(--accent)]" />
               <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 md:gap-12">
-                <span className="font-mono text-xs text-foreground/45 mt-1">2023 — 2027</span>
+                <span className="font-mono text-xs text-foreground/65 mt-1">2023 — 2027</span>
                 <div>
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Bachelor of Technology (B.Tech)</h3>
                   <p className="font-body text-base text-accent mb-1">Computer Science and Engineering</p>
-                  <p className="font-body text-sm text-foreground/60">KIET Group of Institutions, Ghaziabad</p>
+                  <p className="font-body text-sm text-foreground/75">KIET Group of Institutions, Ghaziabad</p>
                   <p className="font-mono text-xs text-accent mt-3">CGPA: 7.5 / 10</p>
                 </div>
               </div>
@@ -238,10 +242,10 @@ export default function HomePage() {
             <div className="timeline-card-anim relative group">
               <div className="absolute left-[-37px] md:left-[-53px] top-1.5 w-3 h-3 rounded-full bg-accent border-4 border-background transition-transform duration-500 group-hover:scale-150 shadow-[0_0_15px_var(--accent)]" />
               <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 md:gap-12">
-                <span className="font-mono text-xs text-foreground/45 mt-1">2022</span>
+                <span className="font-mono text-xs text-foreground/65 mt-1">2022</span>
                 <div>
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Senior Secondary (Class XII)</h3>
-                  <p className="font-body text-base text-foreground/60 mb-1">Scottish International School</p>
+                  <p className="font-body text-base text-foreground/75 mb-1">Scottish International School</p>
                   <p className="font-mono text-xs text-accent mt-3">Score: 86.2%</p>
                 </div>
               </div>
@@ -251,10 +255,10 @@ export default function HomePage() {
             <div className="timeline-card-anim relative group">
               <div className="absolute left-[-37px] md:left-[-53px] top-1.5 w-3 h-3 rounded-full bg-accent border-4 border-background transition-transform duration-500 group-hover:scale-150 shadow-[0_0_15px_var(--accent)]" />
               <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 md:gap-12">
-                <span className="font-mono text-xs text-foreground/45 mt-1">2020</span>
+                <span className="font-mono text-xs text-foreground/65 mt-1">2020</span>
                 <div>
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">Secondary (Class X)</h3>
-                  <p className="font-body text-base text-foreground/60 mb-1">Silver Bells Public School</p>
+                  <p className="font-body text-base text-foreground/75 mb-1">Silver Bells Public School</p>
                   <p className="font-mono text-xs text-accent mt-3">Score: 85.6%</p>
                 </div>
               </div>
@@ -281,11 +285,11 @@ export default function HomePage() {
               <div>
                 <span className="text-accent font-mono text-[10px] uppercase tracking-widest block mb-4">Certification</span>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-2">AWS Certified Cloud Practitioner</h3>
-                <p className="font-body text-sm text-foreground/50 leading-relaxed">Issued by Amazon Web Services (AWS) — validating cloud fluency and foundational architecture knowledge.</p>
+                <p className="font-body text-sm text-foreground/75 leading-relaxed">Issued by Amazon Web Services (AWS) — validating cloud fluency and foundational architecture knowledge.</p>
               </div>
               <div className="mt-8 flex justify-between items-center">
                 <span className="font-mono text-xs text-accent/60">Feb 2026</span>
-                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/60">Active</span>
+                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/75">Active</span>
               </div>
             </div>
 
@@ -293,11 +297,11 @@ export default function HomePage() {
               <div>
                 <span className="text-accent font-mono text-[10px] uppercase tracking-widest block mb-4">Certification</span>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-2">SQL (Intermediate)</h3>
-                <p className="font-body text-sm text-foreground/50 leading-relaxed">Issued by HackerRank — validating intermediate SQL queries, subqueries, indexing, and join optimization skills.</p>
+                <p className="font-body text-sm text-foreground/75 leading-relaxed">Issued by HackerRank — validating intermediate SQL queries, subqueries, indexing, and join optimization skills.</p>
               </div>
               <div className="mt-8 flex justify-between items-center">
                 <span className="font-mono text-xs text-accent/60">Nov 2025</span>
-                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/60">HackerRank</span>
+                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/75">HackerRank</span>
               </div>
             </div>
 
@@ -305,11 +309,11 @@ export default function HomePage() {
               <div>
                 <span className="text-accent font-mono text-[10px] uppercase tracking-widest block mb-4">Extracurricular</span>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-2">Freelance Video Editor</h3>
-                <p className="font-body text-sm text-foreground/50 leading-relaxed">Delivered professional video editing projects for clients utilizing DaVinci Resolve and Adobe After Effects, producing dynamic visual narratives and custom motion graphics.</p>
+                <p className="font-body text-sm text-foreground/75 leading-relaxed">Delivered professional video editing projects for clients utilizing DaVinci Resolve and Adobe After Effects, producing dynamic visual narratives and custom motion graphics.</p>
               </div>
               <div className="mt-8 flex justify-between items-center">
                 <span className="font-mono text-xs text-accent/60">2024 — Present</span>
-                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/60">Media</span>
+                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/75">Media</span>
               </div>
             </div>
 
@@ -317,11 +321,11 @@ export default function HomePage() {
               <div>
                 <span className="text-accent font-mono text-[10px] uppercase tracking-widest block mb-4">Extracurricular</span>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-2">Innotech 2024</h3>
-                <p className="font-body text-sm text-foreground/50 leading-relaxed">Managed official social media content creation, campaigns, and community engagement as a Social Content Creator for campus tech activities.</p>
+                <p className="font-body text-sm text-foreground/75 leading-relaxed">Managed official social media content creation, campaigns, and community engagement as a Social Content Creator for campus tech activities.</p>
               </div>
               <div className="mt-8 flex justify-between items-center">
                 <span className="font-mono text-xs text-accent/60">2024</span>
-                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/60">KIET Innotech</span>
+                <span className="text-xs font-mono border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider text-foreground/75">KIET Innotech</span>
               </div>
             </div>
           </div>
@@ -362,7 +366,7 @@ export default function HomePage() {
                   <path d="M1 7h12M9 3l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
-              <div className="flex items-center gap-4 pl-4 font-mono text-[9px] tracking-[0.2em] uppercase text-off-white/40">
+              <div className="flex items-center gap-4 pl-4 font-mono text-[9px] tracking-[0.2em] uppercase text-off-white/70">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 Available for Q3 2026
               </div>

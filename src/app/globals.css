@@ -16,7 +16,7 @@
 
   --ink-deep: var(--off-white);
   --ink-mid: #A09C94;
-  --ink-light: #6E6A62;
+  --ink-light: #98948B;
 
   --border-subtle: rgba(255, 255, 255, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.03);
@@ -33,7 +33,7 @@ html.light {
 
   --ink-deep: #0D0D0D;
   --ink-mid: #54514D;
-  --ink-light: #8C8880;
+  --ink-light: #5A5854;
 
   --border-subtle: rgba(0, 0, 0, 0.08);
   --glass-bg: rgba(0, 0, 0, 0.03);

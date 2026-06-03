@@ -23,7 +23,7 @@ export default function Hero() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 0.2 });
+      const tl = gsap.timeline();
 
       // ─── Entry Animations ───────────────────
 
@@ -41,47 +41,47 @@ export default function Hero() {
           ref.current,
           { opacity: 0, scale: 0.8, filter: "blur(40px)" },
           { opacity: 0.5, scale: 1, filter: "blur(60px)", duration: 2, ease: "power2.out" },
-          0.2 + i * 0.2
+          i * 0.1
         );
       });
 
-      // Heading split-text-like reveal
+      // Heading split-text-like reveal (starts immediately, very fast stagger)
       wordsRef.current.forEach((word, i) => {
         if (!word) return;
         tl.fromTo(
           word,
           {
             opacity: 0,
-            y: 80,
-            rotateX: -45,
-            filter: "blur(12px)",
+            y: 30,
+            rotateX: -15,
+            filter: "blur(4px)",
           },
           {
             opacity: 1,
             y: 0,
             rotateX: 0,
             filter: "blur(0px)",
-            duration: 1.5,
-            ease: "power4.out",
+            duration: 0.8,
+            ease: "power3.out",
           },
-          0.6 + i * 0.15
+          i * 0.08
         );
       });
 
-      // Subtitle
+      // Subtitle (reveals right after the heading)
       tl.fromTo(
         subtitleRef.current,
         { opacity: 0, y: 20, filter: "blur(8px)" },
-        { opacity: 0.6, y: 0, filter: "blur(0px)", duration: 1.2, ease: "power3.out" },
-        1.2
+        { opacity: 0.6, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
+        0.3
       );
 
       // CTA
       tl.fromTo(
         ctaRef.current,
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, ease: "power3.out" },
-        1.5
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
+        0.5
       );
 
       // ─── Scroll Parallax ───────────────────
@@ -172,7 +172,7 @@ export default function Hero() {
       {/* Mesh Grid */}
       <div
         ref={gridRef}
-        className="absolute inset-0 z-0 pointer-events-none opacity-0"
+        className="absolute inset-0 z-0 pointer-events-none opacity-0 will-change-transform"
         style={{
           backgroundImage: `linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)`,
           backgroundSize: "60px 60px",
@@ -183,21 +183,21 @@ export default function Hero() {
       {/* Ambient Blobs */}
       <div
         ref={shape1Ref}
-        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full z-0 opacity-0"
+        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full z-0 opacity-0 will-change-transform"
         style={{
           background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
         }}
       />
       <div
         ref={shape2Ref}
-        className="absolute bottom-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full z-0 opacity-0"
+        className="absolute bottom-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full z-0 opacity-0 will-change-transform"
         style={{
           background: "radial-gradient(circle, var(--accent-muted) 0%, transparent 70%)",
         }}
       />
       <div
         ref={shape3Ref}
-        className="absolute top-[20%] right-[10%] w-[25vw] h-[25vw] rounded-full z-0 opacity-0"
+        className="absolute top-[20%] right-[10%] w-[25vw] h-[25vw] rounded-full z-0 opacity-0 will-change-transform"
         style={{
           background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
         }}
@@ -223,7 +223,7 @@ export default function Hero() {
             <span
               key={word}
               ref={(el) => { wordsRef.current[i] = el; }}
-              className="inline-block opacity-0 will-change-transform"
+              className="inline-block will-change-transform"
               style={{
                 color: i === 1 ? "var(--accent)" : "var(--foreground)",
                 textShadow: i === 1 ? "0 0 45px var(--accent-muted)" : "none",

@@ -9,11 +9,14 @@ import {
   useSpring,
 } from "framer-motion";
 import gsap from "gsap";
+import dynamic from "next/dynamic";
 
 const MotionLink = motion.create(Link);
 import { useLenis } from "@/components/SmoothScrollProvider";
 
-
+const CommandPalette = dynamic(() => import("./CommandPalette"), {
+  ssr: false,
+});
 
 /* ─── Types ─────────────────────────────────────────── */
 interface NavLink {
@@ -29,18 +32,6 @@ const navLinks: NavLink[] = [
   { href: "/projects", label: "Work", sub: "Portfolio", index: "02" },
   { href: "/about", label: "About", sub: "Story", index: "03" },
   { href: "/resume", label: "Resume", sub: "CV", index: "04" },
-];
-
-const commandItems = [
-  { label: "Go to Home", href: "/", icon: "⌂" },
-  { label: "View Projects", href: "/projects", icon: "◈" },
-  { label: "About Me", href: "/about", icon: "◉" },
-  { label: "View Resume", href: "/resume", icon: "📄" },
-  { label: "Contact Form", href: "/contact", icon: "✉" },
-  { label: "Download Resume", href: "/Resume.pdf", icon: "↓" },
-  { label: "GitHub", href: "https://github.com/RohitV33", icon: "◎" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/rawhit01", icon: "◎" },
-  { label: "LeetCode", href: "https://leetcode.com/u/RohitV33/", icon: "◎" },
 ];
 
 /* ─── Magnetic Hook ──────────────────────────────────── */
@@ -80,105 +71,7 @@ function useMagnetic<T extends HTMLElement>(strength = 0.35) {
   return { ref, sx, sy };
 }
 
-/* ─── Command Palette ────────────────────────────────── */
-function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => {
-        setQuery("");
-        inputRef.current?.focus();
-      }, 80);
-    }
-  }, [open]);
-
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [onClose]);
-
-  const filtered = commandItems.filter((c) =>
-    c.label.toLowerCase().includes(query.toLowerCase())
-  );
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[90] bg-[#0e0c0a]/60 backdrop-blur-sm"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94, y: -16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: -16 }}
-            transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed top-[18%] left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4"
-          >
-            <div className="rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.28)] border border-[rgba(255,255,255,0.12)] bg-[#16120e]">
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-[rgba(255,255,255,0.07)]">
-                <svg className="w-4 h-4 text-[#6b5f54] shrink-0" fill="none" viewBox="0 0 20 20">
-                  <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.6" />
-                  <path d="M14 14l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
-                <input
-                  ref={inputRef}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Type a command or search..."
-                  className="flex-1 bg-transparent text-[#f0e9dc] text-sm placeholder-[#4a4038] outline-none tracking-wide"
-                  style={{ fontFamily: "'Georgia', serif" }}
-                />
-                <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-[#2a231d] text-[#5a4f45] border border-[rgba(255,255,255,0.06)] font-mono">
-                  ESC
-                </kbd>
-              </div>
-              <ul className="py-2 max-h-72 overflow-y-auto">
-                {filtered.length === 0 && (
-                  <li className="px-5 py-8 text-center text-[#4a4038] text-sm">No results found</li>
-                )}
-                {filtered.map((item, i) => (
-                  <motion.li
-                    key={item.label}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      className="flex items-center gap-3.5 px-5 py-3 hover:bg-[rgba(255,255,255,0.05)] transition-colors duration-150 group"
-                    >
-                      <span className="w-7 h-7 rounded-lg bg-[#2a231d] flex items-center justify-center text-[#c4a87a] text-sm border border-[rgba(255,255,255,0.06)] group-hover:border-[#c4a87a]/30 transition-colors">
-                        {item.icon}
-                      </span>
-                      <span className="text-[#c8bfb4] text-sm tracking-wide group-hover:text-[#f0e9dc] transition-colors">
-                        {item.label}
-                      </span>
-                      <span className="ml-auto text-[10px] text-[#3a3028] group-hover:text-[#5a4f45] font-mono">↵</span>
-                    </Link>
-                  </motion.li>
-                ))}
-              </ul>
-              <div className="border-t border-[rgba(255,255,255,0.05)] px-5 py-2.5 flex gap-4">
-                {["↑↓ navigate", "↵ open", "esc close"].map((h) => (
-                  <span key={h} className="text-[10px] text-[#3a3028] tracking-wider font-mono">{h}</span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-}
 
 /* ─── Main Navbar ────────────────────────────────────── */
 export default function Navbar() {
@@ -256,8 +149,8 @@ export default function Navbar() {
   const light = {
     bar: "bg-background/80 border-border-subtle shadow-xl backdrop-blur-xl",
     text: "text-foreground",
-    muted: "text-foreground/40",
-    chip: "bg-foreground/5 border-foreground/10 text-foreground/40",
+    muted: "text-foreground/65",
+    chip: "bg-foreground/5 border-foreground/10 text-foreground/65",
     topbar: "bg-foreground/5 border-foreground/5 text-foreground/30",
     toggle: "bg-foreground/5 border-foreground/10 text-accent",
     navPill: "bg-foreground/5",
@@ -269,8 +162,8 @@ export default function Navbar() {
   const dark = {
     bar: "bg-background/90 border-border-subtle shadow-2xl backdrop-blur-xl",
     text: "text-foreground",
-    muted: "text-foreground/40",
-    chip: "bg-foreground/5 border-foreground/10 text-foreground/40",
+    muted: "text-foreground/65",
+    chip: "bg-foreground/5 border-foreground/10 text-foreground/65",
     topbar: "bg-foreground/5 border-foreground/5 text-foreground/20",
     toggle: "bg-foreground/5 border-foreground/10 text-accent",
     navPill: "bg-foreground/5",
@@ -298,39 +191,12 @@ export default function Navbar() {
           }}
         />
 
-        {/* ── Top micro-bar ── */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0, duration: 0.8 }}
-          className={`hidden lg:flex items-center justify-between px-10 py-1.5 text-[10px] tracking-[0.2em] uppercase font-medium border-b transition-all duration-700 ${t.topbar}`}
-        >
-          <div className="flex items-center gap-3">
-            <span className="w-1 h-1 rounded-full bg-[#c4a87a]" />
-            <span>Rohit · Creative Developer &amp; Designer</span>
-          </div>
-          <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-              Open to new projects
-            </span>
-            <span className="opacity-30">|</span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-[#c4a87a] animate-pulse" />
-              {currentTime}
-            </span>
-            <span className="opacity-30">|</span>
-            <span>{currentDate}</span>
-            <span className="opacity-30">|</span>
-            <span>India, IN</span>
-          </div>
-        </motion.div> */}
-
         {/* ── Main Bar (Floating Glass Dock) ── */}
         <div
           suppressHydrationWarning
-          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative ${scrolled ? "mt-3 py-2.5 px-6 scrolled" : "mt-6 py-3.5 px-8"
-            } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
+          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative mt-4 py-3 px-6 ${
+            scrolled ? "scrolled" : ""
+          } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
         >
           {/* ── LEFT: BRAND / LOGO & HUD Clock ── */}
           <motion.div
@@ -340,6 +206,7 @@ export default function Navbar() {
           >
             <Link
               href="/"
+              aria-label="Home"
               onClick={(e) => {
                 if (pathname === "/") {
                   e.preventDefault();
@@ -363,10 +230,9 @@ export default function Navbar() {
             {/* HUD Status & Clock */}
             <div className="hidden md:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
               <div className="flex items-center gap-1.5 text-emerald-500/80">
-
                 <span>Rohit Verma</span>
               </div>
-              <div className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/30" : "text-foreground/45"}`}>
+              <div className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/60" : "text-foreground/65"}`}>
                 {currentTime || "--:--:--"}
               </div>
             </div>
