@@ -86,16 +86,23 @@ export default function Navbar() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [isDark, setIsDark] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // ── Mount guard (prevents SSR/client mismatch) ──
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // ── Theme Sync ──
   useEffect(() => {
+    if (!mounted) return;
     const root = window.document.documentElement;
     if (isDark) {
       root.classList.remove("light");
     } else {
       root.classList.add("light");
     }
-  }, [isDark]);
+  }, [isDark, mounted]);
 
   // ── Clock ──
   useEffect(() => {
@@ -232,7 +239,10 @@ export default function Navbar() {
               <div className="flex items-center gap-1.5 text-emerald-500/80">
                 <span>Rohit Verma</span>
               </div>
-              <div className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/60" : "text-foreground/65"}`}>
+              <div
+                suppressHydrationWarning
+                className={`mt-0.5 font-semibold uppercase ${isDark ? "text-foreground/60" : "text-foreground/65"}`}
+              >
                 {currentTime || "--:--:--"}
               </div>
             </div>
