@@ -68,7 +68,7 @@ export async function POST(request: Request) {
             ${message.replace(/\n/g, "<br>")}
           </div>
           <hr style="border: 0; border-top: 1px solid #eee; margin-top: 30px;" />
-          <p style="font-size: 11px; color: #999;">Sent from Rohit Verma's Portfolio Contact Form.</p>
+          <p style="font-size: 11px; color: #999;">Sent from Sushil Nautiyal's Portfolio Contact Form.</p>
         </div>
       `,
     };

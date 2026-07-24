@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Link from "next/link";
-const heading = ["ROHIT", "VERMA"];
+const heading = ["SUSHIL", "NAUTIYAL"];
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);

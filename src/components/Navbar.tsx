@@ -201,9 +201,8 @@ export default function Navbar() {
         {/* ── Main Bar (Floating Glass Dock) ── */}
         <div
           suppressHydrationWarning
-          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative mt-4 py-3 px-6 ${
-            scrolled ? "scrolled" : ""
-          } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
+          className={`w-[calc(100%-2rem)] mx-auto max-w-5xl transition-all duration-500 flex items-center justify-between rounded-full border border-white/5 bg-background/60 backdrop-blur-xl relative mt-4 py-3 px-6 ${scrolled ? "scrolled" : ""
+            } ${isDark ? "nav-dock-dark" : "nav-dock-light"}`}
         >
           {/* ── LEFT: BRAND / LOGO & HUD Clock ── */}
           <motion.div
@@ -237,7 +236,7 @@ export default function Navbar() {
             {/* HUD Status & Clock */}
             <div className="hidden md:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
               <div className="flex items-center gap-1.5 text-emerald-500/80">
-                <span>Rohit Verma</span>
+                <span>Sushil Nautiyal</span>
               </div>
               <div
                 suppressHydrationWarning
@@ -312,8 +311,8 @@ export default function Navbar() {
               ref={ctaRef}
               href="/contact"
               className={`group relative overflow-hidden hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full border text-[10px] font-mono font-bold tracking-[0.15em] uppercase cursor-pointer transition-all duration-500 ${isDark
-                  ? "border-[#c4a87a]/30 hover:border-[#c4a87a] bg-white/5 hover:bg-[#c4a87a] hover:text-[#0D0D0D] text-[#f2f0eb]"
-                  : "border-[#1a1714]/30 hover:border-[#1a1714] bg-black/5 hover:bg-[#1a1714] hover:text-[#fcfaf6] text-[#1a1714]"
+                ? "border-[#c4a87a]/30 hover:border-[#c4a87a] bg-white/5 hover:bg-[#c4a87a] hover:text-[#0D0D0D] text-[#f2f0eb]"
+                : "border-[#1a1714]/30 hover:border-[#1a1714] bg-black/5 hover:bg-[#1a1714] hover:text-[#fcfaf6] text-[#1a1714]"
                 }`}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}

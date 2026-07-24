@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-const MARQUEE = "ROHIT VERMA · FULL STACK DEVELOPER · OPEN TO WORK · INDIA · ";
+const MARQUEE = "Sushil Nautiyal · FULL STACK DEVELOPER · OPEN TO WORK · INDIA · ";
 
 const socials = [
   { label: "GitHub", href: "https://github.com/RohitV33", icon: "↗" },
@@ -35,14 +35,14 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
-          
+
           {/* CTA */}
           <div>
             <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-amber mb-6">{"Let's build together"}</p>
             <h2 className="font-display font-bold text-3xl sm:text-5xl md:text-7xl leading-[0.9] tracking-tighter text-off-white mb-10">
               Got a project <br />in mind? <span className="text-amber italic">Talk to me.</span>
             </h2>
-            <Link 
+            <Link
               href="/contact"
               className="inline-flex items-center gap-4 px-10 py-5 rounded-full bg-amber text-[#0D0D0D] font-mono font-bold text-sm tracking-widest uppercase transition-transform hover:scale-105 active:scale-95 shadow-2xl shadow-amber/20"
             >
@@ -86,7 +86,7 @@ export default function Footer() {
         <div className="mt-16 md:mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-syne font-bold text-xs text-amber">R</div>
-            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/20">© 2026 Rohit Verma</span>
+            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/20">© 2026 Sushil Nautiyal</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
