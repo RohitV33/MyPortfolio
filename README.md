@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌐 Rohit Verma - Developer Portfolio
 
-## Getting Started
+A modern, responsive, and interactive portfolio website showcasing my projects, skills, certifications, and experience as a Full Stack Developer.
 
-First, run the development server:
+## 🚀 Live Demo
+
+🔗 https://its-rawhit.vercel.app/
+
+---
+
+## 📌 About
+
+This portfolio highlights my journey as a Computer Science student and Full Stack Developer. It features my projects, technical skills, achievements, and contact information in a clean and responsive interface.
+
+---
+
+## ✨ Features
+
+- 🎨 Modern UI with Dark & Light Mode
+- 📱 Fully Responsive Design
+- ⚡ Smooth Animations using Framer Motion
+- 🧑‍💻 Project Showcase
+- 🛠 Skills Section
+- 📜 Certifications
+- 📞 Contact Section
+- 🌙 Theme Toggle
+- 🚀 Fast Performance with Vite
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+- React.js
+- Vite
+- Tailwind CSS
+- Framer Motion
+- React Icons
+
+### Deployment
+
+- Vercel
+
+---
+
+## 📂 Folder Structure
+
+```
+portfolio/
+│── public/
+│── src/
+│   ├── assets/
+│   ├── components/
+│   ├── pages/
+│   ├── App.jsx
+│   ├── main.jsx
+│── package.json
+│── vite.config.js
+```
+
+---
+
+## ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/RohitV33/portfolio.git
+```
+
+Go to the project directory
+
+```bash
+cd portfolio
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Build for production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Preview production build
 
-## Learn More
+```bash
+npm run preview
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📸 Preview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Portfolio Preview](./public/preview.png)
 
-## Deploy on Vercel
+> Replace this image with a screenshot of your portfolio.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📈 Performance
+
+- Responsive on all devices
+- Optimized assets
+- Fast loading with Vite
+- SEO-friendly structure
+
+---
+
+## 📬 Contact
+
+**Rohit Verma**
+
+📧 Email: your-email@example.com
+
+💼 LinkedIn: https://linkedin.com/in/your-profile
+
+🐙 GitHub: https://github.com/RohitV33
+
+🌐 Portfolio: https://its-rawhit.vercel.app/
+
+---
+
+## ⭐ If you like this project
+
+Give it a ⭐ on GitHub!
+
+---
+
+## 📄 License
+
+This project is open source and available under the MIT License.
