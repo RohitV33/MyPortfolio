@@ -124,7 +124,7 @@ export default function ResumePage() {
             Curriculum Vitae
           </motion.div>
           <h1 className="font-display text-4xl sm:text-6xl md:text-8xl font-bold text-foreground mb-4 leading-tight">
-            Sushil<span className="italic text-accent font-light">Verma</span>
+            Rohit<span className="italic text-accent font-light">Verma</span>
           </h1>
           <p className="font-body text-lg md:text-xl text-foreground/60 font-light max-w-2xl mb-8">
             Full Stack Developer & B.Tech Computer Science student specializing in building high-performance digital systems and clean visual interfaces.
@@ -281,7 +281,7 @@ export default function ResumePage() {
 
       {/* Footer link back */}
       <footer className="max-w-4xl mx-auto border-t border-white/10 pt-12 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase text-foreground/30">
-        <span>© 2026 Sushil Nautiyal</span>
+        <span>© 2026 Rohit Verma</span>
         <Link href="/" className="hover:text-accent transition-colors">Back to Home</Link>
       </footer>
     </main>

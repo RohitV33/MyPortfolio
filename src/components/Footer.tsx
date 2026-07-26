@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-const MARQUEE = "Sushil Nautiyal · FULL STACK DEVELOPER · OPEN TO WORK · INDIA · ";
+const MARQUEE = "Rohit Verma · FULL STACK DEVELOPER · OPEN TO WORK · INDIA · ";
 
 const socials = [
   { label: "GitHub", href: "https://github.com/RohitV33", icon: "↗" },
@@ -86,7 +86,7 @@ export default function Footer() {
         <div className="mt-16 md:mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-syne font-bold text-xs text-amber">R</div>
-            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/20">© 2026 Sushil Nautiyal</span>
+            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-off-white/20">© 2026 Rohit Verma</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />

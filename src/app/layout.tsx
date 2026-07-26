@@ -35,7 +35,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sushil Nautiyal — Full Stack Developer",
+  title: "Rohit Verma — Full Stack Developer",
   description: "Crafting high-end digital experiences with React, Node.js, and motion design. Editorial-inspired developer portfolio.",
 };
 

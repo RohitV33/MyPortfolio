@@ -236,7 +236,7 @@ export default function Navbar() {
             {/* HUD Status & Clock */}
             <div className="hidden md:flex flex-col font-mono text-[7px] tracking-[0.18em] leading-tight select-none">
               <div className="flex items-center gap-1.5 text-emerald-500/80">
-                <span>Sushil Nautiyal</span>
+                <span>Rohit Verma</span>
               </div>
               <div
                 suppressHydrationWarning

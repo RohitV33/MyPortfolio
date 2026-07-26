@@ -71,7 +71,7 @@ export default function AboutPage() {
       <section className="px-6 md:px-24 mb-24 md:mb-48">
         <div className="max-w-7xl mx-auto">
           <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent mb-6 md:mb-8 about-hero-text">
-            System Origin // Sushil Nautiyal
+            System Origin // Rohit Verma
           </p>
           <h1 className="font-display text-[clamp(2.5rem,10vw,8rem)] font-bold leading-[0.85] tracking-tighter text-foreground perspective-1000">
             <span className="block about-hero-text">Building the</span>
