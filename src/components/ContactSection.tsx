@@ -42,7 +42,7 @@ export default function ContactSection() {
 
           <div className="flex flex-wrap items-center gap-6">
             <a
-              href="mailto:rohitverma.dev@gmail.com"
+              href="mailto:verma61421st@gmail.com"
               data-cursor-interactive
               className="inline-flex items-center gap-4 px-10 py-5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.25em] uppercase hover:bg-off-white transition-all duration-300 hover:scale-105 shadow-xl"
             >
@@ -78,7 +78,7 @@ export default function ContactSection() {
           </div>
 
           <p className="font-mono text-xs text-foreground/45 tracking-wider">
-            rohitverma.dev@gmail.com
+            verma61421st@gmail.com
           </p>
         </div>
 

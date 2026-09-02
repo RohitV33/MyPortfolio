@@ -17,22 +17,21 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    slug: "nazara",
-    title: "Nazara",
-    subtitle: "Full-stack e-commerce platform",
-    year: "2025 — 2026",
-    tags: ["React", "Node.js", "MongoDB", "Express", "JWT", "Stripe"],
+    slug: "civiclens",
+    title: "CivicLens-AI",
+    subtitle: "Civic Issue Reporting Platform",
+    year: "Aug 2026",
+    tags: ["React.js", "Node.js", "Express.js", "Python", "FastAPI", "YOLOv8", "MongoDB", "Tailwind CSS"],
     description:
-      "A production-ready e-commerce platform with cart management, secure auth, payment integration, and an admin dashboard — built end-to-end from scratch.",
+      "A full-stack platform for reporting civic issues through image uploads, powered by a YOLOv8 waste classification model and FastAPI microservices.",
     longDescription:
-      "Nazara is a complete e-commerce solution built without shortcuts. The frontend is a React SPA with context-driven cart state, optimistic UI updates, and a fully responsive product catalog. The Node.js + Express backend handles JWT-based authentication, role-based access control for the admin panel, and Stripe-powered checkout with webhook order confirmation. MongoDB stores product inventory, user profiles, and order history with indexed queries for fast filtering. The admin dashboard provides real-time sales analytics, inventory management, and order fulfillment tracking.",
-    color: "#C4A882",
-    accentColor: "#7A5C3E",
-    liveUrl: "https://nazara-shop.vercel.app/",
-    gradient: "from-[#E8D5B8] to-[#C8D8C0]",
+      "CivicLens-AI is an AI-powered municipal reporting platform engineered to eliminate manual complaint verification. The React and Tailwind frontend enables citizens to capture and submit geotagged photos of civic issues. The Node.js + Express backend orchestrates authentication, report telemetry, and MongoDB storage, while dispatching images to a dedicated Python FastAPI service running a YOLOv8 computer vision model. The model classifies waste categories and bounding coordinates in under 800ms with 94% accuracy, surfacing actionable intelligence on the municipal admin dashboard.",
+    color: "#E58A13",
+    accentColor: "#92400E",
+    liveUrl: "https://github.com/RohitV33",
+    gradient: "from-[#F59E0B] to-[#D97706]",
     svgPattern: "M10 30 Q30 10 50 30 Q70 50 90 30",
-    videoUrl: "/videos/project1.mp4",
-    posterUrl: "/images/nazara_poster.png",
+    posterUrl: "/images/civiclens_poster.png",
   },
   {
     slug: "bartr",
