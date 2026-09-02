@@ -8,84 +8,53 @@ import { STORY_STATEMENTS } from "@/data/portfolioData";
 export default function StorySection() {
   const containerRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
-  const statementsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const ambientLightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const statements = statementsRef.current.filter(Boolean);
-      if (!statements.length) return;
-
-      // Initial states: hide all except initial transition
-      statements.forEach((el, index) => {
-        if (!el) return;
-        gsap.set(el, {
-          opacity: index === 0 ? 1 : 0,
-          y: index === 0 ? 0 : 70,
-          scale: index === 0 ? 1 : 0.94,
-          filter: index === 0 ? "blur(0px)" : "blur(8px)",
-        });
-      });
-
-      const tl = gsap.timeline({
+      // Parallax ambient light drift
+      gsap.to(ambientLightRef.current, {
+        y: "40%",
+        opacity: 0.35,
+        ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top top",
-          end: `+=${statements.length * 100}%`,
-          pin: true,
-          scrub: 1.1,
-          anticipatePin: 1,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
         },
       });
 
-      // Ambient light color/position shift
-      tl.to(
-        ambientLightRef.current,
-        {
-          x: "30%",
-          y: "20%",
-          opacity: 0.35,
-          duration: statements.length,
-          ease: "none",
-        },
-        0
-      );
+      // Highlight each story statement as it enters the viewport center
+      cardRefs.current.forEach((card) => {
+        if (!card) return;
 
-      // Sequence statements: as current fades & moves away up, next fades in from down
-      statements.forEach((el, i) => {
-        if (i < statements.length - 1) {
-          const nextEl = statements[i + 1];
+        const text = card.querySelector(".story-text");
+        const badge = card.querySelector(".story-badge");
+        const sub = card.querySelector(".story-subtext");
 
-          tl.to(
-            el,
-            {
-              opacity: 0,
-              y: -80,
-              scale: 0.92,
-              filter: "blur(10px)",
-              duration: 1,
-              ease: "power2.inOut",
+        gsap.fromTo(
+          [badge, text, sub],
+          { opacity: 0.2, y: 30, filter: "blur(4px)" },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.8,
+            ease: "power2.out",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: card,
+              start: "top 75%",
+              end: "bottom 35%",
+              toggleActions: "play reverse play reverse",
             },
-            `step-${i}`
-          ).to(
-            nextEl,
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              filter: "blur(0px)",
-              duration: 1,
-              ease: "power2.inOut",
-            },
-            `step-${i}+=0.1`
-          );
-        }
+          }
+        );
       });
-
-      // Final lingering pause before leaving chapter
-      tl.to({}, { duration: 0.5 });
     }, containerRef);
 
     return () => ctx.revert();
@@ -95,63 +64,72 @@ export default function StorySection() {
     <section
       id="chapter-story"
       ref={containerRef}
-      className="relative w-full min-h-screen h-screen flex flex-col justify-between overflow-hidden bg-charcoal text-off-white select-none py-16 md:py-24 px-6 md:px-16"
+      className="relative w-full min-h-screen py-28 md:py-40 bg-charcoal text-off-white select-none border-t border-white/5 px-6 md:px-16"
     >
       {/* Dynamic ambient background evolution */}
       <div
         ref={ambientLightRef}
         aria-hidden="true"
-        className="absolute top-1/4 left-1/4 w-[50vw] h-[50vw] rounded-full pointer-events-none will-change-transform"
+        className="absolute top-1/4 left-1/4 w-[55vw] h-[55vw] rounded-full pointer-events-none will-change-transform"
         style={{
-          background: "radial-gradient(circle, rgba(245, 166, 35, 0.18) 0%, rgba(217, 119, 6, 0.06) 50%, transparent 70%)",
-          filter: "blur(100px)",
+          background: "radial-gradient(circle, rgba(245, 166, 35, 0.2) 0%, rgba(217, 119, 6, 0.08) 50%, transparent 70%)",
+          filter: "blur(90px)",
         }}
       />
 
-      {/* Top Editorial Eyebrow & Chapter Header */}
-      <div ref={titleRef} className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-start">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="w-2 h-2 rounded-full bg-amber" />
-          <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-            CHAPTER 02 // THE STORY
+      <div className="max-w-7xl mx-auto w-full relative z-10">
+        {/* Sticky Editorial Header */}
+        <div ref={titleRef} className="max-w-3xl mb-20 md:mb-32">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-2 h-2 rounded-full bg-amber" />
+            <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
+              CHAPTER 02 // THE STORY
+            </p>
+          </div>
+          <h2 className="font-display text-4xl md:text-7xl font-extrabold tracking-tight text-off-white uppercase leading-[0.9]">
+            IT STARTED WITH <br />
+            <span className="text-amber">CURIOSITY.</span>
+          </h2>
+          <p className="font-body text-base md:text-lg font-light text-foreground/60 mt-4 leading-relaxed max-w-lg">
+            A continuous progression of deconstructing systems, compiling experiments, and mastering the craftsmanship of modern software.
           </p>
         </div>
-        <h2 className="font-display text-2xl md:text-4xl font-extrabold tracking-tight text-off-white/70">
-          IT STARTED WITH <span className="text-amber">CURIOSITY.</span>
-        </h2>
-      </div>
 
-      {/* Center Story Statements Showcase */}
-      <div className="relative z-10 max-w-5xl mx-auto w-full flex-1 flex items-center justify-center my-auto">
-        <div className="relative w-full min-h-[320px] md:min-h-[380px] flex items-center justify-center text-center">
+        {/* Narrative Statements Flow */}
+        <div className="flex flex-col gap-28 md:gap-44 max-w-5xl mx-auto">
           {STORY_STATEMENTS.map((item, index) => (
             <div
               key={item.id}
               ref={(el) => {
-                statementsRef.current[index] = el;
+                cardRefs.current[index] = el;
               }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-4 will-change-transform"
+              className="flex flex-col items-start border-l border-white/10 pl-6 md:pl-12 will-change-transform"
             >
-              <span className="font-mono text-[11px] md:text-xs text-amber/80 tracking-[0.4em] uppercase mb-4 md:mb-6">
-                PHASE 0{index + 1}
-              </span>
-              <p className="font-display text-[clamp(2rem,6vw,4.8rem)] font-bold tracking-tight text-off-white leading-[1.08] max-w-4xl">
+              <div className="story-badge flex items-center gap-3 mb-4 md:mb-6">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber shadow-[0_0_12px_var(--amber)]" />
+                <span className="font-mono text-xs md:text-sm text-amber font-semibold tracking-[0.3em] uppercase">
+                  PHASE 0{index + 1}
+                </span>
+              </div>
+
+              <p className="story-text font-display text-[clamp(2.2rem,6vw,5rem)] font-extrabold tracking-tight text-off-white leading-[1.05] mb-4 md:mb-6">
                 &ldquo;{item.statement}&rdquo;
               </p>
+
               {item.subtext && (
-                <p className="font-body text-base md:text-xl font-light text-foreground/55 max-w-2xl mt-6 tracking-wide">
+                <p className="story-subtext font-body text-base md:text-2xl font-light text-foreground/65 max-w-2xl leading-relaxed">
                   {item.subtext}
                 </p>
               )}
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Bottom Timeline Indicator */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full flex items-center justify-between border-t border-white/5 pt-6 text-foreground/40 font-mono text-[10px] tracking-widest">
-        <span>CURIOSITY TO EXPERTISE</span>
-        <span>SCROLL TO UNPACK</span>
+        {/* Bottom Stage Footnote */}
+        <div className="mt-28 md:mt-40 border-t border-white/10 pt-8 flex items-center justify-between font-mono text-[10px] tracking-widest text-foreground/40 uppercase">
+          <span>02 / 09 — THE STORY</span>
+          <span>SCROLL FOR CAPABILITIES ↓</span>
+        </div>
       </div>
     </section>
   );

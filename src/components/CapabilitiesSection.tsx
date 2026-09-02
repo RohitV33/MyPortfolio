@@ -8,68 +8,38 @@ import { ArrowUpRight } from "lucide-react";
 
 export default function CapabilitiesSection() {
   const containerRef = useRef<HTMLElement>(null);
-  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const items = itemsRef.current.filter(Boolean);
-      if (!items.length) return;
+      cardRefs.current.forEach((card) => {
+        if (!card) return;
 
-      // Set initial positions
-      items.forEach((item, index) => {
-        if (!item) return;
-        gsap.set(item, {
-          opacity: index === 0 ? 1 : 0,
-          scale: index === 0 ? 1 : 0.9,
-          y: index === 0 ? 0 : 80,
-          filter: index === 0 ? "blur(0px)" : "blur(8px)",
-        });
-      });
+        const title = card.querySelector(".cap-title");
+        const num = card.querySelector(".cap-num");
+        const tag = card.querySelector(".cap-tag");
+        const details = card.querySelectorAll(".cap-detail");
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: `+=${items.length * 110}%`,
-          pin: true,
-          scrub: 1.2,
-          anticipatePin: 1,
-        },
-      });
-
-      items.forEach((item, i) => {
-        if (i < items.length - 1) {
-          const nextItem = items[i + 1];
-
-          tl.to(
-            item,
-            {
-              opacity: 0,
-              scale: 0.85,
-              y: -90,
-              filter: "blur(12px)",
-              duration: 1,
-              ease: "power2.inOut",
+        gsap.fromTo(
+          [num, title, tag, ...Array.from(details)],
+          { opacity: 0.25, y: 25 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: card,
+              start: "top 80%",
+              end: "bottom 30%",
+              toggleActions: "play reverse play reverse",
             },
-            `cap-${i}`
-          ).to(
-            nextItem,
-            {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              filter: "blur(0px)",
-              duration: 1,
-              ease: "power2.inOut",
-            },
-            `cap-${i}+=0.15`
-          );
-        }
+          }
+        );
       });
-
-      tl.to({}, { duration: 0.4 });
     }, containerRef);
 
     return () => ctx.revert();
@@ -79,59 +49,67 @@ export default function CapabilitiesSection() {
     <section
       id="chapter-capabilities"
       ref={containerRef}
-      className="relative w-full min-h-screen h-screen flex flex-col justify-between overflow-hidden bg-charcoal text-off-white select-none py-14 md:py-20 px-6 md:px-16"
+      className="relative w-full min-h-screen py-28 md:py-40 bg-charcoal text-off-white select-none border-t border-white/5 px-6 md:px-16"
     >
       {/* Background Subtle Gradient */}
       <div
         aria-hidden="true"
-        className="absolute top-1/2 right-10 -translate-y-1/2 w-[45vw] h-[45vw] rounded-full pointer-events-none opacity-20"
+        className="absolute top-1/3 right-10 w-[50vw] h-[50vw] rounded-full pointer-events-none opacity-20"
         style={{
           background: "radial-gradient(circle, rgba(245, 166, 35, 0.22) 0%, transparent 70%)",
-          filter: "blur(80px)",
+          filter: "blur(90px)",
         }}
       />
 
-      {/* Top Header: From Idea to Interface */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-start border-b border-white/5 pb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="w-2 h-2 rounded-full bg-amber" />
-          <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-            CHAPTER 03 // WHAT I DO
+      <div className="max-w-7xl mx-auto w-full relative z-10">
+        {/* Header: From Idea to Interface */}
+        <div className="max-w-3xl mb-20 md:mb-32">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="w-2 h-2 rounded-full bg-amber" />
+            <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
+              CHAPTER 03 // WHAT I DO
+            </p>
+          </div>
+          <h2 className="font-display text-4xl md:text-7xl font-extrabold tracking-tight text-off-white uppercase leading-[0.9]">
+            FROM IDEA <br />
+            <span className="text-amber">TO INTERFACE.</span>
+          </h2>
+          <p className="font-body text-base md:text-lg font-light text-foreground/60 mt-4 leading-relaxed max-w-lg">
+            Engineering capabilities covering the full lifecycle of modern digital products, from low-latency databases to fluid user interfaces.
           </p>
         </div>
-        <h2 className="font-display text-2xl md:text-4xl font-extrabold tracking-tight text-off-white">
-          FROM IDEA <span className="text-amber">TO INTERFACE.</span>
-        </h2>
-      </div>
 
-      {/* Main Capabilities Stage (Large Viewport Occupancy) */}
-      <div className="relative z-10 max-w-6xl mx-auto w-full flex-1 flex items-center justify-center my-auto">
-        <div className="relative w-full min-h-[380px] md:min-h-[440px] flex items-center justify-center">
+        {/* Capabilities Stream */}
+        <div className="flex flex-col gap-12 md:gap-16">
           {CAPABILITIES.map((cap, idx) => (
             <div
               key={cap.number}
               ref={(el) => {
-                itemsRef.current[idx] = el;
+                cardRefs.current[idx] = el;
               }}
-              className="absolute inset-0 flex flex-col justify-center px-4 md:px-8 will-change-transform"
+              className="p-8 md:p-14 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md transition-colors duration-500 hover:border-amber/40 shadow-xl will-change-transform"
             >
-              <div className="flex items-baseline gap-4 md:gap-6 mb-4">
-                <span className="font-mono text-xs md:text-sm text-amber font-bold tracking-[0.3em]">
-                  {cap.number} —
-                </span>
-                <h3 className="font-display text-[clamp(2.8rem,7.5vw,6.5rem)] font-extrabold tracking-tight text-off-white uppercase leading-none">
-                  {cap.title}
-                </h3>
+              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8 mb-8">
+                <div>
+                  <span className="cap-num font-mono text-xs md:text-sm text-amber font-bold tracking-[0.3em] block mb-2">
+                    {cap.number} — CAPABILITY
+                  </span>
+                  <h3 className="cap-title font-display text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold tracking-tight text-off-white uppercase leading-none">
+                    {cap.title}
+                  </h3>
+                </div>
+                <p className="cap-tag font-body text-lg md:text-2xl font-light text-off-white/85 max-w-xl leading-relaxed">
+                  {cap.tagline}
+                </p>
               </div>
 
-              <p className="font-body text-xl md:text-3xl font-light text-off-white/90 max-w-3xl leading-snug tracking-tight mb-8">
-                {cap.tagline}
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 max-w-3xl border-t border-white/10 pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-5 border-t border-white/10 pt-8">
                 {cap.details.map((detail, dIdx) => (
-                  <div key={dIdx} className="flex items-center gap-2.5 text-foreground/60 font-mono text-xs tracking-wide">
-                    <ArrowUpRight className="w-3.5 h-3.5 text-amber shrink-0" />
+                  <div
+                    key={dIdx}
+                    className="cap-detail flex items-center gap-3 text-foreground/70 font-mono text-xs md:text-sm tracking-wide"
+                  >
+                    <ArrowUpRight className="w-4 h-4 text-amber shrink-0" />
                     <span>{detail}</span>
                   </div>
                 ))}
@@ -139,12 +117,12 @@ export default function CapabilitiesSection() {
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Bottom Footer Info */}
-      <div className="relative z-10 max-w-7xl mx-auto w-full flex items-center justify-between pt-6 border-t border-white/5 text-foreground/40 font-mono text-[10px] tracking-widest">
-        <span>CRAFT & ARCHITECTURE</span>
-        <span>SCROLL TO ADVANCE</span>
+        {/* Bottom Indicator */}
+        <div className="mt-24 md:mt-36 border-t border-white/10 pt-8 flex items-center justify-between font-mono text-[10px] tracking-widest text-foreground/40 uppercase">
+          <span>03 / 09 — CAPABILITIES</span>
+          <span>SCROLL FOR SELECTED WORK ↓</span>
+        </div>
       </div>
     </section>
   );

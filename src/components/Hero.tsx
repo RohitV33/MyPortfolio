@@ -23,128 +23,62 @@ export default function Hero() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // ── Initial Opening State ──
-      gsap.set(nameGroupRef.current, {
-        scale: 1,
-        y: 0,
-        opacity: 1,
-      });
-      gsap.set([rohitRef.current, vermaRef.current], {
-        x: 0,
-      });
-      gsap.set(glowRef.current, {
-        scale: 0.8,
-        opacity: 0.25,
-      });
-      gsap.set([eyebrowRef.current, detailsRef.current, ctaGroupRef.current], {
-        opacity: 0,
-        y: 40,
-      });
-      gsap.set(scrollIndicatorRef.current, {
-        opacity: 1,
-        y: 0,
-      });
+      // ── Elegant Entrance Animation ──
+      const entryTl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      // ── Cinematic Scroll-Driven Timeline ──
-      const tl = gsap.timeline({
+      entryTl
+        .fromTo(
+          glowRef.current,
+          { scale: 0.6, opacity: 0 },
+          { scale: 1, opacity: 0.35, duration: 1.8 }
+        )
+        .fromTo(
+          eyebrowRef.current,
+          { opacity: 0, y: -20 },
+          { opacity: 1, y: 0, duration: 0.9 },
+          "-=1.4"
+        )
+        .fromTo(
+          [rohitRef.current, vermaRef.current],
+          { opacity: 0, y: 40, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.1, stagger: 0.12 },
+          "-=0.9"
+        )
+        .fromTo(
+          detailsRef.current,
+          { opacity: 0, y: 25 },
+          { opacity: 1, y: 0, duration: 0.9 },
+          "-=0.7"
+        )
+        .fromTo(
+          ctaGroupRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.8 },
+          "-=0.6"
+        )
+        .fromTo(
+          scrollIndicatorRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.8 },
+          "-=0.4"
+        );
+
+      // ── Smooth Scroll Scrub (No dead gaps) ──
+      const scrubTl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=120%",
-          pin: true,
-          scrub: 1.2,
-          anticipatePin: 1,
+          end: "bottom top",
+          scrub: 1,
         },
       });
 
-      tl
-        // Fade out initial scroll prompt immediately
-        .to(
-          scrollIndicatorRef.current,
-          {
-            opacity: 0,
-            y: 15,
-            duration: 0.2,
-            ease: "power2.out",
-          },
-          0
-        )
-        // ROHIT moves slightly left, VERMA moves slightly right
-        .to(
-          rohitRef.current,
-          {
-            x: -45,
-            duration: 1,
-            ease: "power2.out",
-          },
-          0
-        )
-        .to(
-          vermaRef.current,
-          {
-            x: 45,
-            duration: 1,
-            ease: "power2.out",
-          },
-          0
-        )
-        // Typography slowly scales down
-        .to(
-          nameGroupRef.current,
-          {
-            scale: 0.78,
-            y: -25,
-            duration: 1,
-            ease: "power2.out",
-          },
-          0
-        )
-        // Background amber glow expands
-        .to(
-          glowRef.current,
-          {
-            scale: 1.7,
-            opacity: 0.55,
-            duration: 1,
-            ease: "power2.out",
-          },
-          0
-        )
-        // Eyebrow appears
-        .to(
-          eyebrowRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            ease: "power3.out",
-          },
-          0.15
-        )
-        // Introduction text & institution appear
-        .to(
-          detailsRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            ease: "power3.out",
-          },
-          0.3
-        )
-        // CTAs move upward into view
-        .to(
-          ctaGroupRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power3.out",
-          },
-          0.45
-        )
-        // Slight hold before transitioning to Chapter 02
-        .to({}, { duration: 0.4 });
+      scrubTl
+        .to(rohitRef.current, { x: -50, ease: "none" }, 0)
+        .to(vermaRef.current, { x: 50, ease: "none" }, 0)
+        .to(glowRef.current, { scale: 1.5, opacity: 0.5, ease: "none" }, 0)
+        .to(contentWrapperRef.current, { y: 100, opacity: 0.25, ease: "none" }, 0)
+        .to(scrollIndicatorRef.current, { opacity: 0, ease: "none" }, 0);
     }, containerRef);
 
     return () => ctx.revert();
@@ -155,7 +89,7 @@ export default function Hero() {
     const workEl = document.getElementById("chapter-work");
     if (workEl) {
       if (lenis) {
-        lenis.scrollTo(workEl, { duration: 1.5 });
+        lenis.scrollTo(workEl, { duration: 1.4 });
       } else {
         workEl.scrollIntoView({ behavior: "smooth" });
       }
@@ -167,7 +101,7 @@ export default function Hero() {
     const storyEl = document.getElementById("chapter-story");
     if (storyEl) {
       if (lenis) {
-        lenis.scrollTo(storyEl, { duration: 1.3 });
+        lenis.scrollTo(storyEl, { duration: 1.2 });
       } else {
         storyEl.scrollIntoView({ behavior: "smooth" });
       }
@@ -178,34 +112,34 @@ export default function Hero() {
     <section
       id="chapter-intro"
       ref={containerRef}
-      className="relative w-full min-h-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-charcoal select-none"
+      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden bg-charcoal select-none py-28 md:py-36 px-6 md:px-12"
     >
       {/* ── Warm Amber Glow Expansion Background ── */}
       <div
         ref={glowRef}
         aria-hidden="true"
-        className="absolute w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full pointer-events-none z-0 will-change-transform"
+        className="absolute w-[60vw] h-[60vw] max-w-[850px] max-h-[850px] rounded-full pointer-events-none z-0 will-change-transform"
         style={{
-          background: "radial-gradient(circle, rgba(245, 166, 35, 0.28) 0%, rgba(217, 119, 6, 0.12) 45%, transparent 70%)",
-          filter: "blur(70px)",
+          background: "radial-gradient(circle, rgba(245, 166, 35, 0.3) 0%, rgba(217, 119, 6, 0.12) 45%, transparent 70%)",
+          filter: "blur(80px)",
         }}
       />
 
-      {/* Subtle fine grid lines behind the scene */}
+      {/* Subtle fine grid lines */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none opacity-[0.035]"
         style={{
           backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
-          maskImage: "radial-gradient(ellipse at center, black 40%, transparent 80%)",
+          maskImage: "radial-gradient(ellipse at center, black 45%, transparent 80%)",
         }}
       />
 
       {/* ── Main Content Container ── */}
       <div
         ref={contentWrapperRef}
-        className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 flex flex-col items-center text-center justify-center"
+        className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center justify-center will-change-transform"
       >
         {/* Eyebrow */}
         <div ref={eyebrowRef} className="mb-4 md:mb-6">
@@ -221,13 +155,13 @@ export default function Hero() {
         >
           <h1
             ref={rohitRef}
-            className="font-display text-[clamp(4.5rem,14vw,11.5rem)] font-extrabold text-off-white uppercase will-change-transform"
+            className="font-display text-[clamp(4.2rem,13vw,11rem)] font-extrabold text-off-white uppercase will-change-transform"
           >
             ROHIT
           </h1>
           <h1
             ref={vermaRef}
-            className="font-display text-[clamp(4.5rem,14vw,11.5rem)] font-extrabold text-amber uppercase will-change-transform"
+            className="font-display text-[clamp(4.2rem,13vw,11rem)] font-extrabold text-amber uppercase will-change-transform"
           >
             VERMA
           </h1>
@@ -240,7 +174,7 @@ export default function Hero() {
             <br className="hidden sm:inline" /> and dynamic digital experiences.&rdquo;
           </p>
           <p className="font-mono text-xs md:text-sm text-foreground/50 tracking-wider">
-            B.Tech Computer Science & Engineering student at{" "}
+            B.Tech Computer Science &amp; Engineering student at{" "}
             <span className="text-off-white/80 font-medium">KIET Group of Institutions</span>.
           </p>
         </div>
