@@ -139,13 +139,6 @@ const LazyVideo = forwardRef<HTMLVideoElement, {
           className={className}
         >
           <source src={src} type="video/mp4" />
-          <track
-            kind="captions"
-            srcLang="en"
-            label="English"
-            src="/videos/captions.vtt"
-            default
-          />
         </video>
       )}
     </div>
