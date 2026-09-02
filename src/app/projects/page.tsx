@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import { projects } from "@/lib/projects";
 import Link from "next/link";
 
@@ -9,6 +10,8 @@ export default function ProjectsPage() {
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
     const ctx = gsap.context(() => {
       // Hero reveal
       gsap.fromTo(
