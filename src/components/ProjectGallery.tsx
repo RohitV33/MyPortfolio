@@ -10,60 +10,39 @@ import { ArrowUpRight } from "lucide-react";
 export default function ProjectGallery() {
   const containerRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const track = trackRef.current;
-      const container = containerRef.current;
-      if (!track || !container) return;
+      const mm = gsap.matchMedia();
 
-      // Calculate total horizontal scroll distance
-      const totalWidth = track.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      const distance = totalWidth - viewportWidth;
+      mm.add("(min-width: 768px)", () => {
+        const track = trackRef.current;
+        const container = containerRef.current;
+        if (!track || !container) return;
 
-      if (distance > 0) {
-        // Horizontal scroll pinned timeline
-        gsap.to(track, {
-          x: -distance,
-          ease: "none",
-          scrollTrigger: {
-            trigger: container,
-            start: "top top",
-            end: () => `+=${distance * 1.1}`,
-            pin: true,
-            scrub: 1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
+        const totalWidth = track.scrollWidth;
+        const viewportWidth = window.innerWidth;
+        const distance = totalWidth - viewportWidth;
 
-        // Parallax image scaling on individual cards during scrub
-        cardRefs.current.forEach((card) => {
-          if (!card) return;
-          const media = card.querySelector(".project-media");
-          if (media) {
-            gsap.fromTo(
-              media,
-              { scale: 1.15 },
-              {
-                scale: 1,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: card,
-                  containerAnimation: gsap.getById("horizontal-track"),
-                  start: "left right",
-                  end: "right left",
-                  scrub: true,
-                },
-              }
-            );
-          }
-        });
-      }
+        if (distance > 0) {
+          gsap.to(track, {
+            x: -distance,
+            ease: "none",
+            scrollTrigger: {
+              trigger: container,
+              start: "top top",
+              end: () => `+=${distance * 1.1}`,
+              pin: true,
+              scrub: 1,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+      });
     }, containerRef);
 
     return () => ctx.revert();
@@ -75,34 +54,33 @@ export default function ProjectGallery() {
       ref={containerRef}
       className="relative w-full min-h-screen overflow-hidden bg-charcoal text-off-white select-none"
     >
-      {/* Horizontal Track Container */}
+      {/* Responsive Track: natural flow on mobile, pinned horizontal on desktop */}
       <div
         ref={trackRef}
-        className="flex h-screen items-center will-change-transform px-8 md:px-20 gap-12 md:gap-24"
-        style={{ width: "max-content" }}
+        className="flex flex-col md:flex-row min-h-screen md:h-screen md:items-center will-change-transform px-6 md:px-20 py-16 md:py-0 gap-10 md:gap-24 md:w-max"
       >
         {/* Intro Billboard to the Gallery */}
-        <div className="w-[85vw] max-w-[480px] shrink-0 flex flex-col justify-center pr-6">
+        <div className="w-full md:w-[85vw] max-w-[480px] shrink-0 flex flex-col justify-center pr-0 md:pr-6">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber" />
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
               CHAPTER 04 // THE WORK
             </p>
           </div>
-          <h2 className="font-display text-[clamp(3rem,8vw,6.5rem)] font-extrabold tracking-tight text-off-white uppercase leading-[0.9] mb-8">
+          <h2 className="font-display text-[clamp(2.8rem,8vw,6.5rem)] font-extrabold tracking-tight text-off-white uppercase leading-[0.9] mb-6 md:mb-8">
             SELECTED <br />
             <span className="text-amber">WORK.</span>
           </h2>
           <p className="font-body text-base md:text-lg font-light text-foreground/60 leading-relaxed max-w-sm mb-6">
-            Curated production case studies engineered end-to-end. Scroll horizontally through real architectures and live deployments.
+            Curated production case studies engineered end-to-end. Scroll through real architectures and live deployments.
           </p>
           <div className="font-mono text-[11px] text-amber tracking-[0.3em] uppercase flex items-center gap-2">
-            <span>DRAG OR SCROLL HORIZONTALLY</span>
-            <span>→</span>
+            <span className="hidden md:inline">DRAG OR SCROLL HORIZONTALLY →</span>
+            <span className="md:hidden">EXPLORE CASE STUDIES ↓</span>
           </div>
         </div>
 
-        {/* Project Cards (85vw viewport width) */}
+        {/* Project Cards */}
         {PROJECTS.map((project, index) => (
           <article
             key={project.id}
@@ -110,7 +88,7 @@ export default function ProjectGallery() {
               cardRefs.current[index] = el;
             }}
             data-cursor-project
-            className="w-[88vw] md:w-[78vw] lg:w-[72vw] max-w-[1100px] h-[82vh] max-h-[750px] shrink-0 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md p-6 md:p-12 flex flex-col justify-between overflow-hidden relative group hover:border-amber/40 transition-colors duration-500 shadow-2xl"
+            className="w-full md:w-[78vw] lg:w-[72vw] max-w-[1100px] min-h-[580px] md:h-[82vh] max-h-[750px] shrink-0 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md p-6 md:p-12 flex flex-col justify-between overflow-hidden relative group hover:border-amber/40 transition-colors duration-500 shadow-2xl"
           >
             {/* Top Bar: Number & Role */}
             <div className="flex items-center justify-between border-b border-white/10 pb-4 md:pb-6 relative z-10">
