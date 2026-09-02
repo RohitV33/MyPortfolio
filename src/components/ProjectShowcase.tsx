@@ -59,11 +59,11 @@ const ScrollMouse = memo(function ScrollMouse() {
 const LazyVideo = forwardRef<HTMLVideoElement, {
   src: string;
   poster?: string;
-  color: string;
+  color?: string;
   isActive: boolean;
   slug: string;
   className?: string;
-}>(({ src, poster, color, isActive, slug, className }, ref) => {
+}>(({ src, poster, isActive, slug, className }, ref) => {
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

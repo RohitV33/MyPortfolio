@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,6 +10,8 @@ import {
 } from "framer-motion";
 import gsap from "gsap";
 import dynamic from "next/dynamic";
+
+const emptySubscribe = () => () => {};
 
 const MotionLink = motion.create(Link);
 import { useLenis } from "@/components/SmoothScrollProvider";
@@ -86,12 +88,7 @@ export default function Navbar() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const [isDark, setIsDark] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  // ── Mount guard (prevents SSR/client mismatch) ──
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   // ── Theme Sync ──
   useEffect(() => {
