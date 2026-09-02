@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const MARQUEE = "Rohit Verma · FULL STACK DEVELOPER · OPEN TO WORK · INDIA · ";
 
@@ -20,6 +21,11 @@ const links = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // On the homepage, Chapter 09 ContactSection is the cinematic footer
+  if (pathname === "/") return null;
+
   return (
     <footer className="bg-charcoal border-t border-white/5 pt-20">
       {/* Marquee */}
