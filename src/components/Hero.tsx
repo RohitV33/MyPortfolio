@@ -3,285 +3,284 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import Link from "next/link";
-const heading = ["ROHIT", "VERMA"];
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { useLenis } from "@/components/SmoothScrollProvider";
 
 export default function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const scrollHintRef = useRef<HTMLDivElement>(null);
-
-  // Parallax elements
-  const shape1Ref = useRef<HTMLDivElement>(null);
-  const shape2Ref = useRef<HTMLDivElement>(null);
-  const shape3Ref = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const contentWrapperRef = useRef<HTMLDivElement>(null);
+  const rohitRef = useRef<HTMLHeadingElement>(null);
+  const vermaRef = useRef<HTMLHeadingElement>(null);
+  const nameGroupRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const ctaGroupRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const { lenis } = useLenis();
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
-
-      // ─── Entry Animations ───────────────────
-
-      // Grid reveal
-      tl.fromTo(
-        gridRef.current,
-        { opacity: 0, scale: 1.1 },
-        { opacity: 0.15, scale: 1, duration: 2.5, ease: "expo.out" },
-        0
-      );
-
-      // Shape reveals
-      [shape1Ref, shape2Ref, shape3Ref].forEach((ref, i) => {
-        tl.fromTo(
-          ref.current,
-          { opacity: 0, scale: 0.8, filter: "blur(40px)" },
-          { opacity: 0.5, scale: 1, filter: "blur(60px)", duration: 2, ease: "power2.out" },
-          i * 0.1
-        );
+      // ── Initial Opening State ──
+      gsap.set(nameGroupRef.current, {
+        scale: 1,
+        y: 0,
+        opacity: 1,
+      });
+      gsap.set([rohitRef.current, vermaRef.current], {
+        x: 0,
+      });
+      gsap.set(glowRef.current, {
+        scale: 0.8,
+        opacity: 0.25,
+      });
+      gsap.set([eyebrowRef.current, detailsRef.current, ctaGroupRef.current], {
+        opacity: 0,
+        y: 40,
+      });
+      gsap.set(scrollIndicatorRef.current, {
+        opacity: 1,
+        y: 0,
       });
 
-      // Heading split-text-like reveal (starts immediately, very fast stagger)
-      wordsRef.current.forEach((word, i) => {
-        if (!word) return;
-        tl.fromTo(
-          word,
+      // ── Cinematic Scroll-Driven Timeline ──
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=120%",
+          pin: true,
+          scrub: 1.2,
+          anticipatePin: 1,
+        },
+      });
+
+      tl
+        // Fade out initial scroll prompt immediately
+        .to(
+          scrollIndicatorRef.current,
           {
             opacity: 0,
-            y: 30,
-            rotateX: -15,
-            filter: "blur(4px)",
+            y: 15,
+            duration: 0.2,
+            ease: "power2.out",
           },
+          0
+        )
+        // ROHIT moves slightly left, VERMA moves slightly right
+        .to(
+          rohitRef.current,
+          {
+            x: -45,
+            duration: 1,
+            ease: "power2.out",
+          },
+          0
+        )
+        .to(
+          vermaRef.current,
+          {
+            x: 45,
+            duration: 1,
+            ease: "power2.out",
+          },
+          0
+        )
+        // Typography slowly scales down
+        .to(
+          nameGroupRef.current,
+          {
+            scale: 0.78,
+            y: -25,
+            duration: 1,
+            ease: "power2.out",
+          },
+          0
+        )
+        // Background amber glow expands
+        .to(
+          glowRef.current,
+          {
+            scale: 1.7,
+            opacity: 0.55,
+            duration: 1,
+            ease: "power2.out",
+          },
+          0
+        )
+        // Eyebrow appears
+        .to(
+          eyebrowRef.current,
           {
             opacity: 1,
             y: 0,
-            rotateX: 0,
-            filter: "blur(0px)",
-            duration: 0.8,
+            duration: 0.4,
             ease: "power3.out",
           },
-          i * 0.08
-        );
-      });
-
-      // Subtitle (reveals right after the heading)
-      tl.fromTo(
-        subtitleRef.current,
-        { opacity: 0, y: 20, filter: "blur(8px)" },
-        { opacity: 0.6, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" },
-        0.3
-      );
-
-      // CTA
-      tl.fromTo(
-        ctaRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
-        0.5
-      );
-
-      // ─── Scroll Parallax ───────────────────
-
-      // Heading parallax
-      gsap.to(".hero-heading", {
-        y: 100,
-        opacity: 0.2,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        }
-      });
-
-      // Scroll Hint fade out
-      gsap.to(scrollHintRef.current, {
-        opacity: 0,
-        y: 30,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "20% top",
-          scrub: true,
-        }
-      });
-
-      // Shape parallax
-      gsap.to(shape1Ref.current, {
-        y: -150,
-        x: 50,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        }
-      });
-      gsap.to(shape2Ref.current, {
-        y: 100,
-        x: -80,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.5,
-        }
-      });
-      gsap.to(shape3Ref.current, {
-        y: -80,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.5,
-        }
-      });
-
-      // Grid parallax
-      gsap.to(gridRef.current, {
-        y: 50,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        }
-      });
+          0.15
+        )
+        // Introduction text & institution appear
+        .to(
+          detailsRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power3.out",
+          },
+          0.3
+        )
+        // CTAs move upward into view
+        .to(
+          ctaGroupRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power3.out",
+          },
+          0.45
+        )
+        // Slight hold before transitioning to Chapter 02
+        .to({}, { duration: 0.4 });
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
+  const scrollToWork = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const workEl = document.getElementById("chapter-work");
+    if (workEl) {
+      if (lenis) {
+        lenis.scrollTo(workEl, { duration: 1.5 });
+      } else {
+        workEl.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
+  const scrollToStory = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const storyEl = document.getElementById("chapter-story");
+    if (storyEl) {
+      if (lenis) {
+        lenis.scrollTo(storyEl, { duration: 1.3 });
+      } else {
+        storyEl.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <section
+      id="chapter-intro"
       ref={containerRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20 pb-36"
+      className="relative w-full min-h-screen h-screen flex flex-col items-center justify-center overflow-hidden bg-charcoal select-none"
     >
-      {/* ── Background Elements ── */}
-
-      {/* Mesh Grid */}
+      {/* ── Warm Amber Glow Expansion Background ── */}
       <div
-        ref={gridRef}
-        className="absolute inset-0 z-0 pointer-events-none opacity-0 will-change-transform"
+        ref={glowRef}
+        aria-hidden="true"
+        className="absolute w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full pointer-events-none z-0 will-change-transform"
         style={{
-          backgroundImage: `linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
-          maskImage: "radial-gradient(circle at 50% 50%, black, transparent 80%)",
+          background: "radial-gradient(circle, rgba(245, 166, 35, 0.28) 0%, rgba(217, 119, 6, 0.12) 45%, transparent 70%)",
+          filter: "blur(70px)",
         }}
       />
 
-      {/* Ambient Blobs */}
+      {/* Subtle fine grid lines behind the scene */}
       <div
-        ref={shape1Ref}
-        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full z-0 opacity-0 will-change-transform"
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-[0.035]"
         style={{
-          background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        ref={shape2Ref}
-        className="absolute bottom-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full z-0 opacity-0 will-change-transform"
-        style={{
-          background: "radial-gradient(circle, var(--accent-muted) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        ref={shape3Ref}
-        className="absolute top-[20%] right-[10%] w-[25vw] h-[25vw] rounded-full z-0 opacity-0 will-change-transform"
-        style={{
-          background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
+          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+          maskImage: "radial-gradient(ellipse at center, black 40%, transparent 80%)",
         }}
       />
 
-      {/* Cinematic Scanline */}
-      <div className="absolute inset-0 pointer-events-none z-10 opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
-
-      {/* ── Main Content ── */}
-      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-8 text-center perspective-1000">
-
+      {/* ── Main Content Container ── */}
+      <div
+        ref={contentWrapperRef}
+        className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 flex flex-col items-center text-center justify-center"
+      >
         {/* Eyebrow */}
-        <div className="overflow-hidden mb-6">
-          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-accent animate-pulse">
+        <div ref={eyebrowRef} className="mb-4 md:mb-6">
+          <p className="font-mono text-[10px] md:text-xs tracking-[0.35em] uppercase text-amber">
             FULL-STACK DEVELOPER • AI ENTHUSIAST
           </p>
         </div>
 
-        {/* Heading */}
-        {/* Heading */}
-        <h1 className="hero-heading font-display text-[clamp(1.8rem,6.5vw,5.5rem)] font-extrabold leading-none tracking-tight mb-8 flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
-          {heading.map((word, i) => (
-            <span
-              key={word}
-              ref={(el) => { wordsRef.current[i] = el; }}
-              className="inline-block will-change-transform"
-              style={{
-                color: i === 1 ? "var(--accent)" : "var(--foreground)",
-                textShadow: i === 1 ? "0 0 45px var(--accent-muted)" : "none",
-              }}
-            >
-              {word}
-            </span>
-          ))}
-        </h1>
-
-        {/* Subtitle */}
-        <p
-          ref={subtitleRef}
-          className="font-body text-base md:text-xl font-light text-foreground max-w-2xl mx-auto leading-relaxed opacity-0 mb-12"
-          style={{ letterSpacing: "-0.01em" }}
+        {/* Huge Name Typography */}
+        <div
+          ref={nameGroupRef}
+          className="flex flex-col items-center justify-center leading-[0.85] tracking-tighter will-change-transform mb-6 md:mb-8"
         >
-          Engineering high-performance web systems and dynamic digital experiences. B.Tech Computer Science & Engineering student at <span className="text-foreground font-medium">KIET Group of Institutions</span>.
-        </p>
-
-        {/* CTAs */}
-        <div ref={ctaRef} className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 opacity-0">
-          <Link
-            href="/projects"
-            className="group relative px-6 py-4 sm:px-10 sm:py-5 rounded-full overflow-hidden transition-all duration-500 hover:scale-105"
+          <h1
+            ref={rohitRef}
+            className="font-display text-[clamp(4.5rem,14vw,11.5rem)] font-extrabold text-off-white uppercase will-change-transform"
           >
-            <div className="absolute inset-0 bg-accent transition-transform duration-500 group-hover:scale-110" />
-            <span className="relative z-10 font-mono font-bold text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[#0D0D0D] flex items-center gap-2 sm:gap-3">
-              Explore Projects
-              <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" fill="none" viewBox="0 0 14 14">
-                <path d="M1 7h12M9 3l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-          </Link>
-
-          <Link
-            href="/about"
-            className="group font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-foreground/60 hover:text-foreground transition-colors py-3 sm:py-4"
+            ROHIT
+          </h1>
+          <h1
+            ref={vermaRef}
+            className="font-display text-[clamp(4.5rem,14vw,11.5rem)] font-extrabold text-amber uppercase will-change-transform"
           >
-            Read the story
-            <div className="h-px w-0 group-hover:w-full bg-accent transition-all duration-500 mt-1" />
-          </Link>
+            VERMA
+          </h1>
+        </div>
+
+        {/* Introduction Statements */}
+        <div ref={detailsRef} className="max-w-2xl mx-auto space-y-3 md:space-y-4 mb-8 md:mb-10">
+          <p className="font-body text-lg md:text-2xl font-light text-off-white/90 leading-relaxed tracking-tight">
+            &ldquo;Engineering high-performance web systems
+            <br className="hidden sm:inline" /> and dynamic digital experiences.&rdquo;
+          </p>
+          <p className="font-mono text-xs md:text-sm text-foreground/50 tracking-wider">
+            B.Tech Computer Science & Engineering student at{" "}
+            <span className="text-off-white/80 font-medium">KIET Group of Institutions</span>.
+          </p>
+        </div>
+
+        {/* Interactive CTAs */}
+        <div
+          ref={ctaGroupRef}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 will-change-transform"
+        >
+          <a
+            href="#chapter-work"
+            onClick={scrollToWork}
+            data-cursor-interactive
+            className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-off-white text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:bg-amber hover:text-charcoal hover:scale-105"
+          >
+            <span>EXPLORE MY WORK</span>
+            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+
+          <a
+            href="#chapter-story"
+            onClick={scrollToStory}
+            data-cursor-interactive
+            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-white/10 text-off-white/70 font-mono text-xs tracking-[0.2em] uppercase hover:text-off-white hover:border-white/30 transition-all duration-300"
+          >
+            <span>GET TO KNOW ME</span>
+          </a>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* ── Scroll Prompt Indicator at Bottom ── */}
       <div
-        ref={scrollHintRef}
-        className="scroll-hint absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-20"
+        ref={scrollIndicatorRef}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10 pointer-events-none select-none"
       >
-        <span className="font-mono text-[9px] tracking-[0.4em] uppercase opacity-40">
-          Scroll to explore
+        <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-foreground/40">
+          SCROLL TO BEGIN
         </span>
-        <div className="w-px h-16 bg-gradient-to-b from-accent to-transparent relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-accent animate-scrollLine" />
-        </div>
+        <ArrowDown className="w-3.5 h-3.5 text-amber animate-bounce" />
       </div>
-
     </section>
   );
 }
-
