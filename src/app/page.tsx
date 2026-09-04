@@ -6,6 +6,7 @@ import CapabilitiesSection from "@/components/CapabilitiesSection";
 import ProjectGallery from "@/components/ProjectGallery";
 import CaseStudySection from "@/components/CaseStudySection";
 import TechStackSection from "@/components/TechStackSection";
+import MindsetGallery from "@/components/MindsetGallery";
 import AboutSection from "@/components/AboutSection";
 import CurrentlyBuilding from "@/components/CurrentlyBuilding";
 import ContactSection from "@/components/ContactSection";
@@ -30,6 +31,9 @@ export default function HomePage() {
 
       {/* Chapter 06: The Stack */}
       <TechStackSection />
+
+      {/* Atmospheric Mindset & Philosophy: Scroll Animated Parallax Gallery */}
+      <MindsetGallery />
 
       {/* Chapter 07: About */}
       <AboutSection />

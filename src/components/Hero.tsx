@@ -142,59 +142,59 @@ export default function Hero() {
         className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center justify-center will-change-transform"
       >
         {/* Eyebrow & Status Pill */}
-        <div ref={eyebrowRef} className="flex flex-col sm:flex-row items-center gap-3 mb-6 md:mb-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 font-mono text-[11px] text-emerald-400">
+        <div ref={eyebrowRef} className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 font-mono text-[10px] sm:text-[11px] text-emerald-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="tracking-wider uppercase font-semibold">AVAILABLE FOR SDE ROLES</span>
           </div>
           <span className="hidden sm:inline text-foreground/30 font-mono text-xs">•</span>
-          <p className="font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase text-amber font-semibold">
+          <p className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.25em] sm:tracking-[0.3em] uppercase text-amber font-semibold">
             FULL-STACK ARCHITECT &amp; AI INTEGRATOR
           </p>
         </div>
 
-        {/* Balanced Name Typography */}
+        {/* Balanced Name Typography (Geometric Grotesk) */}
         <div
           ref={nameGroupRef}
-          className="flex flex-col items-center justify-center leading-[0.9] tracking-tighter will-change-transform mb-6 md:mb-8"
+          className="flex flex-col items-center justify-center leading-[0.92] tracking-tighter will-change-transform mb-5 sm:mb-8"
         >
           <h1
             ref={rohitRef}
-            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-off-white uppercase will-change-transform"
+            className="font-grotesk text-[clamp(2.8rem,8.5vw,6rem)] font-extrabold text-off-white uppercase will-change-transform"
           >
             ROHIT
           </h1>
           <h1
             ref={vermaRef}
-            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-amber uppercase will-change-transform"
+            className="font-grotesk text-[clamp(2.8rem,8.5vw,6rem)] font-extrabold text-amber uppercase will-change-transform"
           >
             VERMA
           </h1>
         </div>
 
-        {/* Introduction Statements */}
-        <div ref={detailsRef} className="max-w-2xl mx-auto space-y-3 md:space-y-4 mb-8 md:mb-10">
-          <p className="font-body text-base md:text-xl font-light text-off-white/90 leading-relaxed tracking-tight">
+        {/* Introduction Statements (Editorial Serif Quote + System Pills) */}
+        <div ref={detailsRef} className="max-w-2xl mx-auto space-y-3 sm:space-y-4 mb-6 sm:mb-10 px-2">
+          <p className="font-serif italic font-normal text-base sm:text-xl md:text-2xl text-off-white/90 leading-relaxed tracking-tight">
             &ldquo;Engineering high-performance web architectures, computer vision pipelines, and resilient distributed systems.&rdquo;
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 font-mono text-xs text-foreground/60">
-            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">React.js &amp; Next.js</span>
-            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">Node.js &amp; FastAPI</span>
-            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">YOLOv8 AI</span>
-            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">AWS Certified</span>
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pt-1 font-mono text-[11px] sm:text-xs text-foreground/60">
+            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">React.js &amp; Next.js</span>
+            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">Node.js &amp; FastAPI</span>
+            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">YOLOv8 AI</span>
+            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">AWS Certified</span>
           </div>
         </div>
 
         {/* Interactive CTAs */}
         <div
           ref={ctaGroupRef}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 will-change-transform"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 w-full sm:w-auto will-change-transform px-4"
         >
           <a
             href="#chapter-work"
             onClick={scrollToWork}
             data-cursor-interactive
-            className="group relative inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-off-white text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:bg-amber hover:text-charcoal hover:scale-105"
+            className="group relative inline-flex items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-off-white text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:bg-amber hover:text-charcoal hover:scale-105 shadow-md"
           >
             <span>EXPLORE MY WORK</span>
             <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -204,7 +204,7 @@ export default function Hero() {
             href="#chapter-story"
             onClick={scrollToStory}
             data-cursor-interactive
-            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-white/10 text-off-white/70 font-mono text-xs tracking-[0.2em] uppercase hover:text-off-white hover:border-white/30 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-full border border-white/15 text-off-white/70 font-mono text-xs tracking-[0.2em] uppercase hover:text-off-white hover:border-white/30 transition-all duration-300"
           >
             <span>INSPECT MY JOURNEY</span>
           </a>

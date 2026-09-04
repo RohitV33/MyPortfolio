@@ -19,20 +19,20 @@ export default function AboutSection() {
         </div>
 
         {/* Large Editorial Statement */}
-        <div className="mb-12 md:mb-16">
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95] mb-6">
+        <div className="mb-10 sm:mb-12 md:mb-16">
+          <h2 className="font-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.98] mb-4 sm:mb-6">
             BEHIND THE <br />
             <span className="text-amber">CODE.</span>
           </h2>
-          <p className="font-body text-base md:text-xl font-light text-foreground/80 max-w-2xl leading-relaxed tracking-tight">
+          <p className="font-serif italic font-normal text-lg sm:text-2xl md:text-3xl text-off-white/90 max-w-2xl leading-relaxed tracking-tight">
             &ldquo;I&apos;m Rohit Verma — a Computer Science &amp; Engineering student who enjoys turning ideas into useful digital experiences.&rdquo;
           </p>
         </div>
 
         {/* Grid: Left Editorial Portrait / Profile Showcase, Right Timeline */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-start">
           {/* LEFT: Editorial Profile / Portrait Representation */}
-          <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-white/[0.02] p-8 md:p-10 backdrop-blur-md flex flex-col justify-between shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-5 rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 md:p-10 backdrop-blur-md flex flex-col justify-between shadow-2xl relative overflow-hidden">
             {/* Ambient amber backdrop glow */}
             <div
               aria-hidden="true"
@@ -40,13 +40,13 @@ export default function AboutSection() {
             />
 
             <div>
-              <div className="w-24 h-24 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center font-display font-extrabold text-4xl text-amber mb-8 shadow-inner">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center font-grotesk font-extrabold text-3xl sm:text-4xl text-amber mb-6 sm:mb-8 shadow-inner">
                 RV
               </div>
-              <h3 className="font-display text-2xl md:text-3xl font-bold text-off-white mb-2">
+              <h3 className="font-grotesk text-2xl sm:text-3xl font-bold text-off-white mb-2">
                 Rohit Verma
               </h3>
-              <p className="font-mono text-xs text-amber uppercase tracking-widest mb-6">
+              <p className="font-mono text-[11px] sm:text-xs text-amber uppercase tracking-widest mb-4 sm:mb-6">
                 Full-Stack Engineer • KIET &apos;27
               </p>
               <p className="font-body text-sm text-foreground/70 leading-relaxed mb-6">

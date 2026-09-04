@@ -65,8 +65,12 @@ html.light {
   --color-ink-light: var(--ink-light);
 
   --font-display: var(--font-syne), sans-serif;
+  --font-grotesk: var(--font-space-grotesk), sans-serif;
   --font-body: var(--font-outfit), sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-editorial: var(--font-playfair), Georgia, serif;
+  --font-handwriting: var(--font-caveat), cursive;
   --font-syne: var(--font-syne), sans-serif;
   --font-akira: "Akira Expanded", sans-serif;
 }

@@ -94,7 +94,7 @@ export default function CapabilitiesSection() {
                   <span className="cap-num font-mono text-xs text-amber font-bold tracking-[0.25em] block mb-2">
                     {cap.number} // CAPABILITY
                   </span>
-                  <h3 className="cap-title font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-off-white uppercase leading-tight">
+                  <h3 className="cap-title font-grotesk text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-off-white uppercase leading-tight">
                     {cap.title}
                   </h3>
                 </div>

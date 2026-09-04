@@ -147,29 +147,29 @@ export default function StorySection() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10">
         {/* Editorial Header */}
-        <div ref={titleRef} className="max-w-3xl mb-12 md:mb-16">
+        <div ref={titleRef} className="max-w-3xl mb-10 md:mb-16">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber" />
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
               CHAPTER 02 // THE STORY
             </p>
           </div>
-          <h2 className="font-display text-3xl md:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95]">
+          <h2 className="font-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.98]">
             A JOURNEY IN <br />
             <span className="text-amber">CODE &amp; CRAFT.</span>
           </h2>
-          <p className="font-body text-sm md:text-base font-light text-foreground/70 mt-4 leading-relaxed max-w-xl">
+          <p className="font-body text-sm sm:text-base font-light text-foreground/70 mt-3 sm:mt-4 leading-relaxed max-w-xl">
             A progression from curious tinkerer to disciplined full-stack engineer. Scroll through the milestones or select a phase below to inspect real systems, videos, and architecture telemetry.
           </p>
 
-          {/* Quick Jump Phase Navigator */}
-          <div className="flex flex-wrap items-center gap-2 mt-6 pt-4 border-t border-white/10">
+          {/* Quick Jump Phase Navigator (Responsive Horizontal Scroll for Mobile/Tablet) */}
+          <div className="flex items-center gap-2 mt-5 sm:mt-6 pt-4 border-t border-white/10 overflow-x-auto no-scrollbar py-1 w-full touch-pan-x">
             {STORY_STATEMENTS.map((item, idx) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => scrollToPhase(idx)}
-                className={`px-3.5 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 sm:px-3.5 py-1.5 rounded-full font-mono text-[10px] sm:text-[11px] uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 cursor-pointer shrink-0 ${
                   activePhaseIndex === idx
                     ? "bg-amber text-charcoal font-bold shadow-lg scale-105"
                     : "bg-white/[0.04] text-foreground/60 hover:text-off-white hover:bg-white/10"
@@ -183,10 +183,10 @@ export default function StorySection() {
         </div>
 
         {/* 2-Column Split Stage: Left Narrative Track, Right Sticky Media & Video Console */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-14 relative">
           
           {/* LEFT: Narrative Statements Track */}
-          <div ref={narrativeColRef} className="lg:col-span-6 flex flex-col gap-24 md:gap-36 pb-20">
+          <div ref={narrativeColRef} className="lg:col-span-6 flex flex-col gap-16 sm:gap-24 md:gap-36 pb-12 sm:pb-20">
             {STORY_STATEMENTS.map((item, index) => {
               const words = item.statement.split(" ");
               const isCurrent = activePhaseIndex === index;
@@ -197,20 +197,20 @@ export default function StorySection() {
                   ref={(el) => {
                     cardRefs.current[index] = el;
                   }}
-                  className={`flex flex-col items-start border-l-2 pl-6 md:pl-8 transition-all duration-500 will-change-transform ${
+                  className={`flex flex-col items-start border-l-2 pl-4 sm:pl-6 md:pl-8 transition-all duration-500 will-change-transform ${
                     isCurrent ? "border-amber opacity-100" : "border-white/10 opacity-40 hover:opacity-75"
                   }`}
                 >
                   {/* Phase Badge & Step */}
-                  <div className="story-badge flex items-center gap-2.5 mb-3 md:mb-4">
+                  <div className="story-badge flex items-center gap-2.5 mb-2.5 sm:mb-4">
                     <span className={`w-2 h-2 rounded-full ${isCurrent ? "bg-amber shadow-[0_0_10px_var(--amber)] animate-pulse" : "bg-white/30"}`} />
-                    <span className="font-mono text-xs text-amber font-semibold tracking-[0.25em] uppercase">
+                    <span className="font-mono text-[11px] sm:text-xs text-amber font-semibold tracking-[0.25em] uppercase">
                       {item.phase} // {item.title}
                     </span>
                   </div>
 
-                  {/* Kinetic Typography Statement */}
-                  <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-off-white leading-[1.15] mb-4 flex flex-wrap">
+                  {/* Human Thought Statement (Contextual Editorial Literary Serif with Amber Accents) */}
+                  <h3 className="font-serif italic font-normal text-2xl sm:text-3xl md:text-4xl text-off-white leading-[1.25] mb-3 sm:mb-4 flex flex-wrap">
                     &ldquo;
                     {words.map((word, wIdx) => {
                       const isHighlighted = item.highlightWords?.some((hw) => 
@@ -221,7 +221,7 @@ export default function StorySection() {
                         <span key={wIdx} className="inline-block overflow-hidden mr-1.5 py-0.5">
                           <span
                             className={`story-word inline-block transition-colors duration-300 ${
-                              isHighlighted ? "text-amber font-black" : "text-off-white"
+                              isHighlighted ? "text-amber font-medium not-italic" : "text-off-white"
                             }`}
                           >
                             {word}
@@ -232,9 +232,9 @@ export default function StorySection() {
                     &rdquo;
                   </h3>
 
-                  {/* Narrative Subtext */}
+                  {/* Narrative Subtext (Readable Clean Sans) */}
                   {item.subtext && (
-                    <p className="story-subtext font-body text-sm md:text-base font-light text-foreground/75 max-w-lg leading-relaxed mb-6">
+                    <p className="story-subtext font-body text-xs sm:text-sm md:text-base font-light text-foreground/75 max-w-lg leading-relaxed mb-4 sm:mb-6">
                       {item.subtext}
                     </p>
                   )}
