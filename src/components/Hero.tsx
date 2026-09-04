@@ -141,27 +141,32 @@ export default function Hero() {
         ref={contentWrapperRef}
         className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center justify-center will-change-transform"
       >
-        {/* Eyebrow */}
-        <div ref={eyebrowRef} className="mb-4 md:mb-6">
-          <p className="font-mono text-[10px] md:text-xs tracking-[0.35em] uppercase text-amber">
-            FULL-STACK DEVELOPER • AI ENTHUSIAST
+        {/* Eyebrow & Status Pill */}
+        <div ref={eyebrowRef} className="flex flex-col sm:flex-row items-center gap-3 mb-6 md:mb-8">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 font-mono text-[11px] text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="tracking-wider uppercase font-semibold">AVAILABLE FOR SDE ROLES</span>
+          </div>
+          <span className="hidden sm:inline text-foreground/30 font-mono text-xs">•</span>
+          <p className="font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase text-amber font-semibold">
+            FULL-STACK ARCHITECT &amp; AI INTEGRATOR
           </p>
         </div>
 
-        {/* Huge Name Typography */}
+        {/* Balanced Name Typography */}
         <div
           ref={nameGroupRef}
-          className="flex flex-col items-center justify-center leading-[0.85] tracking-tighter will-change-transform mb-6 md:mb-8"
+          className="flex flex-col items-center justify-center leading-[0.9] tracking-tighter will-change-transform mb-6 md:mb-8"
         >
           <h1
             ref={rohitRef}
-            className="font-display text-[clamp(4.2rem,13vw,11rem)] font-extrabold text-off-white uppercase will-change-transform"
+            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-off-white uppercase will-change-transform"
           >
             ROHIT
           </h1>
           <h1
             ref={vermaRef}
-            className="font-display text-[clamp(4.2rem,13vw,11rem)] font-extrabold text-amber uppercase will-change-transform"
+            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-amber uppercase will-change-transform"
           >
             VERMA
           </h1>
@@ -169,14 +174,15 @@ export default function Hero() {
 
         {/* Introduction Statements */}
         <div ref={detailsRef} className="max-w-2xl mx-auto space-y-3 md:space-y-4 mb-8 md:mb-10">
-          <p className="font-body text-lg md:text-2xl font-light text-off-white/90 leading-relaxed tracking-tight">
-            &ldquo;Engineering high-performance web systems
-            <br className="hidden sm:inline" /> and dynamic digital experiences.&rdquo;
+          <p className="font-body text-base md:text-xl font-light text-off-white/90 leading-relaxed tracking-tight">
+            &ldquo;Engineering high-performance web architectures, computer vision pipelines, and resilient distributed systems.&rdquo;
           </p>
-          <p className="font-mono text-xs md:text-sm text-foreground/50 tracking-wider">
-            B.Tech Computer Science &amp; Engineering student at{" "}
-            <span className="text-off-white/80 font-medium">KIET Group of Institutions</span>.
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 font-mono text-xs text-foreground/60">
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">React.js &amp; Next.js</span>
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">Node.js &amp; FastAPI</span>
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">YOLOv8 AI</span>
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">AWS Certified</span>
+          </div>
         </div>
 
         {/* Interactive CTAs */}
@@ -200,7 +206,7 @@ export default function Hero() {
             data-cursor-interactive
             className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-white/10 text-off-white/70 font-mono text-xs tracking-[0.2em] uppercase hover:text-off-white hover:border-white/30 transition-all duration-300"
           >
-            <span>GET TO KNOW ME</span>
+            <span>INSPECT MY JOURNEY</span>
           </a>
         </div>
       </div>

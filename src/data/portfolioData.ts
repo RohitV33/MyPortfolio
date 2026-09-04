@@ -42,8 +42,16 @@ export interface CaseStudy {
 
 export interface StoryStatement {
   id: string;
+  phase: string;
+  title: string;
   statement: string;
   subtext?: string;
+  highlightWords?: string[];
+  techTags: string[];
+  metricBadge?: { label: string; value: string };
+  mediaType: "network" | "video" | "debugger" | "architecture" | "showcase";
+  videoUrl?: string;
+  posterUrl?: string;
 }
 
 export interface Capability {
@@ -83,28 +91,64 @@ export const CHAPTERS = [
 export const STORY_STATEMENTS: StoryStatement[] = [
   {
     id: "story-1",
+    phase: "PHASE 01",
+    title: "SYSTEM CURIOSITY",
     statement: "I wanted to understand how systems work.",
     subtext: "Exploring network requests, browser runtimes, and the architectures behind daily tools.",
+    highlightWords: ["understand how systems work."],
+    techTags: ["HTTP/3 Protocols", "V8 Engine Loop", "TCP/IP Sockets", "Network Waterfall"],
+    metricBadge: { label: "P99 Telemetry", value: "24ms" },
+    mediaType: "network",
   },
   {
     id: "story-2",
+    phase: "PHASE 02",
+    title: "FIRST DEPLOYMENTS",
     statement: "So I started building.",
     subtext: "Writing JavaScript, creating full-stack apps, and learning database mechanics by shipping.",
+    highlightWords: ["started building."],
+    techTags: ["React.js", "Node.js", "Express.js", "MongoDB", "REST APIs"],
+    metricBadge: { label: "First Live Production App", value: "Shipped" },
+    mediaType: "video",
+    videoUrl: "/videos/project1.mp4",
+    posterUrl: "/images/bartr_poster.png",
   },
   {
     id: "story-3",
+    phase: "PHASE 03",
+    title: "CHAOS & RESILIENCE",
     statement: "Then I broke things.",
     subtext: "Debugging race conditions, state drift, and performance bottlenecks under load.",
+    highlightWords: ["broke things."],
+    techTags: ["Race Conditions", "Memory Profiling", "State Drift", "Load Benchmarks"],
+    metricBadge: { label: "Bottlenecks Resolved", value: "100%" },
+    mediaType: "debugger",
   },
   {
     id: "story-4",
+    phase: "PHASE 04",
+    title: "SCALABLE ARCHITECTURE",
     statement: "And learned to build better.",
     subtext: "Refining data flow, microservice bridges, and resilient backend contracts.",
+    highlightWords: ["build better."],
+    techTags: ["FastAPI Service", "YOLOv8 Inference", "JWT Handshake", "AWS Cloud"],
+    metricBadge: { label: "AI Classification", value: "<800ms" },
+    mediaType: "architecture",
+    videoUrl: "/videos/project2.mp4",
+    posterUrl: "/images/civiclens_poster.png",
   },
   {
     id: "story-5",
+    phase: "PHASE 05",
+    title: "CRAFT & PRECISION",
     statement: "Now I craft digital experiences.",
     subtext: "Fast, reliable web applications designed with technical precision and restraint.",
+    highlightWords: ["craft digital experiences."],
+    techTags: ["Fluid Choreography", "Sub-100ms TTI", "Lighthouse 100", "Production Grade"],
+    metricBadge: { label: "Lighthouse Score", value: "100/100" },
+    mediaType: "showcase",
+    videoUrl: "/videos/project3.mp4",
+    posterUrl: "/images/fuzzr_poster.png",
   },
 ];
 
@@ -295,14 +339,14 @@ export const TECH_STACK_CATEGORIES = [
   },
   {
     category: "TOOLS & CORE",
-    items: ["Git", "GitHub", "Postman", "VS Code", "IntelliJ IDEA", "Vite", "DSA (300+ LeetCode)", "OOP", "DBMS", "OS", "Computer Networks"],
+    items: ["Git", "GitHub", "Postman", "VS Code", "IntelliJ IDEA", "Vite", "OOP", "DBMS", "OS", "Computer Networks"],
   },
 ];
 
 export const FLOWING_TECHS = [
   ["React.js", "Node.js", "Express.js", "Python", "FastAPI", "YOLOv8"],
   ["MongoDB", "MySQL", "Socket.IO", "JWT Auth", "Tailwind CSS", "Java"],
-  ["AWS Cloud", "Git & GitHub", "REST APIs", "DSA (300+)", "SQL", "Vite"],
+  ["AWS Cloud", "Git & GitHub", "REST APIs", "SQL", "Vite"],
 ];
 
 export const EDUCATION_DATA: EducationItem[] = [

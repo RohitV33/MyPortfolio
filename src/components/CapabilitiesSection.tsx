@@ -63,51 +63,51 @@ export default function CapabilitiesSection() {
 
       <div className="max-w-7xl mx-auto w-full relative z-10">
         {/* Header: From Idea to Interface */}
-        <div className="max-w-3xl mb-20 md:mb-32">
+        <div className="max-w-3xl mb-14 md:mb-20">
           <div className="flex items-center gap-3 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber" />
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
               CHAPTER 03 // WHAT I DO
             </p>
           </div>
-          <h2 className="font-display text-4xl md:text-7xl font-extrabold tracking-tight text-off-white uppercase leading-[0.9]">
+          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95]">
             FROM IDEA <br />
             <span className="text-amber">TO INTERFACE.</span>
           </h2>
-          <p className="font-body text-base md:text-lg font-light text-foreground/60 mt-4 leading-relaxed max-w-lg">
+          <p className="font-body text-sm md:text-base font-light text-foreground/70 mt-4 leading-relaxed max-w-lg">
             Engineering capabilities covering the full lifecycle of modern digital products, from low-latency databases to fluid user interfaces.
           </p>
         </div>
 
         {/* Capabilities Stream */}
-        <div className="flex flex-col gap-12 md:gap-16">
+        <div className="flex flex-col gap-8 md:gap-12">
           {CAPABILITIES.map((cap, idx) => (
             <div
               key={cap.number}
               ref={(el) => {
                 cardRefs.current[idx] = el;
               }}
-              className="p-8 md:p-14 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md transition-colors duration-500 hover:border-amber/40 shadow-xl will-change-transform"
+              className="p-6 md:p-10 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md transition-all duration-500 hover:border-amber/40 shadow-xl will-change-transform"
             >
-              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8 mb-8">
+              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6">
                 <div>
-                  <span className="cap-num font-mono text-xs md:text-sm text-amber font-bold tracking-[0.3em] block mb-2">
-                    {cap.number} — CAPABILITY
+                  <span className="cap-num font-mono text-xs text-amber font-bold tracking-[0.25em] block mb-2">
+                    {cap.number} // CAPABILITY
                   </span>
-                  <h3 className="cap-title font-display text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold tracking-tight text-off-white uppercase leading-none">
+                  <h3 className="cap-title font-display text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-off-white uppercase leading-tight">
                     {cap.title}
                   </h3>
                 </div>
-                <p className="cap-tag font-body text-lg md:text-2xl font-light text-off-white/85 max-w-xl leading-relaxed">
+                <p className="cap-tag font-body text-base md:text-xl font-light text-off-white/85 max-w-xl leading-relaxed">
                   {cap.tagline}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-5 border-t border-white/10 pt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 border-t border-white/10 pt-6">
                 {cap.details.map((detail, dIdx) => (
                   <div
                     key={dIdx}
-                    className="cap-detail flex items-center gap-3 text-foreground/70 font-mono text-xs md:text-sm tracking-wide"
+                    className="cap-detail flex items-center gap-3 text-foreground/70 font-mono text-xs md:text-sm tracking-wide p-2 rounded-lg bg-white/[0.015] border border-white/5 hover:border-amber/20 transition-colors"
                   >
                     <ArrowUpRight className="w-4 h-4 text-amber shrink-0" />
                     <span>{detail}</span>

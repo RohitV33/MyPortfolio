@@ -19,12 +19,12 @@ export default function AboutSection() {
         </div>
 
         {/* Large Editorial Statement */}
-        <div className="mb-16 md:mb-24">
-          <h2 className="font-display text-4xl md:text-8xl font-extrabold tracking-tight text-off-white uppercase leading-[0.88] mb-8">
+        <div className="mb-12 md:mb-16">
+          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95] mb-6">
             BEHIND THE <br />
             <span className="text-amber">CODE.</span>
           </h2>
-          <p className="font-body text-xl md:text-3xl font-light text-foreground/80 max-w-3xl leading-relaxed tracking-tight">
+          <p className="font-body text-base md:text-xl font-light text-foreground/80 max-w-2xl leading-relaxed tracking-tight">
             &ldquo;I&apos;m Rohit Verma — a Computer Science &amp; Engineering student who enjoys turning ideas into useful digital experiences.&rdquo;
           </p>
         </div>
