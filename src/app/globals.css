@@ -250,6 +250,10 @@ footer,
   font-family: var(--font-anton), 'Impact', 'Bebas Neue', sans-serif;
 }
 
+.font-akira {
+  font-family: 'Akira Expanded', var(--font-syne), sans-serif;
+}
+
 /* ── Reduced Motion Accessibility ─────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,

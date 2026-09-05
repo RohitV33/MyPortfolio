@@ -77,19 +77,22 @@ export interface MilestoneItem {
 }
 
 export interface HeroData {
+  firstName: string;
+  lastName: string;
   name: string;
   role: string;
   subtitleParts: string[];
-  keyword: string;
+  keyword?: string;
   location: string;
   taglineParts: string[];
 }
 
 export const HERO_DATA: HeroData = {
+  firstName: "ROHIT",
+  lastName: "VERMA",
   name: "ROHIT VERMA",
   role: "Web Developer, Competitive Programmer and Problem Solver",
   subtitleParts: ["Web Developer", "Competitive Programmer", "Problem Solver"],
-  keyword: "code",
   location: "Based in India",
   taglineParts: ["BUILD", "LEARN", "EXPLORE"],
 };

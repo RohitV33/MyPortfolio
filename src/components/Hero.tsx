@@ -11,6 +11,9 @@ import { HERO_DATA } from "@/data/portfolioData";
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
   const textStackRef = useRef<HTMLDivElement>(null);
+  const rohitRef = useRef<HTMLDivElement>(null);
+  const vermaRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
   const photoContainerRef = useRef<HTMLDivElement>(null);
   const bottomUIRef = useRef<HTMLDivElement>(null);
   const { lenis } = useLenis();
@@ -31,28 +34,58 @@ export default function Hero() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // 2. Mouse Scroll Scrub Animations (GSAP ScrollTrigger)
+  // 2. Mouse Scroll Split & Scrub Animations (GSAP ScrollTrigger)
+  // "rohit text goes right and verma text goes left while mouse scrolling with smootheness"
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // Smoothly float up and fade out the text stack on mouse scroll
-      if (textStackRef.current) {
-        gsap.to(textStackRef.current, {
-          y: -120,
+      // 1. ROHIT text glides to the RIGHT smoothly on mouse scroll
+      if (rohitRef.current) {
+        gsap.to(rohitRef.current, {
+          x: 220,
           opacity: 0,
-          scale: 0.94,
           ease: "none",
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
             end: "bottom 35%",
-            scrub: 0.8,
+            scrub: 1.2,
           },
         });
       }
 
-      // Cinematic depth parallax on the photograph on mouse scroll
+      // 2. VERMA text glides to the LEFT smoothly on mouse scroll
+      if (vermaRef.current) {
+        gsap.to(vermaRef.current, {
+          x: -220,
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom 35%",
+            scrub: 1.2,
+          },
+        });
+      }
+
+      // 3. Subtitle floats up and dissolves
+      if (subtitleRef.current) {
+        gsap.to(subtitleRef.current, {
+          y: -40,
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom 45%",
+            scrub: 1,
+          },
+        });
+      }
+
+      // 4. Cinematic depth parallax on the photograph on mouse scroll
       if (photoContainerRef.current) {
         gsap.to(photoContainerRef.current, {
           y: 70,
@@ -67,7 +100,7 @@ export default function Hero() {
         });
       }
 
-      // Fade out bottom controls on initial scroll
+      // 5. Fade out bottom controls on initial scroll
       if (bottomUIRef.current) {
         gsap.to(bottomUIRef.current, {
           opacity: 0,
@@ -169,23 +202,41 @@ export default function Hero() {
         }}
       />
 
-      {/* ── Central Typographic Stack Layer (Matches Website Fonts & Amber Colors) ── */}
-      {/* Positioned over chest/torso, with mouse parallax and GSAP mouse-scroll animation */}
+      {/* ── Central Typographic Stack Layer (Matches User Reference Image) ── */}
+      {/* ROHIT (white) on top line, VERMA (amber) on bottom line in Akira Expanded */}
+      {/* While mouse scrolling: ROHIT moves right, VERMA moves left */}
       <div
         ref={textStackRef}
-        className="absolute inset-x-0 bottom-[18%] sm:bottom-[20%] md:bottom-[22%] z-20 flex flex-col items-center text-center pointer-events-none px-4 will-change-transform"
+        className="absolute inset-x-0 bottom-[10%] sm:bottom-[12%] md:bottom-[13%] z-20 flex flex-col items-center text-center pointer-events-none px-4 will-change-transform overflow-visible"
         style={{
           transform: `translate(${mousePos.x * 3.5}px, ${mousePos.y * 2}px)`,
           transition: "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
         }}
       >
-        {/* 1. Identity Layer: ROHIT VERMA (Matches Chapter 02 font-display Syne/Akira, off-white, wide tracking) */}
-        <h1 className="font-display font-extrabold text-lg sm:text-xl md:text-2xl lg:text-[28px] tracking-[0.26em] text-off-white uppercase drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] mb-2.5 pointer-events-auto select-none">
-          {HERO_DATA.name}
-        </h1>
+        {/* Stacked Akira Expanded Heading (ROHIT white / VERMA amber) */}
+        <div className="flex flex-col items-center leading-[0.84] select-none pointer-events-auto">
+          {/* 1. ROHIT (Glides to the RIGHT on mouse scroll) */}
+          <div
+            ref={rohitRef}
+            className="font-akira text-[clamp(42px,8.2vw,108px)] font-black tracking-[-0.02em] text-off-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.98)] will-change-transform uppercase"
+          >
+            {HERO_DATA.firstName}
+          </div>
 
-        {/* 2. Supporting Layer: Web Developer • Competitive Programmer • Problem Solver (Matches font-mono & amber accents) */}
-        <p className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto font-normal flex items-center justify-center gap-2 flex-wrap select-none">
+          {/* 2. VERMA (Glides to the LEFT on mouse scroll) */}
+          <div
+            ref={vermaRef}
+            className="font-akira text-[clamp(42px,8.2vw,108px)] font-black tracking-[-0.02em] text-amber drop-shadow-[0_8px_35px_rgba(245,166,35,0.45)] will-change-transform uppercase mt-[-0.08em]"
+          >
+            {HERO_DATA.lastName}
+          </div>
+        </div>
+
+        {/* Supporting Layer: Web Developer • Competitive Programmer • Problem Solver */}
+        <p
+          ref={subtitleRef}
+          className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto font-normal flex items-center justify-center gap-2 flex-wrap select-none mt-4 sm:mt-5 will-change-transform"
+        >
           {HERO_DATA.subtitleParts.map((part, idx) => (
             <span key={part} className="inline-flex items-center gap-2">
               <span>{part}</span>
