@@ -1,35 +1,23 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLenis } from "@/components/SmoothScrollProvider";
 import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Web development", href: "/#chapter-work" },
-  { label: "photography", href: "/#chapter-capabilities" },
-  { label: "Videography", href: "/#chapter-stack" },
-  { label: "The person behind it", href: "/#chapter-about" },
+  { label: "Home", href: "/#chapter-intro" },
+  { label: "Projects", href: "/#chapter-work" },
+  { label: "Skills", href: "/#chapter-stack" },
+  { label: "Experience", href: "/#chapter-capabilities" },
+  { label: "About", href: "/#chapter-about" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { lenis } = useLenis();
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const lastScrollY = useRef(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrolled(currentScrollY > 40);
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("/#") && pathname === "/") {
@@ -51,28 +39,24 @@ export default function Navbar() {
     <>
       <header
         role="banner"
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-out ${
-          scrolled
-            ? "py-3 sm:py-4 bg-[#111215]/85 backdrop-blur-xl border-b border-white/10 shadow-2xl"
-            : "py-6 sm:py-8 bg-transparent border-b border-transparent"
-        }`}
+        className="fixed top-0 left-0 w-full z-50 pt-7 px-8 sm:px-10 select-none pointer-events-none"
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex items-center justify-between">
-          {/* Top-Left: Circular "RV" Monogram Button */}
+        <div className="w-full max-w-[1720px] mx-auto flex items-center justify-between pointer-events-auto">
+          {/* Top-Left: Circular outlined logo "RV" */}
           <Link
             href="/#chapter-intro"
             onClick={(e) => handleNavClick(e, "/#chapter-intro")}
             data-cursor-interactive
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-white/[0.02] flex items-center justify-center font-bold text-xs tracking-wider text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none font-anton"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-black/20 backdrop-blur-md flex items-center justify-center font-mono font-bold text-xs tracking-wider text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
             aria-label="Rohit Verma Home"
           >
             RV
           </Link>
 
-          {/* Center-Top: Translucent Rounded Navigation Pill (Matching Reference Exactly) */}
+          {/* Top-Center: Horizontally centered glass/translucent pill navigation */}
           <nav
             aria-label="Main Navigation"
-            className="hidden md:flex items-center gap-6 lg:gap-8 px-7 py-2.5 rounded-full border border-white/15 bg-black/40 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] select-none"
+            className="hidden md:flex items-center gap-7 lg:gap-8 h-12 px-7 rounded-full border border-white/15 bg-black/35 backdrop-blur-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] select-none"
           >
             {NAV_ITEMS.map((item, idx) => (
               <Link
@@ -80,10 +64,10 @@ export default function Navbar() {
                 href={item.href}
                 onClick={(e) => handleNavClick(e, item.href)}
                 data-cursor-interactive
-                className={`text-xs tracking-wide transition-all duration-200 ${
+                className={`text-[13px] tracking-wide transition-all duration-200 ${
                   idx === 0
-                    ? "text-white font-medium"
-                    : "text-white/60 hover:text-white font-normal"
+                    ? "text-white font-semibold"
+                    : "text-white/65 hover:text-white font-normal"
                 }`}
               >
                 {item.label}
@@ -91,15 +75,15 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Top-Right: Outlined Rounded Contact Button (all lowercase 'contact') */}
+          {/* Top-Right: Outlined rounded button "Contact" */}
           <div className="hidden md:flex items-center">
             <Link
               href="/#chapter-contact"
               onClick={(e) => handleNavClick(e, "/#chapter-contact")}
               data-cursor-interactive
-              className="px-6 py-2.5 rounded-full border border-white/25 bg-white/[0.02] text-xs font-medium text-white tracking-wide hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none lowercase"
+              className="h-12 px-7 rounded-full border border-white/25 bg-black/20 backdrop-blur-md flex items-center justify-center text-[13px] font-medium text-white tracking-wide hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
             >
-              contact
+              Contact
             </Link>
           </div>
 
@@ -108,16 +92,16 @@ export default function Navbar() {
             type="button"
             aria-label="Toggle navigation menu"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden w-10 h-10 rounded-full border border-white/20 bg-white/[0.02] flex items-center justify-center text-white hover:border-white transition-colors"
+            className="md:hidden w-10 h-10 rounded-full border border-white/25 bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:border-white transition-colors"
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Drawer */}
       <div
-        className={`fixed inset-0 z-40 bg-[#111215]/98 backdrop-blur-3xl md:hidden flex flex-col justify-between px-8 py-24 transition-all duration-500 ease-out ${
+        className={`fixed inset-0 z-40 bg-[#0d0e11]/98 backdrop-blur-3xl md:hidden flex flex-col justify-between px-8 py-24 transition-all duration-500 ease-out ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -149,14 +133,14 @@ export default function Navbar() {
               handleNavClick(e, "/#chapter-contact");
               setMenuOpen(false);
             }}
-            className="mt-6 flex items-center justify-center py-3.5 px-6 rounded-full border border-white/30 text-white font-mono text-xs tracking-widest uppercase hover:bg-white/10 transition-all lowercase"
+            className="mt-6 flex items-center justify-center py-3.5 px-6 rounded-full border border-white/30 text-white font-mono text-xs tracking-widest uppercase hover:bg-white/10 transition-all"
           >
-            contact
+            Contact
           </Link>
         </div>
 
         <div className="border-t border-white/10 pt-6 flex justify-between items-center text-white/40 font-mono text-[10px] tracking-wider">
-          <span>🇮🇳 Based in India</span>
+          <span>Based in India</span>
           <span>© 2026</span>
         </div>
       </div>

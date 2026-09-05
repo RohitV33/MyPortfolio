@@ -2,54 +2,27 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { useLenis } from "@/components/SmoothScrollProvider";
-
-const DISCIPLINES = [
-  {
-    word: "code.",
-    title: "ROHIT VERMA",
-    subtitle: "Web developer, competitive programmer and problem solver from India",
-  },
-  {
-    word: "build.",
-    title: "ROHIT VERMA",
-    subtitle: "Full-stack architect, AI systems and distributed web platform builder",
-  },
-  {
-    word: "solve.",
-    title: "ROHIT VERMA",
-    subtitle: "Competitive programmer, low-latency algorithms and data structures",
-  },
-];
 
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
   const { lenis } = useLenis();
-  const [activeSlide, setActiveSlide] = useState(0);
 
-  // Mouse parallax state for organic interactive depth
+  // Mouse parallax coordinates (smooth normalized -1 to 1)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
-      const y = (e.clientY / innerHeight - 0.5) * 2; // -1 to 1
+      const x = (e.clientX / innerWidth - 0.5) * 2;
+      const y = (e.clientY / innerHeight - 0.5) * 2;
       setMousePos({ x, y });
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
-
-  const handlePrevSlide = () => {
-    setActiveSlide((prev) => (prev > 0 ? prev - 1 : DISCIPLINES.length - 1));
-  };
-
-  const handleNextSlide = () => {
-    setActiveSlide((prev) => (prev < DISCIPLINES.length - 1 ? prev + 1 : 0));
-  };
 
   const scrollToCapabilities = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,227 +36,189 @@ export default function Hero() {
     }
   };
 
-  const currentDiscipline = DISCIPLINES[activeSlide];
-
   return (
     <section
       id="chapter-intro"
       ref={containerRef}
-      className="relative w-full h-screen min-h-[700px] flex flex-col justify-between overflow-hidden bg-[#131417] select-none pt-24 pb-8 sm:pb-12 px-6 sm:px-10 md:px-16"
+      className="relative w-full h-screen min-h-[700px] overflow-hidden bg-[#0e0f12] select-none"
     >
-      {/* ── Studio Vignette & Circular Halo Spotlight (Exact Reference Lighting) ── */}
+      {/* ── Studio Vignette & Radial Lighting Behind Portrait ── */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none z-0"
         style={{
           background:
-            "radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.09) 0%, rgba(180, 160, 140, 0.035) 36%, transparent 70%), radial-gradient(circle at 50% 50%, transparent 45%, rgba(13, 14, 17, 0.96) 100%)",
+            "radial-gradient(ellipse at 53% 38%, rgba(255, 255, 255, 0.08) 0%, rgba(190, 170, 150, 0.025) 34%, transparent 68%), radial-gradient(circle at 50% 50%, transparent 45%, rgba(10, 11, 14, 0.98) 100%)",
         }}
       />
 
       {/* Subtle Atmospheric Studio Grain */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] z-0"
+        className="absolute inset-0 pointer-events-none opacity-[0.028] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] z-0"
       />
 
-      {/* ── Centerpiece: Living Double-Exposure Portrait (Exact Cutout & Profile) ── */}
-      <div className="relative z-10 w-full flex-1 flex flex-col items-center justify-center my-auto pointer-events-none">
-        <div className="relative w-full max-w-[960px] aspect-[16/9.5] sm:aspect-[16/9] flex items-center justify-center [mask-image:radial-gradient(ellipse_75%_75%_at_50%_48%,black_60%,transparent_96%)]">
-          {/* 1. Ghosted Profile Duplicate (Offset to left with independent organic floating drift) */}
+      {/* ── Centerpiece: Living Cinematic Portrait Layer ── */}
+      {/* Horizontally centered at 52-55% viewport, starting ~8-10% from top */}
+      <div className="absolute inset-x-0 top-[6%] sm:top-[8%] bottom-0 flex items-center justify-center pointer-events-none z-10 overflow-visible">
+        <div className="relative w-full max-w-[780px] md:max-w-[880px] lg:max-w-[960px] h-[85vh] sm:h-[88vh] flex items-center justify-center [mask-image:linear-gradient(to_bottom,black_65%,transparent_98%)]">
+          {/* 1. Ghost Portrait: Left offset ~60px, grayscale, opacity ~20%, slight blur, slower independent drift */}
           <div
-            className="absolute inset-0 flex items-center justify-center transition-transform duration-700 ease-out will-change-transform opacity-45 mix-blend-screen"
+            className="absolute inset-0 flex items-center justify-center will-change-transform opacity-20 filter grayscale contrast-125 blur-[1.5px]"
             style={{
-              transform: `translate(${mousePos.x * -10 - 16}px, ${mousePos.y * -6}px) scale(1.02)`,
-              animation: "ghostDrift 11s ease-in-out infinite alternate",
+              transform: `translate(${mousePos.x * -10 - 55}px, ${mousePos.y * -6 - 8}px)`,
+              animation: "ghostLivingDrift 10s ease-in-out infinite alternate",
             }}
           >
-            <div className="relative w-full h-full filter grayscale contrast-125 brightness-90">
+            <div className="relative w-full h-full">
               <Image
-                src="/images/rohit_hero_clean.jpg"
-                alt="Rohit Verma Double-Exposure Profile"
+                src="/images/rohit_portrait_seamless.png"
+                alt="Rohit Verma Ghost Profile"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 960px"
-                className="object-contain object-center scale-[1.03]"
+                className="object-contain object-bottom scale-[1.03]"
               />
             </div>
           </div>
 
-          {/* 2. Main High-Contrast Cinematic Front Portrait */}
+          {/* 2. Main Portrait: Monochrome with strong cinematic contrast, slow breathing & micro-tilt */}
           <div
-            className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-out will-change-transform"
+            className="absolute inset-0 flex items-center justify-center will-change-transform filter grayscale contrast-[1.2] brightness-[0.97]"
             style={{
-              transform: `translate(${mousePos.x * 5}px, ${mousePos.y * 4}px)`,
-              animation: "livingBreathingPortrait 8s ease-in-out infinite alternate",
+              transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 5}px) rotate(${mousePos.x * 0.8}deg)`,
+              animation: "mainPortraitBreathing 7.5s ease-in-out infinite alternate",
             }}
           >
-            <div className="relative w-full h-full filter grayscale contrast-[1.18] brightness-[0.96]">
+            <div className="relative w-full h-full">
               <Image
-                src="/images/rohit_hero_clean.jpg"
-                alt="Rohit Verma Cinematic Portrait"
+                src="/images/rohit_portrait_seamless.png"
+                alt="Rohit Verma Portrait"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 960px"
-                className="object-contain object-center"
+                className="object-contain object-bottom"
               />
 
-              {/* 3. Subtle Studio Lighting Sweep across Facial Features */}
+              {/* 3. Subtle Lighting Shift across facial planes */}
               <div
                 aria-hidden="true"
                 className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-25"
                 style={{
                   background:
-                    "radial-gradient(ellipse at 49% 42%, rgba(255, 235, 200, 0.45) 0%, transparent 58%)",
-                  animation: "studioLightSweep 9.5s ease-in-out infinite alternate",
+                    "radial-gradient(ellipse at 51% 38%, rgba(255, 240, 210, 0.45) 0%, transparent 55%)",
+                  animation: "facialLightShift 9s ease-in-out infinite alternate",
                 }}
               />
             </div>
           </div>
         </div>
+      </div>
 
-        {/* ── Overlay Text Hierarchy: Matching Christoph Nagel Reference Composition ── */}
-        <div className="absolute inset-x-0 bottom-4 sm:bottom-6 md:bottom-8 z-20 flex flex-col items-center text-center pointer-events-none">
-          {/* Top Title: ROHIT VERMA in Anton font */}
-          <h1
-            className="font-anton text-xl sm:text-2xl md:text-3xl tracking-[0.16em] text-white uppercase drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] mb-1 transition-transform duration-300 ease-out pointer-events-auto"
-            style={{
-              transform: `translate(${mousePos.x * 2.5}px, ${mousePos.y * 1.5}px)`,
-            }}
-          >
-            {currentDiscipline.title}
-          </h1>
-
-          {/* Subtitle in Anton font */}
-          <p
-            className="font-anton text-xs sm:text-sm md:text-base tracking-wide text-white/85 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] max-w-2xl px-4 transition-transform duration-300 ease-out pointer-events-auto mb-2 sm:mb-2.5 font-normal"
-            style={{
-              transform: `translate(${mousePos.x * 2}px, ${mousePos.y * 1.2}px)`,
-            }}
-          >
-            {currentDiscipline.subtitle}
-          </p>
-
-          {/* ── Massive Condensed Typography: "code." in Anton ── */}
-          <div
-            className="relative pointer-events-none select-none transition-transform duration-300 ease-out"
-            style={{
-              transform: `translate(${mousePos.x * 1.5}px, ${mousePos.y * 0.8}px)`,
-            }}
-          >
-            <span className="font-anton text-[clamp(6.5rem,24vw,19.5rem)] font-normal tracking-[-0.03em] leading-[0.76] text-white drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)] block">
-              {currentDiscipline.word}
-            </span>
-          </div>
-        </div>
-
-        {/* ── Floating "( SCROLL )" Button (Matches Right-Side Floating Pill) ── */}
-        <button
-          type="button"
-          onClick={scrollToCapabilities}
-          data-cursor-interactive
-          className="hidden md:flex absolute right-[5%] lg:right-[9%] xl:right-[12%] top-[54%] -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-white/20 bg-white/[0.04] backdrop-blur-md items-center justify-center text-white/80 hover:text-white hover:border-white/50 hover:scale-110 active:scale-95 transition-all shadow-2xl z-30 group pointer-events-auto"
-          aria-label="Scroll down"
-          title="Scroll down"
+      {/* ── Central Typography Stack (All Centered, Exact Hierarchy) ── */}
+      {/* Stack sits in the lower portion overlapping chest without colliding with face */}
+      <div className="absolute inset-x-0 bottom-[6%] sm:bottom-[7%] md:bottom-[8%] z-20 flex flex-col items-center text-center pointer-events-none px-4">
+        {/* 1. Name: ROHIT VERMA (Uppercase, Anton condensed, letter spacing ~0.12em, white, centered) */}
+        <h1
+          className="font-anton text-lg sm:text-xl md:text-2xl tracking-[0.14em] text-white uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] mb-1 sm:mb-1.5 transition-transform duration-300 ease-out pointer-events-auto"
+          style={{
+            transform: `translate(${mousePos.x * 3}px, ${mousePos.y * 2}px)`,
+          }}
         >
-          <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.25em] group-hover:tracking-[0.3em] transition-all">
-            SCROLL
-          </span>
-        </button>
-      </div>
+          ROHIT VERMA
+        </h1>
 
-      {/* ── Bottom Bar: Flag & Imprint (Left) / Carousel Controls (Right) ── */}
-      <div className="relative z-30 w-full max-w-7xl mx-auto flex items-center justify-between mt-auto select-none pt-2">
-        {/* Bottom-Left: Flag + Imprint / Data protection */}
-        <div className="flex items-center gap-2 sm:gap-2.5 text-white/60 font-mono text-[11px] sm:text-xs tracking-wider">
-          <span className="text-base sm:text-lg">🇮🇳</span>
-          <span className="hover:text-white transition-colors cursor-pointer underline-offset-4 hover:underline">
-            Imprint
-          </span>
-          <span className="text-white/30">·</span>
-          <span className="hover:text-white transition-colors cursor-pointer underline-offset-4 hover:underline">
-            Data protection
+        {/* 2. Subtitle: Web developer, competitive programmer and problem solver from India */}
+        <p
+          className="font-mono text-xs sm:text-[13px] md:text-sm text-white/75 tracking-[0.03em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] max-w-xl transition-transform duration-300 ease-out pointer-events-auto mb-2 sm:mb-3 font-normal"
+          style={{
+            transform: `translate(${mousePos.x * 2.5}px, ${mousePos.y * 1.5}px)`,
+          }}
+        >
+          Web developer, competitive programmer and problem solver from India
+        </p>
+
+        {/* 3. Word: "code." (Target size ~170–220px desktop, bold condensed Anton font, period visible) */}
+        <div
+          className="relative pointer-events-none select-none transition-transform duration-300 ease-out"
+          style={{
+            transform: `translate(${mousePos.x * 1.8}px, ${mousePos.y * 1.2}px)`,
+          }}
+        >
+          <span className="font-anton text-[clamp(90px,13vw,210px)] font-black tracking-[-0.04em] leading-[0.75] text-white drop-shadow-[0_20px_50px_rgba(0,0,0,0.98)] block">
+            code.
           </span>
         </div>
+      </div>
 
-        {/* Bottom-Right: Carousel Controls (< ──────── >) */}
-        <div className="flex items-center gap-3 sm:gap-4 select-none">
-          <button
-            type="button"
-            onClick={handlePrevSlide}
-            data-cursor-interactive
-            className="w-10 h-10 rounded-full border border-white/20 bg-white/[0.02] flex items-center justify-center text-white/60 hover:text-white hover:border-white hover:scale-105 active:scale-95 transition-all"
-            aria-label="Previous discipline"
-            title="Previous discipline"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
+      {/* ── Bottom UI: Anchored to Bottom Edge ── */}
+      <div className="absolute inset-x-0 bottom-6 sm:bottom-7 md:bottom-8 z-30 px-8 sm:px-10 max-w-[1720px] mx-auto flex items-center justify-between select-none pointer-events-none">
+        {/* Bottom-Left: Small horizontal line + Based in India */}
+        <div className="flex items-center gap-3 text-white/50 font-mono text-xs tracking-wider pointer-events-auto">
+          <span className="w-5 sm:w-6 h-px bg-white/35" />
+          <span>Based in India</span>
+        </div>
 
-          {/* Horizontal Track Line with Indicator */}
-          <div className="w-16 sm:w-24 h-0.5 bg-white/20 rounded-full overflow-hidden relative">
-            <div
-              className="h-full bg-white transition-all duration-500 ease-out"
-              style={{
-                width: "33.33%",
-                transform: `translateX(${activeSlide * 100}%)`,
-              }}
-            />
-          </div>
+        {/* Bottom-Right: BUILD / LEARN / EXPLORE + Circular Outlined Arrow Button */}
+        <div className="flex items-center gap-3 sm:gap-4 pointer-events-auto">
+          <span className="hidden sm:inline-block text-white/50 font-mono text-[11px] tracking-[0.25em] uppercase">
+            BUILD &nbsp;/&nbsp; LEARN &nbsp;/&nbsp; EXPLORE
+          </span>
 
           <button
             type="button"
-            onClick={handleNextSlide}
+            onClick={scrollToCapabilities}
             data-cursor-interactive
-            className="w-10 h-10 rounded-full border border-white/20 bg-white/[0.02] flex items-center justify-center text-white/60 hover:text-white hover:border-white hover:scale-105 active:scale-95 transition-all"
-            aria-label="Next discipline"
-            title="Next discipline"
+            className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md"
+            aria-label="Scroll to explore"
+            title="Scroll to explore"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ArrowDown className="w-4 h-4 text-white transition-transform duration-300 group-hover:translate-y-0.5" />
           </button>
         </div>
       </div>
 
-      {/* ── Keyframe Animations for Living Organic Motion ── */}
+      {/* ── Organic Living Portrait Keyframes ── */}
       <style jsx global>{`
-        @keyframes livingBreathingPortrait {
+        @keyframes mainPortraitBreathing {
           0% {
             transform: scale(1) translateY(0px);
           }
           50% {
-            transform: scale(1.007) translateY(-3px);
+            transform: scale(1.006) translateY(-3px);
           }
           100% {
-            transform: scale(1.014) translateY(-1px);
+            transform: scale(1.012) translateY(-1px);
           }
         }
 
-        @keyframes ghostDrift {
+        @keyframes ghostLivingDrift {
           0% {
-            transform: translate(-14px, 0px) scale(1.01);
-            opacity: 0.4;
+            transform: translate(-55px, -8px) scale(1.01);
+            opacity: 0.18;
           }
           50% {
-            transform: translate(-22px, -3.5px) scale(1.028);
-            opacity: 0.55;
+            transform: translate(-65px, -12px) scale(1.025);
+            opacity: 0.25;
           }
           100% {
-            transform: translate(-16px, 1.5px) scale(1.018);
-            opacity: 0.44;
+            transform: translate(-58px, -6px) scale(1.015);
+            opacity: 0.2;
           }
         }
 
-        @keyframes studioLightSweep {
+        @keyframes facialLightShift {
           0% {
-            transform: translate(-6%, -4%) scale(1);
-            opacity: 0.16;
+            transform: translate(-4%, -3%) scale(1);
+            opacity: 0.18;
           }
           50% {
-            transform: translate(5%, 3%) scale(1.05);
+            transform: translate(4%, 3%) scale(1.04);
             opacity: 0.28;
           }
           100% {
-            transform: translate(-3%, 2%) scale(1.02);
-            opacity: 0.18;
+            transform: translate(-2%, 1%) scale(1.01);
+            opacity: 0.2;
           }
         }
       `}</style>
