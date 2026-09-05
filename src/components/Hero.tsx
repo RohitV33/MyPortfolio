@@ -40,127 +40,116 @@ export default function Hero() {
     <section
       id="chapter-intro"
       ref={containerRef}
-      className="relative w-full h-screen min-h-[700px] overflow-hidden bg-[#0e0f12] select-none"
+      className="relative w-full h-screen min-h-[640px] overflow-hidden bg-[#0d0d0d] select-none"
     >
-      {/* ── Studio Vignette & Radial Lighting Behind Portrait ── */}
+      {/* ── 1. The Photographic Hero Environment (Full-Bleed Canvas) ── */}
+      {/* Breathing 1-3px, subtle micro-tilt, 5-8px mouse parallax */}
       <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none z-0"
+        className="absolute inset-0 w-full h-full pointer-events-none z-0 will-change-transform"
         style={{
-          background:
-            "radial-gradient(ellipse at 53% 38%, rgba(255, 255, 255, 0.08) 0%, rgba(190, 170, 150, 0.025) 34%, transparent 68%), radial-gradient(circle at 50% 50%, transparent 45%, rgba(10, 11, 14, 0.98) 100%)",
+          transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 4}px) rotate(${mousePos.x * 0.25}deg)`,
+          transition: "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)",
         }}
-      />
+      >
+        <div
+          className="relative w-full h-full scale-[1.03]"
+          style={{
+            animation: "photographicBreathing 8s ease-in-out infinite alternate",
+          }}
+        >
+          <Image
+            src="/images/rohit_hero_clean.jpg"
+            alt="Rohit Verma — Cinematic Portrait Environment"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[51%_35%] select-none"
+          />
 
-      {/* Subtle Atmospheric Studio Grain */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-[0.028] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] z-0"
-      />
-
-      {/* ── Centerpiece: Living Cinematic Portrait Layer ── */}
-      {/* Horizontally centered at 52-55% viewport, starting ~8-10% from top */}
-      <div className="absolute inset-x-0 top-[6%] sm:top-[8%] bottom-0 flex items-center justify-center pointer-events-none z-10 overflow-visible">
-        <div className="relative w-full max-w-[780px] md:max-w-[880px] lg:max-w-[960px] h-[85vh] sm:h-[88vh] flex items-center justify-center [mask-image:linear-gradient(to_bottom,black_65%,transparent_98%)]">
-          {/* 1. Ghost Portrait: Left offset ~60px, grayscale, opacity ~20%, slight blur, slower independent drift */}
+          {/* ── 2. Atmospheric Double-Exposure Drift Layer ── */}
+          {/* Subtle ghost duplicate drifts independently with slower parallax */}
           <div
-            className="absolute inset-0 flex items-center justify-center will-change-transform opacity-20 filter grayscale contrast-125 blur-[1.5px]"
+            className="absolute inset-0 w-full h-full pointer-events-none mix-blend-screen opacity-25"
             style={{
-              transform: `translate(${mousePos.x * -10 - 55}px, ${mousePos.y * -6 - 8}px)`,
-              animation: "ghostLivingDrift 10s ease-in-out infinite alternate",
+              transform: `translate(${mousePos.x * -4 - 3}px, ${mousePos.y * -2 - 2}px)`,
+              animation: "ghostAtmosphericDrift 9.5s ease-in-out infinite alternate",
             }}
           >
-            <div className="relative w-full h-full">
-              <Image
-                src="/images/rohit_portrait_seamless.png"
-                alt="Rohit Verma Ghost Profile"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 960px"
-                className="object-contain object-bottom scale-[1.03]"
-              />
-            </div>
+            <Image
+              src="/images/rohit_ghost_overlay.png"
+              alt="Rohit Verma Double Exposure Atmosphere"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-[51%_35%] select-none filter blur-[1px]"
+            />
           </div>
 
-          {/* 2. Main Portrait: Monochrome with strong cinematic contrast, slow breathing & micro-tilt */}
+          {/* ── 3. Subtle Living Facial Lighting Shift ── */}
           <div
-            className="absolute inset-0 flex items-center justify-center will-change-transform filter grayscale contrast-[1.2] brightness-[0.97]"
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-30"
             style={{
-              transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 5}px) rotate(${mousePos.x * 0.8}deg)`,
-              animation: "mainPortraitBreathing 7.5s ease-in-out infinite alternate",
+              background: `radial-gradient(ellipse at ${52 + mousePos.x * 2}% ${35 + mousePos.y * 2}%, rgba(255, 245, 230, 0.4) 0%, transparent 48%)`,
+              animation: "facialLightShift 8.5s ease-in-out infinite alternate",
             }}
-          >
-            <div className="relative w-full h-full">
-              <Image
-                src="/images/rohit_portrait_seamless.png"
-                alt="Rohit Verma Portrait"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 960px"
-                className="object-contain object-bottom"
-              />
-
-              {/* 3. Subtle Lighting Shift across facial planes */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-25"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at 51% 38%, rgba(255, 240, 210, 0.45) 0%, transparent 55%)",
-                  animation: "facialLightShift 9s ease-in-out infinite alternate",
-                }}
-              />
-            </div>
-          </div>
+          />
         </div>
       </div>
 
-      {/* ── Central Typography Stack (All Centered, Exact Hierarchy) ── */}
-      {/* Stack sits in the lower portion overlapping chest without colliding with face */}
-      <div className="absolute inset-x-0 bottom-[6%] sm:bottom-[7%] md:bottom-[8%] z-20 flex flex-col items-center text-center pointer-events-none px-4">
-        {/* 1. Name: ROHIT VERMA (Uppercase, Anton condensed, letter spacing ~0.12em, white, centered) */}
-        <h1
-          className="font-anton text-lg sm:text-xl md:text-2xl tracking-[0.14em] text-white uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] mb-1 sm:mb-1.5 transition-transform duration-300 ease-out pointer-events-auto"
-          style={{
-            transform: `translate(${mousePos.x * 3}px, ${mousePos.y * 2}px)`,
-          }}
-        >
+      {/* ── Seamless Edge Vignette to Guarantee Zero Rectangular Borders ── */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{
+          background:
+            "radial-gradient(ellipse at 51% 40%, transparent 58%, rgba(13, 13, 13, 0.4) 80%, rgba(13, 13, 13, 0.95) 100%), linear-gradient(to bottom, rgba(13, 13, 13, 0.25) 0%, transparent 18%, transparent 85%, rgba(13, 13, 13, 0.8) 100%)",
+        }}
+      />
+
+      {/* Subtle Cinematic Studio Grain */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-[0.022] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] z-10"
+      />
+
+      {/* ── Central Typographic Stack Layer ── */}
+      {/* Positioned over the chest/torso, exactly matching the reference composition */}
+      <div
+        className="absolute inset-x-0 bottom-[6%] sm:bottom-[7%] md:bottom-[7.5%] z-20 flex flex-col items-center text-center pointer-events-none px-4"
+        style={{
+          transform: `translate(${mousePos.x * 3}px, ${mousePos.y * 2}px)`,
+          transition: "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
+        }}
+      >
+        {/* 1. Identity Layer: ROHIT VERMA */}
+        <h1 className="font-anton text-base sm:text-lg md:text-xl lg:text-[22px] tracking-[0.2em] text-white uppercase drop-shadow-[0_3px_12px_rgba(0,0,0,0.95)] mb-1 pointer-events-auto">
           ROHIT VERMA
         </h1>
 
-        {/* 2. Subtitle: Web developer, competitive programmer and problem solver from India */}
-        <p
-          className="font-mono text-xs sm:text-[13px] md:text-sm text-white/75 tracking-[0.03em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] max-w-xl transition-transform duration-300 ease-out pointer-events-auto mb-2 sm:mb-3 font-normal"
-          style={{
-            transform: `translate(${mousePos.x * 2.5}px, ${mousePos.y * 1.5}px)`,
-          }}
-        >
-          Web developer, competitive programmer and problem solver from India
+        {/* 2. Supporting Layer: Web Developer, Competitive Programmer and Problem Solver */}
+        <p className="font-mono text-[11px] sm:text-xs md:text-[13px] lg:text-sm text-[#b0b3ba] tracking-[0.04em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto mb-1.5 sm:mb-2 font-normal">
+          Web Developer, Competitive Programmer and Problem Solver
         </p>
 
-        {/* 3. Word: "code." (Target size ~170–220px desktop, bold condensed Anton font, period visible) */}
-        <div
-          className="relative pointer-events-none select-none transition-transform duration-300 ease-out"
-          style={{
-            transform: `translate(${mousePos.x * 1.8}px, ${mousePos.y * 1.2}px)`,
-          }}
-        >
-          <span className="font-anton text-[clamp(90px,13vw,210px)] font-black tracking-[-0.04em] leading-[0.75] text-white drop-shadow-[0_20px_50px_rgba(0,0,0,0.98)] block">
+        {/* 3. Editorial Layer: code. */}
+        <div className="relative pointer-events-none select-none">
+          <span className="font-anton text-[clamp(100px,14.5vw,215px)] font-black tracking-[-0.04em] leading-[0.76] text-white drop-shadow-[0_25px_50px_rgba(0,0,0,0.98)] block">
             code.
           </span>
         </div>
       </div>
 
-      {/* ── Bottom UI: Anchored to Bottom Edge ── */}
+      {/* ── Bottom UI: Anchored to Viewport Bottom Edge ── */}
       <div className="absolute inset-x-0 bottom-6 sm:bottom-7 md:bottom-8 z-30 px-8 sm:px-10 max-w-[1720px] mx-auto flex items-center justify-between select-none pointer-events-none">
-        {/* Bottom-Left: Small horizontal line + Based in India */}
+        {/* Bottom-Left: Location information */}
         <div className="flex items-center gap-3 text-white/50 font-mono text-xs tracking-wider pointer-events-auto">
-          <span className="w-5 sm:w-6 h-px bg-white/35" />
+          <span className="w-5 sm:w-6 h-px bg-white/40" />
           <span>Based in India</span>
         </div>
 
-        {/* Bottom-Right: BUILD / LEARN / EXPLORE + Circular Outlined Arrow Button */}
-        <div className="flex items-center gap-3 sm:gap-4 pointer-events-auto">
+        {/* Bottom-Right: BUILD / LEARN / EXPLORE + Circular Arrow Button */}
+        <div className="flex items-center gap-4 pointer-events-auto">
           <span className="hidden sm:inline-block text-white/50 font-mono text-[11px] tracking-[0.25em] uppercase">
             BUILD &nbsp;/&nbsp; LEARN &nbsp;/&nbsp; EXPLORE
           </span>
@@ -178,47 +167,47 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Organic Living Portrait Keyframes ── */}
+      {/* ── Organic Living Animations (6-10s cycles, smooth easing, no obvious looping) ── */}
       <style jsx global>{`
-        @keyframes mainPortraitBreathing {
+        @keyframes photographicBreathing {
           0% {
             transform: scale(1) translateY(0px);
           }
           50% {
-            transform: scale(1.006) translateY(-3px);
+            transform: scale(1.008) translateY(-2.5px);
           }
           100% {
-            transform: scale(1.012) translateY(-1px);
+            transform: scale(1.003) translateY(-0.8px);
           }
         }
 
-        @keyframes ghostLivingDrift {
+        @keyframes ghostAtmosphericDrift {
           0% {
-            transform: translate(-55px, -8px) scale(1.01);
-            opacity: 0.18;
+            transform: translate(0px, 0px) scale(1);
+            opacity: 0.22;
           }
           50% {
-            transform: translate(-65px, -12px) scale(1.025);
-            opacity: 0.25;
+            transform: translate(-6px, -3px) scale(1.015);
+            opacity: 0.32;
           }
           100% {
-            transform: translate(-58px, -6px) scale(1.015);
-            opacity: 0.2;
+            transform: translate(-3px, 1px) scale(1.008);
+            opacity: 0.26;
           }
         }
 
         @keyframes facialLightShift {
           0% {
-            transform: translate(-4%, -3%) scale(1);
-            opacity: 0.18;
+            transform: translate(-2%, -2%) scale(1);
+            opacity: 0.22;
           }
           50% {
-            transform: translate(4%, 3%) scale(1.04);
-            opacity: 0.28;
+            transform: translate(2%, 1.5%) scale(1.03);
+            opacity: 0.35;
           }
           100% {
-            transform: translate(-2%, 1%) scale(1.01);
-            opacity: 0.2;
+            transform: translate(-1%, 0.5%) scale(1.01);
+            opacity: 0.25;
           }
         }
       `}</style>
