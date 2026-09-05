@@ -37,19 +37,16 @@ export default function ProjectGallery() {
   const [videoProgress, setVideoProgress] = useState(0);
   const [cinemaProject, setCinemaProject] = useState<Project | null>(null);
 
-  // Animation DOM targets
-  const containerRef = useRef<HTMLDivElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const descRef = useRef<HTMLDivElement>(null);
-  const tagsRef = useRef<HTMLDivElement>(null);
-  const actionsRef = useRef<HTMLDivElement>(null);
+  // Section & Pinning targets
+  const sectionRef = useRef<HTMLElement>(null);
+  const stickyViewportRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
+
+  // Stack of independent project layer elements
+  const projectLayersRef = useRef<(HTMLDivElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // State refs to avoid stale closures in event listeners
+  // Interaction & transition flags
   const activeIdxRef = useRef(0);
   const isAnimatingRef = useRef(false);
   const cooldownRef = useRef(false);
@@ -57,264 +54,202 @@ export default function ProjectGallery() {
   const { lenis } = useLenis();
   const activeProject = PROJECTS[activeIdx] || PROJECTS[0];
 
-  // ── GSAP Transition Choreography ──
+  // ── Controlled Project Transition ──
   const goToProject = useCallback((targetIdx: number, customDir?: number) => {
     if (targetIdx === activeIdxRef.current || isAnimatingRef.current) return;
     if (targetIdx < 0 || targetIdx >= PROJECTS.length) return;
 
     isAnimatingRef.current = true;
-    const dir = customDir ?? (targetIdx > activeIdxRef.current ? 1 : -1);
+    const currentIdx = activeIdxRef.current;
+    const dir = customDir ?? (targetIdx > currentIdx ? 1 : -1);
+
+    const currentLayer = projectLayersRef.current[currentIdx];
+    const incomingLayer = projectLayersRef.current[targetIdx];
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (prefersReducedMotion) {
+    // Counter animation
+    if (counterRef.current && !prefersReducedMotion) {
+      gsap.to(counterRef.current, {
+        y: dir > 0 ? -16 : 16,
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(counterRef.current, { y: dir > 0 ? 16 : -16, opacity: 0 });
+          gsap.to(counterRef.current, {
+            y: 0,
+            opacity: 1,
+            duration: 0.35,
+            ease: "power3.out",
+          });
+        },
+      });
+    }
+
+    if (prefersReducedMotion || !currentLayer || !incomingLayer) {
       setActiveIdx(targetIdx);
       activeIdxRef.current = targetIdx;
       setVideoProgress(0);
       setTimeout(() => {
         isAnimatingRef.current = false;
-      }, 150);
+      }, 100);
       return;
+    }
+
+    const currentPreview = currentLayer.querySelector<HTMLElement>(".project-preview");
+    const currentInfo = currentLayer.querySelectorAll<HTMLElement>(".project-info-item");
+
+    const incomingPreview = incomingLayer.querySelector<HTMLElement>(".project-preview");
+    const incomingInfo = incomingLayer.querySelectorAll<HTMLElement>(".project-info-item");
+
+    // Make incoming layer active in DOM immediately (positioned on top)
+    gsap.set(incomingLayer, {
+      display: "block",
+      opacity: 1,
+      visibility: "visible",
+      zIndex: 20,
+    });
+
+    // Set initial incoming transforms
+    if (incomingPreview) {
+      gsap.set(incomingPreview, {
+        scale: 0.97,
+        y: dir > 0 ? 35 : -35,
+        opacity: 0,
+        filter: "blur(6px)",
+      });
+    }
+
+    if (incomingInfo.length > 0) {
+      gsap.set(incomingInfo, {
+        y: dir > 0 ? 25 : -25,
+        opacity: 0,
+        filter: "blur(4px)",
+      });
     }
 
     const tl = gsap.timeline({
       onComplete: () => {
+        setActiveIdx(targetIdx);
+        activeIdxRef.current = targetIdx;
+        setVideoProgress(0);
+
+        // Explicitly clear all inline transforms and filters to prevent blur leakage
+        if (incomingPreview) {
+          gsap.set(incomingPreview, { clearProps: "all" });
+        }
+        if (incomingInfo) {
+          incomingInfo.forEach((el) => gsap.set(el, { clearProps: "all" }));
+        }
+        if (currentPreview) {
+          gsap.set(currentPreview, { clearProps: "all" });
+        }
+        if (currentInfo) {
+          currentInfo.forEach((el) => gsap.set(el, { clearProps: "all" }));
+        }
+
+        // Hide outgoing layer
+        gsap.set(currentLayer, {
+          display: "none",
+          opacity: 0,
+          visibility: "hidden",
+          zIndex: 0,
+        });
+
+        // Ensure incoming layer is clean
+        gsap.set(incomingLayer, { clearProps: "zIndex" });
+
+        // Play active video, pause others
+        videoRefs.current.forEach((vid, i) => {
+          if (vid) {
+            if (i === targetIdx) {
+              vid.currentTime = 0;
+              vid.play().catch(() => {});
+            } else {
+              vid.pause();
+            }
+          }
+        });
+
         isAnimatingRef.current = false;
-        // Clean up any stray filter/blur artifacts
-        if (previewRef.current) {
-          gsap.set(previewRef.current, { clearProps: "filter,transform" });
-        }
-        if (titleRef.current) {
-          gsap.set(titleRef.current, { clearProps: "filter,transform" });
-        }
       },
     });
 
-    // 1. Current Project Exits (Scale down, translate, fade out, subtle blur)
-    if (previewRef.current) {
+    // ── Phase 1: Animate Outgoing Elements ──
+    if (currentPreview) {
       tl.to(
-        previewRef.current,
+        currentPreview,
         {
-          scale: 0.95,
-          y: dir > 0 ? -28 : 28,
+          scale: 0.97,
+          y: dir > 0 ? -30 : 30,
           opacity: 0,
           filter: "blur(6px)",
-          duration: 0.35,
+          duration: 0.38,
           ease: "power2.inOut",
         },
         0
       );
     }
 
-    const infoElements = [
-      titleRef.current,
-      subtitleRef.current,
-      descRef.current,
-      tagsRef.current,
-      actionsRef.current,
-    ].filter(Boolean);
-
-    if (infoElements.length > 0) {
+    if (currentInfo.length > 0) {
       tl.to(
-        infoElements,
+        currentInfo,
         {
           y: dir > 0 ? -20 : 20,
           opacity: 0,
           filter: "blur(4px)",
           stagger: 0.02,
-          duration: 0.3,
+          duration: 0.32,
           ease: "power2.inOut",
         },
         0
       );
     }
 
-    if (counterRef.current) {
+    // ── Phase 2: Animate Incoming Elements with Stagger ──
+    if (incomingPreview) {
       tl.to(
-        counterRef.current,
-        {
-          y: dir > 0 ? -16 : 16,
-          opacity: 0,
-          duration: 0.25,
-          ease: "power2.inOut",
-        },
-        0
-      );
-    }
-
-    // 2. Midpoint State Swap
-    tl.add(() => {
-      setActiveIdx(targetIdx);
-      activeIdxRef.current = targetIdx;
-      setVideoProgress(0);
-
-      // Video playback sync
-      videoRefs.current.forEach((vid, i) => {
-        if (vid) {
-          if (i === targetIdx) {
-            vid.currentTime = 0;
-            vid.play().catch(() => {});
-          } else {
-            vid.pause();
-          }
-        }
-      });
-
-      // Prepare incoming initial transforms
-      if (previewRef.current) {
-        gsap.set(previewRef.current, {
-          scale: 1.04,
-          y: dir > 0 ? 32 : -32,
-          opacity: 0,
-          filter: "blur(6px)",
-        });
-      }
-      if (titleRef.current) {
-        gsap.set(titleRef.current, {
-          y: dir > 0 ? 25 : -25,
-          opacity: 0,
-          filter: "blur(4px)",
-        });
-      }
-      if (subtitleRef.current) {
-        gsap.set(subtitleRef.current, {
-          y: dir > 0 ? 18 : -18,
-          opacity: 0,
-        });
-      }
-      if (descRef.current) {
-        gsap.set(descRef.current, {
-          y: dir > 0 ? 18 : -18,
-          opacity: 0,
-        });
-      }
-      if (tagsRef.current) {
-        gsap.set(tagsRef.current, {
-          y: dir > 0 ? 14 : -14,
-          opacity: 0,
-        });
-      }
-      if (actionsRef.current) {
-        gsap.set(actionsRef.current, {
-          y: dir > 0 ? 14 : -14,
-          opacity: 0,
-        });
-      }
-      if (counterRef.current) {
-        gsap.set(counterRef.current, {
-          y: dir > 0 ? 16 : -16,
-          opacity: 0,
-        });
-      }
-    });
-
-    // 3. Incoming Project Enters (Staggered scale 1, y 0, opacity 1, blur 0)
-    if (previewRef.current) {
-      tl.to(
-        previewRef.current,
+        incomingPreview,
         {
           scale: 1,
           y: 0,
           opacity: 1,
           filter: "blur(0px)",
-          duration: 0.55,
+          duration: 0.52,
           ease: "power3.out",
         },
-        "+=0.03"
+        0.12
       );
     }
 
-    if (titleRef.current) {
+    if (incomingInfo.length > 0) {
       tl.to(
-        titleRef.current,
+        incomingInfo,
         {
           y: 0,
           opacity: 1,
           filter: "blur(0px)",
-          duration: 0.5,
+          stagger: 0.04,
+          duration: 0.48,
           ease: "power3.out",
         },
-        "<+=0.04"
-      );
-    }
-
-    if (subtitleRef.current) {
-      tl.to(
-        subtitleRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.45,
-          ease: "power3.out",
-        },
-        "<+=0.03"
-      );
-    }
-
-    if (descRef.current) {
-      tl.to(
-        descRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.45,
-          ease: "power3.out",
-        },
-        "<+=0.03"
-      );
-    }
-
-    if (tagsRef.current) {
-      tl.to(
-        tagsRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.42,
-          ease: "power3.out",
-        },
-        "<+=0.03"
-      );
-    }
-
-    if (actionsRef.current) {
-      tl.to(
-        actionsRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.42,
-          ease: "power3.out",
-        },
-        "<+=0.03"
-      );
-    }
-
-    if (counterRef.current) {
-      tl.to(
-        counterRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.4,
-          ease: "power3.out",
-        },
-        "<"
+        0.18
       );
     }
   }, []);
 
-  // ── ScrollTrigger for Continuous Scrollbar Drag / Touch Sync ──
+  // ── Sync with ScrollTrigger for Continuous Scrollbar Dragging ──
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    if (!containerRef.current) return;
+    if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
-        trigger: containerRef.current,
+        trigger: sectionRef.current,
         start: "top top",
         end: "bottom bottom",
         onUpdate: (self) => {
@@ -331,24 +266,24 @@ export default function ProjectGallery() {
     return () => ctx.revert();
   }, [goToProject]);
 
-  // ── Global Mouse Wheel Event Listener (Immediate Response) ──
+  // ── Discrete Mouse Wheel Step Interception ──
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      const container = containerRef.current;
-      if (!container) return;
+      const section = sectionRef.current;
+      if (!section) return;
 
-      const rect = container.getBoundingClientRect();
-      // Active when container is sticky in view: top has reached near 0, and bottom hasn't scrolled past
-      const isStickyActive = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.7;
+      const rect = section.getBoundingClientRect();
+      // Section is active in viewport when it has reached top (or near top) and hasn't completely scrolled away
+      const isPinnedInView = rect.top <= 90 && rect.bottom >= window.innerHeight * 0.5;
 
-      if (!isStickyActive) return;
+      if (!isPinnedInView) return;
 
       const current = activeIdxRef.current;
 
       // ── Scroll DOWN (01 → 02 → 03) ──
       if (e.deltaY > 15) {
         if (current < PROJECTS.length - 1) {
-          // Intercept scroll within project showcase
+          // Intercept scroll inside projects showcase
           e.preventDefault();
           (e as unknown as { lenisStopPropagation: boolean }).lenisStopPropagation = true;
 
@@ -357,11 +292,11 @@ export default function ProjectGallery() {
             const nextIdx = current + 1;
             goToProject(nextIdx, 1);
 
-            // Sync page scroll position to the next step
+            // Synchronize page scroll to the matching third of the section
             if (lenis) {
-              const containerTop = window.scrollY + rect.top;
+              const sectionTop = window.scrollY + rect.top;
               const scrollRange = rect.height - window.innerHeight;
-              const targetY = containerTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+              const targetY = sectionTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
               lenis.scrollTo(targetY, { duration: 0.8 });
             }
 
@@ -370,12 +305,13 @@ export default function ProjectGallery() {
             }, 600);
           }
         }
-        // If at last project (Bartr) scrolling down, don't preventDefault; let user scroll into Chapter 04!
+        // When on Project 03 (last project), do NOT preventDefault!
+        // The wheel event continues naturally to Chapter 04!
       }
       // ── Scroll UP (03 → 02 → 01) ──
       else if (e.deltaY < -15) {
         if (current > 0) {
-          // Intercept scroll within project showcase
+          // Intercept scroll inside projects showcase
           e.preventDefault();
           (e as unknown as { lenisStopPropagation: boolean }).lenisStopPropagation = true;
 
@@ -384,11 +320,11 @@ export default function ProjectGallery() {
             const prevIdx = current - 1;
             goToProject(prevIdx, -1);
 
-            // Sync page scroll position to previous step
+            // Synchronize page scroll
             if (lenis) {
-              const containerTop = window.scrollY + rect.top;
+              const sectionTop = window.scrollY + rect.top;
               const scrollRange = rect.height - window.innerHeight;
-              const targetY = containerTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+              const targetY = sectionTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
               lenis.scrollTo(targetY, { duration: 0.8 });
             }
 
@@ -397,7 +333,8 @@ export default function ProjectGallery() {
             }, 600);
           }
         }
-        // If at first project (CivicLens) scrolling up, don't preventDefault; let user scroll into Chapter 02!
+        // When on Project 01 (first project), do NOT preventDefault!
+        // The wheel event continues naturally to Chapter 02!
       }
     };
 
@@ -414,18 +351,18 @@ export default function ProjectGallery() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      const container = containerRef.current;
-      if (!container) return;
+      const section = sectionRef.current;
+      if (!section) return;
 
-      const rect = container.getBoundingClientRect();
-      const isStickyActive = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.7;
-      if (!isStickyActive) return;
+      const rect = section.getBoundingClientRect();
+      const isPinnedInView = rect.top <= 90 && rect.bottom >= window.innerHeight * 0.5;
+      if (!isPinnedInView) return;
 
       const deltaY = touchStartY - e.touches[0].clientY;
       const current = activeIdxRef.current;
 
       if (deltaY > 50) {
-        // Swipe UP = next project
+        // Swipe UP = Next Project
         if (current < PROJECTS.length - 1 && !isAnimatingRef.current && !cooldownRef.current) {
           e.preventDefault();
           cooldownRef.current = true;
@@ -433,9 +370,9 @@ export default function ProjectGallery() {
           goToProject(nextIdx, 1);
 
           if (lenis) {
-            const containerTop = window.scrollY + rect.top;
+            const sectionTop = window.scrollY + rect.top;
             const scrollRange = rect.height - window.innerHeight;
-            const targetY = containerTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+            const targetY = sectionTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
             lenis.scrollTo(targetY, { duration: 0.8 });
           }
 
@@ -444,7 +381,7 @@ export default function ProjectGallery() {
           }, 600);
         }
       } else if (deltaY < -50) {
-        // Swipe DOWN = prev project
+        // Swipe DOWN = Prev Project
         if (current > 0 && !isAnimatingRef.current && !cooldownRef.current) {
           e.preventDefault();
           cooldownRef.current = true;
@@ -452,9 +389,9 @@ export default function ProjectGallery() {
           goToProject(prevIdx, -1);
 
           if (lenis) {
-            const containerTop = window.scrollY + rect.top;
+            const sectionTop = window.scrollY + rect.top;
             const scrollRange = rect.height - window.innerHeight;
-            const targetY = containerTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+            const targetY = sectionTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
             lenis.scrollTo(targetY, { duration: 0.8 });
           }
 
@@ -474,7 +411,7 @@ export default function ProjectGallery() {
     };
   }, [goToProject, lenis]);
 
-  // ── Keyboard Arrows Navigation ──
+  // ── Keyboard Navigation (Arrow Keys) ──
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (cinemaProject) {
@@ -482,10 +419,10 @@ export default function ProjectGallery() {
         return;
       }
 
-      const container = containerRef.current;
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const inView = rect.top <= 120 && rect.bottom >= window.innerHeight * 0.5;
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const inView = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.4;
       if (!inView) return;
 
       const current = activeIdxRef.current;
@@ -493,49 +430,35 @@ export default function ProjectGallery() {
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         if (current < PROJECTS.length - 1) {
           e.preventDefault();
-          const nextIdx = current + 1;
-          goToProject(nextIdx, 1);
-          if (lenis) {
-            const containerTop = window.scrollY + rect.top;
-            const scrollRange = rect.height - window.innerHeight;
-            const targetY = containerTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
-            lenis.scrollTo(targetY, { duration: 0.8 });
-          }
+          handleTabClick(current + 1);
         }
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         if (current > 0) {
           e.preventDefault();
-          const prevIdx = current - 1;
-          goToProject(prevIdx, -1);
-          if (lenis) {
-            const containerTop = window.scrollY + rect.top;
-            const scrollRange = rect.height - window.innerHeight;
-            const targetY = containerTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
-            lenis.scrollTo(targetY, { duration: 0.8 });
-          }
+          handleTabClick(current - 1);
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToProject, lenis, cinemaProject]);
+  }, [cinemaProject]);
 
-  // Tab click handler
+  // Direct Tab Click Handler
   const handleTabClick = (idx: number) => {
     if (idx === activeIdxRef.current || isAnimatingRef.current) return;
     goToProject(idx);
-    const container = containerRef.current;
-    if (container && lenis) {
-      const rect = container.getBoundingClientRect();
-      const containerTop = window.scrollY + rect.top;
+    const section = sectionRef.current;
+    if (section && lenis) {
+      const rect = section.getBoundingClientRect();
+      const sectionTop = window.scrollY + rect.top;
       const scrollRange = rect.height - window.innerHeight;
-      const targetY = containerTop + (idx / (PROJECTS.length - 1)) * scrollRange;
+      const targetY = sectionTop + (idx / (PROJECTS.length - 1)) * scrollRange;
       lenis.scrollTo(targetY, { duration: 0.8 });
     }
   };
 
-  // Video Time Update for Progress Line
+  // Video Time Update for Looping Progress Bar
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const vid = e.currentTarget;
     if (vid.duration) {
@@ -543,7 +466,7 @@ export default function ProjectGallery() {
     }
   };
 
-  // Toggle Video Play/Pause
+  // Video Play/Pause Toggle
   const togglePlay = () => {
     const vid = videoRefs.current[activeIdx];
     if (!vid) return;
@@ -556,7 +479,7 @@ export default function ProjectGallery() {
     }
   };
 
-  // Toggle Video Mute/Unmute
+  // Video Mute/Unmute Toggle
   const toggleMute = () => {
     const nextMuted = !isMuted;
     videoRefs.current.forEach((vid) => {
@@ -565,7 +488,7 @@ export default function ProjectGallery() {
     setIsMuted(nextMuted);
   };
 
-  // Scroll to Chapter 04 Case Study
+  // Scroll smoothly to Chapter 04 Case Study
   const scrollToCaseStudy = (e: React.MouseEvent) => {
     e.preventDefault();
     const el = document.getElementById("chapter-case-study");
@@ -581,13 +504,14 @@ export default function ProjectGallery() {
   return (
     <section
       id="chapter-work"
-      ref={containerRef}
-      className="relative w-full h-[250vh] bg-[#0d0d0d] text-off-white select-none border-t border-white/5"
+      ref={sectionRef}
+      className="relative w-full bg-[#0d0d0d] text-off-white select-none border-t border-white/5"
+      style={{ height: `${PROJECTS.length * 100}vh` }}
     >
-      {/* ── PINNED / STICKY SHOWCASE STAGE (Locks to viewport while exploring) ── */}
+      {/* ── STICKY PROJECTS VIEWPORT (Pinned inside the scroll distance) ── */}
       <div
-        ref={stickyRef}
-        className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-16 sm:pt-20 pb-8 z-10"
+        ref={stickyViewportRef}
+        className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-28 sm:pt-32 pb-8 z-10"
       >
         {/* Dynamic Ambient Background Glow Tinted by Current Project */}
         <div
@@ -604,8 +528,8 @@ export default function ProjectGallery() {
           className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"
         />
 
-        <div className="relative z-10 max-w-[1500px] mx-auto w-full flex flex-col justify-between h-full max-h-[820px]">
-          {/* ── SECTION HEADER & DYNAMIC NAVIGATION ── */}
+        <div className="relative z-10 max-w-[1500px] mx-auto w-full flex flex-col justify-between h-full max-h-[800px]">
+          {/* ── SECTION HEADER & DYNAMIC NAVIGATION (Accounts for Fixed Navbar) ── */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 sm:mb-6">
             <div>
               <div className="flex items-center gap-2.5 mb-2">
@@ -692,24 +616,27 @@ export default function ProjectGallery() {
             </div>
           </div>
 
-          {/* ── MAIN SHOWCASE STAGE (Left Video, Right Details) ── */}
-          <div className="w-full rounded-3xl border border-white/10 bg-[#121316]/90 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-              {/* ── LEFT: Cinematic Video Preview (Cols 1-7) ── */}
-              <div ref={previewRef} className="lg:col-span-7 flex flex-col gap-2 will-change-transform">
-                <div className="relative w-full aspect-[16/10] max-h-[380px] sm:max-h-[420px] rounded-2xl overflow-hidden bg-black/95 border border-white/15 shadow-2xl group">
-                  {/* Preloaded Video Elements with Instant Opacity Switching */}
-                  {PROJECTS.map((project, idx) => {
-                    const isCurrent = idx === activeIdx;
-                    return (
-                      <div
-                        key={project.id}
-                        className={`absolute inset-0 transition-opacity duration-500 ${
-                          isCurrent
-                            ? "opacity-100 pointer-events-auto z-10"
-                            : "opacity-0 pointer-events-none z-0"
-                        }`}
-                      >
+          {/* ── PROJECT STACK: Independent Layer per Project (Never Disappears) ── */}
+          <div className="relative w-full rounded-3xl border border-white/10 bg-[#121316]/95 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)] min-h-[460px] sm:min-h-[500px] flex items-center">
+            {PROJECTS.map((project, idx) => {
+              const isCurrent = idx === activeIdx;
+
+              return (
+                <div
+                  key={project.id}
+                  ref={(el) => {
+                    projectLayersRef.current[idx] = el;
+                  }}
+                  className={`w-full transition-none ${
+                    isCurrent
+                      ? "relative z-10 block opacity-100"
+                      : "absolute inset-0 p-5 sm:p-7 lg:p-9 pointer-events-none hidden opacity-0"
+                  }`}
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+                    {/* ── LEFT: Cinematic Video Preview (Cols 1-7) ── */}
+                    <div className="project-preview lg:col-span-7 flex flex-col gap-2 will-change-transform">
+                      <div className="relative w-full aspect-[16/10] max-h-[380px] sm:max-h-[420px] rounded-2xl overflow-hidden bg-black/95 border border-white/15 shadow-2xl group">
                         {project.videoUrl ? (
                           <video
                             ref={(el) => {
@@ -717,11 +644,11 @@ export default function ProjectGallery() {
                             }}
                             src={project.videoUrl}
                             poster={project.posterUrl}
-                            autoPlay
+                            autoPlay={isCurrent}
                             loop
                             muted={isMuted}
                             playsInline
-                            onTimeUpdate={handleTimeUpdate}
+                            onTimeUpdate={isCurrent ? handleTimeUpdate : undefined}
                             className="w-full h-full object-cover object-center"
                           />
                         ) : (
@@ -733,181 +660,170 @@ export default function ProjectGallery() {
                             className="object-cover object-center"
                           />
                         )}
-                      </div>
-                    );
-                  })}
 
-                  {/* Subtle Cinematic Vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none z-20" />
+                        {/* Subtle Cinematic Vignette */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none z-20" />
 
-                  {/* Top Overlay Badge */}
-                  <div className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-mono">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-off-white font-medium tracking-wider">
-                      PRODUCTION DEMO
-                    </span>
-                  </div>
+                        {/* Top Overlay Badge */}
+                        <div className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-mono">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className="text-off-white font-medium tracking-wider">
+                            PRODUCTION DEMO
+                          </span>
+                        </div>
 
-                  {/* Top Right: Fullscreen Cinema Button */}
-                  <button
-                    type="button"
-                    onClick={() => setCinemaProject(activeProject)}
-                    aria-label="Expand to Cinema Theatre"
-                    className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-off-white/80 hover:text-amber hover:border-amber transition-all shadow-lg"
-                    title="Expand Fullscreen Reel"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
-
-                  {/* Floating Bottom HUD Controls */}
-                  {activeProject.videoUrl && (
-                    <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
+                        {/* Top Right: Fullscreen Cinema Button */}
                         <button
                           type="button"
-                          onClick={togglePlay}
-                          className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider"
+                          onClick={() => setCinemaProject(project)}
+                          aria-label="Expand to Cinema Theatre"
+                          className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-off-white/80 hover:text-amber hover:border-amber transition-all shadow-lg pointer-events-auto"
+                          title="Expand Fullscreen Reel"
                         >
-                          {isPlaying ? (
-                            <>
-                              <Pause className="w-3 h-3 text-amber" />
-                              <span>PAUSE</span>
-                            </>
-                          ) : (
-                            <>
-                              <Play className="w-3 h-3 text-amber" />
-                              <span>PLAY</span>
-                            </>
-                          )}
+                          <Maximize2 className="w-3.5 h-3.5" />
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={toggleMute}
-                          className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center justify-center"
-                          title={isMuted ? "Unmute Audio" : "Mute Audio"}
-                        >
-                          {isMuted ? (
-                            <VolumeX className="w-3.5 h-3.5 text-off-white/60" />
-                          ) : (
-                            <Volume2 className="w-3.5 h-3.5 text-amber" />
-                          )}
-                        </button>
+                        {/* Floating Bottom HUD Controls */}
+                        {project.videoUrl && (
+                          <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 pointer-events-auto">
+                              <button
+                                type="button"
+                                onClick={togglePlay}
+                                className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider"
+                              >
+                                {isPlaying ? (
+                                  <>
+                                    <Pause className="w-3 h-3 text-amber" />
+                                    <span>PAUSE</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Play className="w-3 h-3 text-amber" />
+                                    <span>PLAY</span>
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={toggleMute}
+                                className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center justify-center"
+                                title={isMuted ? "Unmute Audio" : "Mute Audio"}
+                              >
+                                {isMuted ? (
+                                  <VolumeX className="w-3.5 h-3.5 text-off-white/60" />
+                                ) : (
+                                  <Volume2 className="w-3.5 h-3.5 text-amber" />
+                                )}
+                              </button>
+                            </div>
+
+                            <span className="font-mono text-[9px] text-off-white/50 tracking-wider bg-black/60 px-2.5 py-0.5 rounded-md border border-white/10 hidden sm:inline">
+                              1080P // LOOPING
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Looping Progress Line Indicator */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
+                          <div
+                            className="h-full bg-gradient-to-r from-amber to-amber-lighter transition-all duration-150"
+                            style={{ width: `${isCurrent ? videoProgress : 0}%` }}
+                          />
+                        </div>
                       </div>
-
-                      <span className="font-mono text-[9px] text-off-white/50 tracking-wider bg-black/60 px-2.5 py-0.5 rounded-md border border-white/10 hidden sm:inline">
-                        1080P // LOOPING
-                      </span>
                     </div>
-                  )}
 
-                  {/* Looping Progress Line Indicator */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
-                    <div
-                      className="h-full bg-gradient-to-r from-amber to-amber-lighter transition-all duration-150"
-                      style={{ width: `${videoProgress}%` }}
-                    />
+                    {/* ── RIGHT: Project Details (Cols 8-12) ── */}
+                    <div className="lg:col-span-5 flex flex-col justify-center space-y-4">
+                      {/* Number & Date */}
+                      <div className="project-info-item flex items-center gap-3 mb-1 font-mono text-xs will-change-transform">
+                        <span className="text-amber font-bold tracking-[0.25em]">
+                          PROJECT {project.number}
+                        </span>
+                        <span className="text-white/20">•</span>
+                        <span className="text-off-white/50 tracking-wider uppercase">
+                          {project.year}
+                        </span>
+                      </div>
+
+                      {/* Project Akira Title */}
+                      <h3 className="project-info-item font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform">
+                        {project.title}
+                      </h3>
+
+                      {/* Subtitle */}
+                      <p className="project-info-item font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform">
+                        {project.subtitle}
+                      </p>
+
+                      {/* Clean Project Description */}
+                      <div className="project-info-item space-y-2 will-change-transform">
+                        <p className="font-body text-xs sm:text-sm text-off-white/85 leading-relaxed font-light">
+                          {project.description}
+                        </p>
+                        <p className="font-body text-[11px] sm:text-xs text-off-white/60 leading-relaxed font-light">
+                          {project.built}
+                        </p>
+                      </div>
+
+                      {/* Tech Stack Tags */}
+                      <div className="project-info-item will-change-transform">
+                        <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/40 block mb-1.5">
+                          TECH STACK
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {project.tags.slice(0, 5).map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-2.5 py-0.5 rounded-md border border-white/10 bg-white/[0.03] font-mono text-[10px] sm:text-[11px] text-off-white/80 tracking-wide hover:border-amber/40 hover:text-off-white transition-colors"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="project-info-item flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform">
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase hover:bg-off-white transition-all duration-300 shadow-[0_0_20px_rgba(245,166,35,0.25)] hover:scale-[1.02] active:scale-[0.98] pointer-events-auto"
+                        >
+                          <span>LAUNCH DEMO</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </a>
+
+                        {project.githubUrl && (
+                          <a
+                            href={project.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/20 bg-white/[0.02] font-mono text-xs tracking-[0.15em] text-off-white/80 hover:text-off-white hover:border-amber/60 hover:bg-white/[0.05] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] pointer-events-auto"
+                          >
+                            <GithubIcon className="w-3.5 h-3.5" />
+                            <span>REPOSITORY</span>
+                          </a>
+                        )}
+
+                        {project.number === "01" && (
+                          <a
+                            href="#chapter-case-study"
+                            onClick={scrollToCaseStudy}
+                            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] font-mono text-xs tracking-wider text-off-white/60 hover:text-amber hover:border-amber/40 transition-all pointer-events-auto"
+                          >
+                            <span>CASE STUDY ↓</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* ── RIGHT: Project Details (Cols 8-12) ── */}
-              <div className="lg:col-span-5 flex flex-col justify-center space-y-4">
-                <div>
-                  {/* Number & Year Header */}
-                  <div className="flex items-center gap-3 mb-1.5 font-mono text-xs">
-                    <span className="text-amber font-bold tracking-[0.25em]">
-                      PROJECT {activeProject.number}
-                    </span>
-                    <span className="text-white/20">•</span>
-                    <span className="text-off-white/50 tracking-wider uppercase">
-                      {activeProject.year}
-                    </span>
-                  </div>
-
-                  {/* Project Akira Title */}
-                  <h3
-                    ref={titleRef}
-                    className="font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform"
-                  >
-                    {activeProject.title}
-                  </h3>
-
-                  {/* Subtitle */}
-                  <p
-                    ref={subtitleRef}
-                    className="font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform"
-                  >
-                    {activeProject.subtitle}
-                  </p>
-                </div>
-
-                {/* Clean Project Description */}
-                <div ref={descRef} className="space-y-2 will-change-transform">
-                  <p className="font-body text-xs sm:text-sm text-off-white/85 leading-relaxed font-light">
-                    {activeProject.description}
-                  </p>
-                  <p className="font-body text-[11px] sm:text-xs text-off-white/60 leading-relaxed font-light">
-                    {activeProject.built}
-                  </p>
-                </div>
-
-                {/* Necessary Tech Stack Tags */}
-                <div ref={tagsRef} className="will-change-transform">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/40 block mb-1.5">
-                    TECH STACK
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {activeProject.tags.slice(0, 5).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-0.5 rounded-md border border-white/10 bg-white/[0.03] font-mono text-[10px] sm:text-[11px] text-off-white/80 tracking-wide hover:border-amber/40 hover:text-off-white transition-colors"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div
-                  ref={actionsRef}
-                  className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform"
-                >
-                  <a
-                    href={activeProject.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase hover:bg-off-white transition-all duration-300 shadow-[0_0_20px_rgba(245,166,35,0.25)] hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <span>LAUNCH DEMO</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
-
-                  {activeProject.githubUrl && (
-                    <a
-                      href={activeProject.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/20 bg-white/[0.02] font-mono text-xs tracking-[0.15em] text-off-white/80 hover:text-off-white hover:border-amber/60 hover:bg-white/[0.05] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                    >
-                      <GithubIcon className="w-3.5 h-3.5" />
-                      <span>REPOSITORY</span>
-                    </a>
-                  )}
-
-                  {activeProject.number === "01" && (
-                    <a
-                      href="#chapter-case-study"
-                      onClick={scrollToCaseStudy}
-                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] font-mono text-xs tracking-wider text-off-white/60 hover:text-amber hover:border-amber/40 transition-all"
-                    >
-                      <span>CASE STUDY ↓</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
 
           {/* ── BOTTOM INTERACTION HINT ── */}
