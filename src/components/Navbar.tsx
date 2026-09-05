@@ -4,39 +4,27 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLenis } from "@/components/SmoothScrollProvider";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "HOME", href: "/#chapter-intro" },
-  { label: "WORK", href: "/#chapter-work" },
-  { label: "ABOUT", href: "/#chapter-about" },
-  { label: "RESUME", href: "/Resume.pdf", external: true },
+  { label: "Home", href: "/#chapter-intro" },
+  { label: "Projects", href: "/#chapter-work" },
+  { label: "Skills", href: "/#chapter-stack" },
+  { label: "Experience", href: "/#chapter-capabilities" },
+  { label: "About", href: "/#chapter-about" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { lenis } = useLenis();
   const [scrolled, setScrolled] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("up");
   const [menuOpen, setMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      if (currentScrollY > 60) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      if (currentScrollY > lastScrollY.current && currentScrollY > 150) {
-        setScrollDirection("down");
-      } else {
-        setScrollDirection("up");
-      }
-
+      setScrolled(currentScrollY > 40);
       lastScrollY.current = currentScrollY;
     };
 
@@ -51,7 +39,7 @@ export default function Navbar() {
       const targetEl = document.getElementById(targetId);
       if (targetEl) {
         if (lenis) {
-          lenis.scrollTo(targetEl, { offset: -60, duration: 1.4 });
+          lenis.scrollTo(targetEl, { offset: -30, duration: 1.2 });
         } else {
           targetEl.scrollIntoView({ behavior: "smooth" });
         }
@@ -65,65 +53,63 @@ export default function Navbar() {
       <header
         role="banner"
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-out ${
-          scrollDirection === "down"
-            ? "py-3 bg-charcoal/70 backdrop-blur-xl border-b border-white/5 opacity-90 -translate-y-1"
-            : scrolled
-            ? "py-4 bg-charcoal/85 backdrop-blur-xl border-b border-white/10 opacity-100 translate-y-0"
-            : "py-7 bg-transparent border-b border-transparent opacity-100 translate-y-0"
+          scrolled
+            ? "py-3 sm:py-4 bg-[#0d0e11]/85 backdrop-blur-xl border-b border-white/10 shadow-2xl"
+            : "py-6 sm:py-8 bg-transparent border-b border-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-          {/* Left: Brand Monogram & Title */}
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex items-center justify-between">
+          {/* Top-Left: Circular "RV" Monogram Button */}
           <Link
             href="/#chapter-intro"
             onClick={(e) => handleNavClick(e, "/#chapter-intro")}
-            className="group flex items-center gap-3.5 select-none"
+            data-cursor-interactive
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-white/[0.02] flex items-center justify-center font-mono font-bold text-xs tracking-wider text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
+            aria-label="Rohit Verma Home"
           >
-            <div className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center font-display font-bold text-xs text-off-white bg-white/[0.03] transition-all duration-300 group-hover:border-amber group-hover:text-amber">
-              R
-            </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-xs font-bold tracking-[0.2em] text-off-white group-hover:text-amber transition-colors">
-                ROHIT VERMA
-              </span>
-              <span className="font-mono text-[9px] tracking-[0.25em] text-foreground/45 uppercase">
-                FULL-STACK DEVELOPER
-              </span>
-            </div>
+            RV
           </Link>
 
-          {/* Right: Desktop Navigation */}
-          <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-8 lg:gap-10">
-            {NAV_ITEMS.map((item) => (
+          {/* Center-Top: Translucent Rounded Navigation Pill */}
+          <nav
+            aria-label="Main Navigation"
+            className="hidden md:flex items-center gap-6 lg:gap-8 px-7 py-2.5 rounded-full border border-white/15 bg-black/40 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] select-none"
+          >
+            {NAV_ITEMS.map((item, idx) => (
               <Link
                 key={item.label}
                 href={item.href}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noopener noreferrer" : undefined}
-                onClick={(e) => !item.external && handleNavClick(e, item.href)}
-                className="font-mono text-[11px] tracking-[0.25em] text-foreground/70 hover:text-off-white transition-colors relative py-1 group"
+                onClick={(e) => handleNavClick(e, item.href)}
+                data-cursor-interactive
+                className={`text-xs tracking-wide transition-all duration-200 ${
+                  idx === 0
+                    ? "text-white font-semibold"
+                    : "text-white/65 hover:text-white font-normal"
+                }`}
               >
                 {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-amber transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
+          </nav>
 
+          {/* Top-Right: Outlined Rounded Contact Button */}
+          <div className="hidden md:flex items-center">
             <Link
               href="/#chapter-contact"
               onClick={(e) => handleNavClick(e, "/#chapter-contact")}
-              className="group inline-flex items-center gap-2 pl-4 pr-5 py-2 rounded-full border border-amber/30 bg-amber/5 text-amber font-mono text-[11px] tracking-[0.2em] uppercase transition-all duration-300 hover:bg-amber hover:text-charcoal hover:border-amber"
+              data-cursor-interactive
+              className="px-6 py-2.5 rounded-full border border-white/25 bg-white/[0.02] text-xs font-medium text-white tracking-wide hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
             >
-              LET&apos;S TALK
-              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              Contact
             </Link>
-          </nav>
+          </div>
 
           {/* Mobile Menu Trigger */}
           <button
             type="button"
             aria-label="Toggle navigation menu"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-off-white hover:border-amber transition-colors"
+            className="md:hidden w-10 h-10 rounded-full border border-white/20 bg-white/[0.02] flex items-center justify-center text-white hover:border-white transition-colors"
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -132,30 +118,28 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-charcoal/95 backdrop-blur-2xl md:hidden flex flex-col justify-between px-8 py-24 transition-all duration-500 ease-out ${
+        className={`fixed inset-0 z-40 bg-[#0d0e11]/98 backdrop-blur-3xl md:hidden flex flex-col justify-between px-8 py-24 transition-all duration-500 ease-out ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
-        <div className="flex flex-col gap-8 pt-10">
-          <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-amber">
-            NAVIGATION // CHAPTERS
+        <div className="flex flex-col gap-6 pt-10">
+          <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">
+            ROHIT VERMA // NAVIGATION
           </p>
           {NAV_ITEMS.map((item, idx) => (
             <Link
               key={item.label}
               href={item.href}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noopener noreferrer" : undefined}
               onClick={(e) => {
-                if (!item.external) handleNavClick(e, item.href);
+                handleNavClick(e, item.href);
                 setMenuOpen(false);
               }}
-              className="flex items-baseline justify-between border-b border-white/5 pb-4 group"
+              className="flex items-baseline justify-between border-b border-white/10 pb-4 group"
             >
-              <span className="font-display text-3xl font-bold text-off-white group-hover:text-amber transition-colors">
+              <span className="font-display text-2xl font-bold text-white group-hover:text-amber transition-colors">
                 {item.label}
               </span>
-              <span className="font-mono text-xs text-foreground/40">
+              <span className="font-mono text-xs text-white/40">
                 0{idx + 1}
               </span>
             </Link>
@@ -166,15 +150,14 @@ export default function Navbar() {
               handleNavClick(e, "/#chapter-contact");
               setMenuOpen(false);
             }}
-            className="mt-4 flex items-center justify-between py-4 px-6 rounded-2xl bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase"
+            className="mt-6 flex items-center justify-center py-3.5 px-6 rounded-full border border-white/30 text-white font-mono text-xs tracking-widest uppercase hover:bg-white/10 transition-all"
           >
-            LET&apos;S TALK
-            <ArrowUpRight className="w-4 h-4" />
+            Contact
           </Link>
         </div>
 
-        <div className="border-t border-white/10 pt-6 flex justify-between items-center text-foreground/50 font-mono text-[10px] tracking-wider">
-          <span>ROHIT VERMA</span>
+        <div className="border-t border-white/10 pt-6 flex justify-between items-center text-white/40 font-mono text-[10px] tracking-wider">
+          <span>Based in India</span>
           <span>© 2026</span>
         </div>
       </div>

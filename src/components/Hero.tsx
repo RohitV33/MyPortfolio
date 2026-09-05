@@ -1,100 +1,28 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { ArrowDown } from "lucide-react";
 import { useLenis } from "@/components/SmoothScrollProvider";
 
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
-  const contentWrapperRef = useRef<HTMLDivElement>(null);
-  const rohitRef = useRef<HTMLHeadingElement>(null);
-  const vermaRef = useRef<HTMLHeadingElement>(null);
-  const nameGroupRef = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const eyebrowRef = useRef<HTMLDivElement>(null);
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const ctaGroupRef = useRef<HTMLDivElement>(null);
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const { lenis } = useLenis();
 
+  // Mouse parallax state for organic interactive depth
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    const handleMouseMove = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const x = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
+      const y = (e.clientY / innerHeight - 0.5) * 2; // -1 to 1
+      setMousePos({ x, y });
+    };
 
-    const ctx = gsap.context(() => {
-      // ── Elegant Entrance Animation ──
-      const entryTl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      entryTl
-        .fromTo(
-          glowRef.current,
-          { scale: 0.6, opacity: 0 },
-          { scale: 1, opacity: 0.35, duration: 1.8 }
-        )
-        .fromTo(
-          eyebrowRef.current,
-          { opacity: 0, y: -20 },
-          { opacity: 1, y: 0, duration: 0.9 },
-          "-=1.4"
-        )
-        .fromTo(
-          [rohitRef.current, vermaRef.current],
-          { opacity: 0, y: 40, scale: 0.95 },
-          { opacity: 1, y: 0, scale: 1, duration: 1.1, stagger: 0.12 },
-          "-=0.9"
-        )
-        .fromTo(
-          detailsRef.current,
-          { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 0.9 },
-          "-=0.7"
-        )
-        .fromTo(
-          ctaGroupRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.6"
-        )
-        .fromTo(
-          scrollIndicatorRef.current,
-          { opacity: 0 },
-          { opacity: 1, duration: 0.8 },
-          "-=0.4"
-        );
-
-      // ── Smooth Scroll Scrub (No dead gaps) ──
-      const scrubTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
-      });
-
-      scrubTl
-        .to(rohitRef.current, { x: -50, ease: "none" }, 0)
-        .to(vermaRef.current, { x: 50, ease: "none" }, 0)
-        .to(glowRef.current, { scale: 1.5, opacity: 0.5, ease: "none" }, 0)
-        .to(contentWrapperRef.current, { y: 100, opacity: 0.25, ease: "none" }, 0)
-        .to(scrollIndicatorRef.current, { opacity: 0, ease: "none" }, 0);
-    }, containerRef);
-
-    return () => ctx.revert();
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
-
-  const scrollToWork = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const workEl = document.getElementById("chapter-work");
-    if (workEl) {
-      if (lenis) {
-        lenis.scrollTo(workEl, { duration: 1.4 });
-      } else {
-        workEl.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
 
   const scrollToCapabilities = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -112,115 +40,186 @@ export default function Hero() {
     <section
       id="chapter-intro"
       ref={containerRef}
-      className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden bg-charcoal select-none py-28 md:py-36 px-6 md:px-12"
+      className="relative w-full h-screen min-h-[700px] flex flex-col justify-between overflow-hidden bg-[#111215] select-none pt-24 pb-8 sm:pb-12 px-6 sm:px-12 md:px-16"
     >
-      {/* ── Warm Amber Glow Expansion Background ── */}
+      {/* ── Studio Vignette & Radial Spotlight (Matches Reference Lighting) ── */}
       <div
-        ref={glowRef}
         aria-hidden="true"
-        className="absolute w-[60vw] h-[60vw] max-w-[850px] max-h-[850px] rounded-full pointer-events-none z-0 will-change-transform"
+        className="absolute inset-0 pointer-events-none z-0"
         style={{
-          background: "radial-gradient(circle, rgba(245, 166, 35, 0.3) 0%, rgba(217, 119, 6, 0.12) 45%, transparent 70%)",
-          filter: "blur(80px)",
+          background:
+            "radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.08) 0%, rgba(180, 160, 140, 0.03) 35%, transparent 70%), radial-gradient(circle at 50% 50%, transparent 45%, rgba(10, 11, 14, 0.95) 100%)",
         }}
       />
 
-      {/* Subtle fine grid lines */}
+      {/* Subtle Atmospheric Studio Grain */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-[0.035]"
-        style={{
-          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.2) 1px, transparent 1px)",
-          backgroundSize: "80px 80px",
-          maskImage: "radial-gradient(ellipse at center, black 45%, transparent 80%)",
-        }}
+        className="absolute inset-0 pointer-events-none opacity-[0.035] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] z-0"
       />
 
-      {/* ── Main Content Container ── */}
-      <div
-        ref={contentWrapperRef}
-        className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center justify-center will-change-transform"
-      >
-        {/* Eyebrow & Status Pill */}
-        <div ref={eyebrowRef} className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 mb-5 sm:mb-8">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 font-mono text-[10px] sm:text-[11px] text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="tracking-wider uppercase font-semibold">AVAILABLE FOR SDE ROLES</span>
+      {/* ── Centerpiece: Living Double-Exposure Portrait ── */}
+      <div className="relative z-10 w-full flex-1 flex flex-col items-center justify-center my-auto pointer-events-none">
+        <div className="relative w-full max-w-[1020px] aspect-[16/9.2] sm:aspect-[16/9] flex items-center justify-center [mask-image:radial-gradient(ellipse_75%_75%_at_50%_48%,black_58%,transparent_96%)]">
+          {/* 1. Ghosted Profile Duplicate (Offset to left with independent drifting) */}
+          <div
+            className="absolute inset-0 flex items-center justify-center transition-transform duration-700 ease-out will-change-transform opacity-45 mix-blend-screen"
+            style={{
+              transform: `translate(${mousePos.x * -10 - 16}px, ${mousePos.y * -6}px) scale(1.02)`,
+              animation: "ghostDrift 11s ease-in-out infinite alternate",
+            }}
+          >
+            <div className="relative w-full h-full filter grayscale contrast-125 brightness-90">
+              <Image
+                src="/images/rohit_hero_clean.jpg"
+                alt="Rohit Verma Double-Exposure Profile"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 1020px"
+                className="object-contain object-center scale-[1.03]"
+              />
+            </div>
           </div>
-          <span className="hidden sm:inline text-foreground/30 font-mono text-xs">•</span>
-          <p className="font-mono text-[9px] sm:text-[11px] md:text-xs tracking-[0.25em] sm:tracking-[0.3em] uppercase text-amber font-semibold">
-            FULL-STACK ARCHITECT &amp; AI INTEGRATOR
-          </p>
-        </div>
 
-        {/* Name Typography (Original Display Font) */}
-        <div
-          ref={nameGroupRef}
-          className="flex flex-col items-center justify-center leading-[0.88] tracking-tighter will-change-transform mb-5 sm:mb-8"
-        >
-          <h1
-            ref={rohitRef}
-            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-off-white uppercase will-change-transform"
+          {/* 2. Main High-Contrast Cinematic Front Portrait */}
+          <div
+            className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-out will-change-transform"
+            style={{
+              transform: `translate(${mousePos.x * 5}px, ${mousePos.y * 4}px)`,
+              animation: "livingBreathingPortrait 8s ease-in-out infinite alternate",
+            }}
           >
-            ROHIT
-          </h1>
-          <h1
-            ref={vermaRef}
-            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-amber uppercase will-change-transform"
-          >
-            VERMA
-          </h1>
-        </div>
+            <div className="relative w-full h-full filter grayscale contrast-[1.18] brightness-[0.96]">
+              <Image
+                src="/images/rohit_hero_clean.jpg"
+                alt="Rohit Verma Cinematic Portrait"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 1020px"
+                className="object-contain object-center"
+              />
 
-        {/* Introduction Statements (Clean Scaled-Down Sans Subtitle + System Pills) */}
-        <div ref={detailsRef} className="max-w-2xl mx-auto space-y-3 sm:space-y-4 mb-6 sm:mb-10 px-2">
-          <p className="font-body text-sm sm:text-base md:text-lg font-light text-foreground/80 leading-relaxed max-w-xl mx-auto">
-            Engineering high-performance web architectures, computer vision pipelines, and resilient distributed systems.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pt-1 font-mono text-[11px] sm:text-xs text-foreground/60">
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">React.js &amp; Next.js</span>
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">Node.js &amp; FastAPI</span>
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">YOLOv8 AI</span>
-            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">AWS Certified</span>
+              {/* 3. Subtle Studio Lighting Sweep across Facial Features */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-25"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 49% 42%, rgba(255, 235, 200, 0.45) 0%, transparent 58%)",
+                  animation: "studioLightSweep 9.5s ease-in-out infinite alternate",
+                }}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Interactive CTAs */}
-        <div
-          ref={ctaGroupRef}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 w-full sm:w-auto will-change-transform px-4"
-        >
-          <a
-            href="#chapter-work"
-            onClick={scrollToWork}
-            data-cursor-interactive
-            className="group relative inline-flex items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-off-white text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase transition-all duration-300 hover:bg-amber hover:text-charcoal hover:scale-105 shadow-md"
+        {/* ── Overlay Text Hierarchy: Centered Over Lower Portrait & Composition ── */}
+        <div className="absolute inset-x-0 bottom-6 sm:bottom-8 md:bottom-10 z-20 flex flex-col items-center text-center pointer-events-none">
+          {/* Upper Title: ROHIT VERMA */}
+          <h1
+            className="font-mono text-xs sm:text-sm md:text-[15px] font-bold tracking-[0.38em] text-white/95 uppercase drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)] mb-1 sm:mb-1.5 transition-transform duration-300 ease-out pointer-events-auto"
+            style={{
+              transform: `translate(${mousePos.x * 2.5}px, ${mousePos.y * 1.5}px)`,
+            }}
           >
-            <span>EXPLORE MY WORK</span>
-            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+            ROHIT VERMA
+          </h1>
 
-          <a
-            href="#chapter-capabilities"
+          {/* Subtitle: Web Developer, Competitive Programmer and Problem Solver */}
+          <p
+            className="font-mono text-[11px] sm:text-xs md:text-[13px] text-white/70 tracking-wide drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] font-light max-w-xl px-4 transition-transform duration-300 ease-out pointer-events-auto mb-2 sm:mb-3"
+            style={{
+              transform: `translate(${mousePos.x * 2}px, ${mousePos.y * 1.2}px)`,
+            }}
+          >
+            Web Developer, Competitive Programmer and Problem Solver
+          </p>
+
+          {/* ── Enormous Bold Condensed Typography: "code." ── */}
+          <div
+            className="relative pointer-events-none select-none transition-transform duration-300 ease-out"
+            style={{
+              transform: `translate(${mousePos.x * 1.5}px, ${mousePos.y * 0.8}px)`,
+            }}
+          >
+            <span className="font-black text-[clamp(5.2rem,17vw,15.5rem)] tracking-tighter leading-[0.76] text-white drop-shadow-[0_25px_60px_rgba(0,0,0,0.98)] block">
+              code.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom Bar: Based in India & BUILD / LEARN / EXPLORE + Arrow ── */}
+      <div className="relative z-30 w-full max-w-7xl mx-auto flex items-center justify-between mt-auto select-none">
+        {/* Bottom-Left: Subtle Line + Based in India */}
+        <div className="flex items-center gap-3 text-white/60 font-mono text-[11px] sm:text-xs tracking-wider">
+          <span className="w-5 sm:w-6 h-px bg-white/40" />
+          <span>Based in India</span>
+        </div>
+
+        {/* Bottom-Right: BUILD / LEARN / EXPLORE + Circular Downward-Arrow Button */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          <span className="hidden sm:inline-block text-white/60 font-mono text-[10px] sm:text-[11px] tracking-[0.25em] uppercase">
+            BUILD &nbsp;/&nbsp; LEARN &nbsp;/&nbsp; EXPLORE
+          </span>
+
+          <button
+            type="button"
             onClick={scrollToCapabilities}
             data-cursor-interactive
-            className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-full border border-white/15 text-off-white/70 font-mono text-xs tracking-[0.2em] uppercase hover:text-off-white hover:border-white/30 transition-all duration-300"
+            className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/20 bg-white/[0.02] flex items-center justify-center text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md"
+            aria-label="Scroll down to explore"
+            title="Scroll to explore"
           >
-            <span>WHAT I DO</span>
-          </a>
+            <ArrowDown className="w-4 h-4 text-white transition-transform duration-300 group-hover:translate-y-0.5" />
+          </button>
         </div>
       </div>
 
-      {/* ── Scroll Prompt Indicator at Bottom ── */}
-      <div
-        ref={scrollIndicatorRef}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10 pointer-events-none select-none"
-      >
-        <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-foreground/40">
-          SCROLL TO BEGIN
-        </span>
-        <ArrowDown className="w-3.5 h-3.5 text-amber animate-bounce" />
-      </div>
+      {/* ── Keyframe Animations for Living Organic Motion ── */}
+      <style jsx global>{`
+        @keyframes livingBreathingPortrait {
+          0% {
+            transform: scale(1) translateY(0px);
+          }
+          50% {
+            transform: scale(1.007) translateY(-3px);
+          }
+          100% {
+            transform: scale(1.014) translateY(-1px);
+          }
+        }
+
+        @keyframes ghostDrift {
+          0% {
+            transform: translate(-14px, 0px) scale(1.01);
+            opacity: 0.4;
+          }
+          50% {
+            transform: translate(-22px, -3.5px) scale(1.028);
+            opacity: 0.55;
+          }
+          100% {
+            transform: translate(-16px, 1.5px) scale(1.018);
+            opacity: 0.44;
+          }
+        }
+
+        @keyframes studioLightSweep {
+          0% {
+            transform: translate(-6%, -4%) scale(1);
+            opacity: 0.16;
+          }
+          50% {
+            transform: translate(5%, 3%) scale(1.05);
+            opacity: 0.28;
+          }
+          100% {
+            transform: translate(-3%, 2%) scale(1.02);
+            opacity: 0.18;
+          }
+        }
+      `}</style>
     </section>
   );
 }
