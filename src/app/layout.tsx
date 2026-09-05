@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import PageTransition from "@/components/PageTransition";
 import Footer from "@/components/Footer";
-import { Outfit, Space_Grotesk, Syne, JetBrains_Mono, Playfair_Display, Caveat } from "next/font/google";
+import { Outfit, Space_Grotesk, Syne, JetBrains_Mono, Playfair_Display, Caveat, Anton } from "next/font/google";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -49,6 +49,13 @@ const caveat = Caveat({
   display: "swap",
 });
 
+const anton = Anton({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-anton",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Rohit Verma — Full Stack Developer",
   description: "Crafting high-end digital experiences with React, Node.js, and motion design. Editorial-inspired developer portfolio.",
@@ -73,7 +80,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={`${outfit.variable} ${spaceGrotesk.variable} ${syne.variable} ${jetbrainsMono.variable} ${playfair.variable} ${caveat.variable} noise-overlay`}>
+      <body className={`${outfit.variable} ${spaceGrotesk.variable} ${syne.variable} ${jetbrainsMono.variable} ${playfair.variable} ${caveat.variable} ${anton.variable} noise-overlay`}>
         <SmoothScrollProvider>
           <CustomCursor />
           <ScrollIndicator />

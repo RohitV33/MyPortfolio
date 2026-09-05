@@ -7,11 +7,10 @@ import { useLenis } from "@/components/SmoothScrollProvider";
 import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "/#chapter-intro" },
-  { label: "Projects", href: "/#chapter-work" },
-  { label: "Skills", href: "/#chapter-stack" },
-  { label: "Experience", href: "/#chapter-capabilities" },
-  { label: "About", href: "/#chapter-about" },
+  { label: "Web development", href: "/#chapter-work" },
+  { label: "photography", href: "/#chapter-capabilities" },
+  { label: "Videography", href: "/#chapter-stack" },
+  { label: "The person behind it", href: "/#chapter-about" },
 ];
 
 export default function Navbar() {
@@ -54,7 +53,7 @@ export default function Navbar() {
         role="banner"
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-out ${
           scrolled
-            ? "py-3 sm:py-4 bg-[#0d0e11]/85 backdrop-blur-xl border-b border-white/10 shadow-2xl"
+            ? "py-3 sm:py-4 bg-[#111215]/85 backdrop-blur-xl border-b border-white/10 shadow-2xl"
             : "py-6 sm:py-8 bg-transparent border-b border-transparent"
         }`}
       >
@@ -64,13 +63,13 @@ export default function Navbar() {
             href="/#chapter-intro"
             onClick={(e) => handleNavClick(e, "/#chapter-intro")}
             data-cursor-interactive
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-white/[0.02] flex items-center justify-center font-mono font-bold text-xs tracking-wider text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-white/[0.02] flex items-center justify-center font-bold text-xs tracking-wider text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none font-anton"
             aria-label="Rohit Verma Home"
           >
             RV
           </Link>
 
-          {/* Center-Top: Translucent Rounded Navigation Pill */}
+          {/* Center-Top: Translucent Rounded Navigation Pill (Matching Reference Exactly) */}
           <nav
             aria-label="Main Navigation"
             className="hidden md:flex items-center gap-6 lg:gap-8 px-7 py-2.5 rounded-full border border-white/15 bg-black/40 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] select-none"
@@ -83,8 +82,8 @@ export default function Navbar() {
                 data-cursor-interactive
                 className={`text-xs tracking-wide transition-all duration-200 ${
                   idx === 0
-                    ? "text-white font-semibold"
-                    : "text-white/65 hover:text-white font-normal"
+                    ? "text-white font-medium"
+                    : "text-white/60 hover:text-white font-normal"
                 }`}
               >
                 {item.label}
@@ -92,15 +91,15 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Top-Right: Outlined Rounded Contact Button */}
+          {/* Top-Right: Outlined Rounded Contact Button (all lowercase 'contact') */}
           <div className="hidden md:flex items-center">
             <Link
               href="/#chapter-contact"
               onClick={(e) => handleNavClick(e, "/#chapter-contact")}
               data-cursor-interactive
-              className="px-6 py-2.5 rounded-full border border-white/25 bg-white/[0.02] text-xs font-medium text-white tracking-wide hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
+              className="px-6 py-2.5 rounded-full border border-white/25 bg-white/[0.02] text-xs font-medium text-white tracking-wide hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none lowercase"
             >
-              Contact
+              contact
             </Link>
           </div>
 
@@ -118,7 +117,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-[#0d0e11]/98 backdrop-blur-3xl md:hidden flex flex-col justify-between px-8 py-24 transition-all duration-500 ease-out ${
+        className={`fixed inset-0 z-40 bg-[#111215]/98 backdrop-blur-3xl md:hidden flex flex-col justify-between px-8 py-24 transition-all duration-500 ease-out ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -150,14 +149,14 @@ export default function Navbar() {
               handleNavClick(e, "/#chapter-contact");
               setMenuOpen(false);
             }}
-            className="mt-6 flex items-center justify-center py-3.5 px-6 rounded-full border border-white/30 text-white font-mono text-xs tracking-widest uppercase hover:bg-white/10 transition-all"
+            className="mt-6 flex items-center justify-center py-3.5 px-6 rounded-full border border-white/30 text-white font-mono text-xs tracking-widest uppercase hover:bg-white/10 transition-all lowercase"
           >
-            Contact
+            contact
           </Link>
         </div>
 
         <div className="border-t border-white/10 pt-6 flex justify-between items-center text-white/40 font-mono text-[10px] tracking-wider">
-          <span>Based in India</span>
+          <span>🇮🇳 Based in India</span>
           <span>© 2026</span>
         </div>
       </div>
