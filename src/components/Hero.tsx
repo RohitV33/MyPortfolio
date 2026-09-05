@@ -172,10 +172,10 @@ export default function Hero() {
           </h1>
         </div>
 
-        {/* Introduction Statements (Editorial Serif Quote + System Pills) */}
+        {/* Introduction Statements (Clean Scaled-Down Sans Subtitle + System Pills) */}
         <div ref={detailsRef} className="max-w-2xl mx-auto space-y-3 sm:space-y-4 mb-6 sm:mb-10 px-2">
-          <p className="font-serif italic font-normal text-base sm:text-xl md:text-2xl text-off-white/90 leading-relaxed tracking-tight">
-            &ldquo;Engineering high-performance web architectures, computer vision pipelines, and resilient distributed systems.&rdquo;
+          <p className="font-body text-sm sm:text-base md:text-lg font-light text-foreground/80 leading-relaxed max-w-xl mx-auto">
+            Engineering high-performance web architectures, computer vision pipelines, and resilient distributed systems.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 pt-1 font-mono text-[11px] sm:text-xs text-foreground/60">
             <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-white/[0.03] border border-white/10 text-off-white/80">React.js &amp; Next.js</span>
