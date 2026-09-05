@@ -77,15 +77,14 @@ export interface MilestoneItem {
 }
 
 export const CHAPTERS = [
-  { number: "01", name: "Intro", label: "01 / 09", id: "chapter-intro" },
-  { number: "02", name: "Story", label: "02 / 09", id: "chapter-story" },
-  { number: "03", name: "Capabilities", label: "03 / 09", id: "chapter-capabilities" },
-  { number: "04", name: "Work", label: "04 / 09", id: "chapter-work" },
-  { number: "05", name: "Case Study", label: "05 / 09", id: "chapter-case-study" },
-  { number: "06", name: "Stack", label: "06 / 09", id: "chapter-stack" },
-  { number: "07", name: "About", label: "07 / 09", id: "chapter-about" },
-  { number: "08", name: "Currently", label: "08 / 09", id: "chapter-currently" },
-  { number: "09", name: "Contact", label: "09 / 09", id: "chapter-contact" },
+  { number: "01", name: "Intro", label: "01 / 08", id: "chapter-intro" },
+  { number: "02", name: "Capabilities", label: "02 / 08", id: "chapter-capabilities" },
+  { number: "03", name: "Work", label: "03 / 08", id: "chapter-work" },
+  { number: "04", name: "Case Study", label: "04 / 08", id: "chapter-case-study" },
+  { number: "05", name: "Stack", label: "05 / 08", id: "chapter-stack" },
+  { number: "06", name: "About", label: "06 / 08", id: "chapter-about" },
+  { number: "07", name: "Currently", label: "07 / 08", id: "chapter-currently" },
+  { number: "08", name: "Contact", label: "08 / 08", id: "chapter-contact" },
 ];
 
 export const STORY_STATEMENTS: StoryStatement[] = [

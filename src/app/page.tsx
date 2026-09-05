@@ -1,7 +1,6 @@
 "use client";
 
 import Hero from "@/components/Hero";
-import StorySection from "@/components/StorySection";
 import CapabilitiesSection from "@/components/CapabilitiesSection";
 import ProjectGallery from "@/components/ProjectGallery";
 import CaseStudySection from "@/components/CaseStudySection";
@@ -17,31 +16,28 @@ export default function HomePage() {
       {/* Chapter 01: The Introduction */}
       <Hero />
 
-      {/* Chapter 02: The Story */}
-      <StorySection />
-
-      {/* Chapter 03: What I Do */}
+      {/* Chapter 02: What I Do */}
       <CapabilitiesSection />
 
-      {/* Chapter 04: The Work */}
+      {/* Chapter 03: The Work */}
       <ProjectGallery />
 
-      {/* Chapter 05: Case Study Moment */}
+      {/* Chapter 04: Case Study Moment */}
       <CaseStudySection />
 
-      {/* Chapter 06: The Stack */}
+      {/* Chapter 05: The Stack */}
       <TechStackSection />
 
       {/* Atmospheric Mindset & Philosophy: Scroll Animated Parallax Gallery */}
       <MindsetGallery />
 
-      {/* Chapter 07: About */}
+      {/* Chapter 06: About */}
       <AboutSection />
 
-      {/* Chapter 08: Currently Building */}
+      {/* Chapter 07: Currently Building */}
       <CurrentlyBuilding />
 
-      {/* Chapter 09: Contact & Minimalist Footer */}
+      {/* Chapter 08: Contact & Minimalist Footer */}
       <ContactSection />
     </main>
   );

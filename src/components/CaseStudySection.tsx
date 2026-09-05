@@ -49,7 +49,7 @@ export default function CaseStudySection() {
         <div className="flex items-center gap-3 mb-3">
           <span className="w-2 h-2 rounded-full bg-amber" />
           <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-            CHAPTER 05 // CASE STUDY MOMENT
+            CHAPTER 04 // CASE STUDY MOMENT
           </p>
         </div>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">

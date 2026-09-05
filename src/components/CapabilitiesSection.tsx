@@ -67,7 +67,7 @@ export default function CapabilitiesSection() {
           <div className="flex items-center gap-3 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber" />
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-              CHAPTER 03 // WHAT I DO
+              CHAPTER 02 // WHAT I DO
             </p>
           </div>
           <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95]">
@@ -120,7 +120,7 @@ export default function CapabilitiesSection() {
 
         {/* Bottom Indicator */}
         <div className="mt-24 md:mt-36 border-t border-white/10 pt-8 flex items-center justify-between font-mono text-[10px] tracking-widest text-foreground/40 uppercase">
-          <span>03 / 09 — CAPABILITIES</span>
+          <span>02 / 08 — CAPABILITIES</span>
           <span>SCROLL FOR SELECTED WORK ↓</span>
         </div>
       </div>

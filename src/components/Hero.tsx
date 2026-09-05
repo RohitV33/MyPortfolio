@@ -96,14 +96,14 @@ export default function Hero() {
     }
   };
 
-  const scrollToStory = (e: React.MouseEvent) => {
+  const scrollToCapabilities = (e: React.MouseEvent) => {
     e.preventDefault();
-    const storyEl = document.getElementById("chapter-story");
-    if (storyEl) {
+    const capEl = document.getElementById("chapter-capabilities");
+    if (capEl) {
       if (lenis) {
-        lenis.scrollTo(storyEl, { duration: 1.2 });
+        lenis.scrollTo(capEl, { duration: 1.2 });
       } else {
-        storyEl.scrollIntoView({ behavior: "smooth" });
+        capEl.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
@@ -201,12 +201,12 @@ export default function Hero() {
           </a>
 
           <a
-            href="#chapter-story"
-            onClick={scrollToStory}
+            href="#chapter-capabilities"
+            onClick={scrollToCapabilities}
             data-cursor-interactive
             className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-full border border-white/15 text-off-white/70 font-mono text-xs tracking-[0.2em] uppercase hover:text-off-white hover:border-white/30 transition-all duration-300"
           >
-            <span>INSPECT MY JOURNEY</span>
+            <span>WHAT I DO</span>
           </a>
         </div>
       </div>

@@ -62,7 +62,7 @@ export default function ProjectGallery() {
         <div className="flex items-center gap-3 mb-3">
           <span className="w-2 h-2 rounded-full bg-amber" />
           <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-            CHAPTER 04 // THE WORK
+            CHAPTER 03 // THE WORK
           </p>
         </div>
 

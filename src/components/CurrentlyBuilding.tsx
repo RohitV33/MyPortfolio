@@ -45,7 +45,7 @@ export default function CurrentlyBuilding() {
         <div className="flex items-center gap-3 mb-3">
           <span className="w-2 h-2 rounded-full bg-amber" />
           <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-            CHAPTER 08 // CURRENTLY
+            CHAPTER 07 // CURRENTLY
           </p>
         </div>
         <h2 className="font-display text-4xl md:text-7xl font-extrabold tracking-tight text-off-white uppercase leading-[0.9]">
