@@ -5,6 +5,7 @@ import Image from "next/image";
 import { PROJECTS, Project } from "@/data/portfolioData";
 import { useLenis } from "@/components/SmoothScrollProvider";
 import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import {
   ArrowUpRight,
   Play,
@@ -36,8 +37,9 @@ export default function ProjectGallery() {
   const [videoProgress, setVideoProgress] = useState(0);
   const [cinemaProject, setCinemaProject] = useState<Project | null>(null);
 
-  // Animation targets
-  const sectionRef = useRef<HTMLElement>(null);
+  // Animation DOM targets
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
@@ -47,11 +49,10 @@ export default function ProjectGallery() {
   const counterRef = useRef<HTMLSpanElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Interaction flags
+  // State refs to avoid stale closures in event listeners
   const activeIdxRef = useRef(0);
   const isAnimatingRef = useRef(false);
   const cooldownRef = useRef(false);
-  const isHoveredRef = useRef(false);
 
   const { lenis } = useLenis();
   const activeProject = PROJECTS[activeIdx] || PROJECTS[0];
@@ -81,10 +82,17 @@ export default function ProjectGallery() {
     const tl = gsap.timeline({
       onComplete: () => {
         isAnimatingRef.current = false;
+        // Clean up any stray filter/blur artifacts
+        if (previewRef.current) {
+          gsap.set(previewRef.current, { clearProps: "filter,transform" });
+        }
+        if (titleRef.current) {
+          gsap.set(titleRef.current, { clearProps: "filter,transform" });
+        }
       },
     });
 
-    // 1. Current Project Out (Scale down, translate, fade, subtle blur)
+    // 1. Current Project Exits (Scale down, translate, fade out, subtle blur)
     if (previewRef.current) {
       tl.to(
         previewRef.current,
@@ -142,7 +150,7 @@ export default function ProjectGallery() {
       activeIdxRef.current = targetIdx;
       setVideoProgress(0);
 
-      // Video sync
+      // Video playback sync
       videoRefs.current.forEach((vid, i) => {
         if (vid) {
           if (i === targetIdx) {
@@ -202,7 +210,7 @@ export default function ProjectGallery() {
       }
     });
 
-    // 3. Incoming Project In (Staggered to scale 1, y 0, opacity 1, blur 0)
+    // 3. Incoming Project Enters (Staggered scale 1, y 0, opacity 1, blur 0)
     if (previewRef.current) {
       tl.to(
         previewRef.current,
@@ -298,63 +306,107 @@ export default function ProjectGallery() {
     }
   }, []);
 
-  // ── Wheel Scroll Gesture Handler ──
+  // ── ScrollTrigger for Continuous Scrollbar Drag / Touch Sync ──
   useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
+    gsap.registerPlugin(ScrollTrigger);
 
+    if (!containerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: (self) => {
+          if (isAnimatingRef.current || cooldownRef.current) return;
+          const p = self.progress;
+          const targetStep = p < 0.33 ? 0 : p < 0.66 ? 1 : 2;
+          if (targetStep !== activeIdxRef.current) {
+            goToProject(targetStep);
+          }
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, [goToProject]);
+
+  // ── Global Mouse Wheel Event Listener (Immediate Response) ──
+  useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      // Check if mouse is over section and section is in view
-      const rect = el.getBoundingClientRect();
-      const inView = rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+      const container = containerRef.current;
+      if (!container) return;
 
-      if (!inView || !isHoveredRef.current) return;
+      const rect = container.getBoundingClientRect();
+      // Active when container is sticky in view: top has reached near 0, and bottom hasn't scrolled past
+      const isStickyActive = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.7;
+
+      if (!isStickyActive) return;
 
       const current = activeIdxRef.current;
 
-      // Scroll DOWN
-      if (e.deltaY > 20) {
+      // ── Scroll DOWN (01 → 02 → 03) ──
+      if (e.deltaY > 15) {
         if (current < PROJECTS.length - 1) {
+          // Intercept scroll within project showcase
           e.preventDefault();
           (e as unknown as { lenisStopPropagation: boolean }).lenisStopPropagation = true;
 
           if (!isAnimatingRef.current && !cooldownRef.current) {
             cooldownRef.current = true;
-            goToProject(current + 1, 1);
+            const nextIdx = current + 1;
+            goToProject(nextIdx, 1);
+
+            // Sync page scroll position to the next step
+            if (lenis) {
+              const containerTop = window.scrollY + rect.top;
+              const scrollRange = rect.height - window.innerHeight;
+              const targetY = containerTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+              lenis.scrollTo(targetY, { duration: 0.8 });
+            }
+
             setTimeout(() => {
               cooldownRef.current = false;
             }, 600);
           }
         }
-        // If on last project (Bartr), do not prevent default; lets user scroll down to Chapter 04!
+        // If at last project (Bartr) scrolling down, don't preventDefault; let user scroll into Chapter 04!
       }
-      // Scroll UP
-      else if (e.deltaY < -20) {
+      // ── Scroll UP (03 → 02 → 01) ──
+      else if (e.deltaY < -15) {
         if (current > 0) {
+          // Intercept scroll within project showcase
           e.preventDefault();
           (e as unknown as { lenisStopPropagation: boolean }).lenisStopPropagation = true;
 
           if (!isAnimatingRef.current && !cooldownRef.current) {
             cooldownRef.current = true;
-            goToProject(current - 1, -1);
+            const prevIdx = current - 1;
+            goToProject(prevIdx, -1);
+
+            // Sync page scroll position to previous step
+            if (lenis) {
+              const containerTop = window.scrollY + rect.top;
+              const scrollRange = rect.height - window.innerHeight;
+              const targetY = containerTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+              lenis.scrollTo(targetY, { duration: 0.8 });
+            }
+
             setTimeout(() => {
               cooldownRef.current = false;
             }, 600);
           }
         }
-        // If on first project (CivicLens), do not prevent default; lets user scroll up to Chapter 02!
+        // If at first project (CivicLens) scrolling up, don't preventDefault; let user scroll into Chapter 02!
       }
     };
 
-    el.addEventListener("wheel", handleWheel, { passive: false });
-    return () => el.removeEventListener("wheel", handleWheel);
-  }, [goToProject]);
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [goToProject, lenis]);
 
   // ── Touch Swipe Support (Mobile) ──
   useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
     let touchStartY = 0;
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -362,6 +414,13 @@ export default function ProjectGallery() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+      const isStickyActive = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.7;
+      if (!isStickyActive) return;
+
       const deltaY = touchStartY - e.touches[0].clientY;
       const current = activeIdxRef.current;
 
@@ -370,7 +429,16 @@ export default function ProjectGallery() {
         if (current < PROJECTS.length - 1 && !isAnimatingRef.current && !cooldownRef.current) {
           e.preventDefault();
           cooldownRef.current = true;
-          goToProject(current + 1, 1);
+          const nextIdx = current + 1;
+          goToProject(nextIdx, 1);
+
+          if (lenis) {
+            const containerTop = window.scrollY + rect.top;
+            const scrollRange = rect.height - window.innerHeight;
+            const targetY = containerTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+            lenis.scrollTo(targetY, { duration: 0.8 });
+          }
+
           setTimeout(() => {
             cooldownRef.current = false;
           }, 600);
@@ -380,7 +448,16 @@ export default function ProjectGallery() {
         if (current > 0 && !isAnimatingRef.current && !cooldownRef.current) {
           e.preventDefault();
           cooldownRef.current = true;
-          goToProject(current - 1, -1);
+          const prevIdx = current - 1;
+          goToProject(prevIdx, -1);
+
+          if (lenis) {
+            const containerTop = window.scrollY + rect.top;
+            const scrollRange = rect.height - window.innerHeight;
+            const targetY = containerTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+            lenis.scrollTo(targetY, { duration: 0.8 });
+          }
+
           setTimeout(() => {
             cooldownRef.current = false;
           }, 600);
@@ -388,14 +465,14 @@ export default function ProjectGallery() {
       }
     };
 
-    el.addEventListener("touchstart", handleTouchStart, { passive: true });
-    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
-      el.removeEventListener("touchstart", handleTouchStart);
-      el.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [goToProject]);
+  }, [goToProject, lenis]);
 
   // ── Keyboard Arrows Navigation ──
   useEffect(() => {
@@ -405,10 +482,10 @@ export default function ProjectGallery() {
         return;
       }
 
-      const el = sectionRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const inView = rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.3;
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const inView = rect.top <= 120 && rect.bottom >= window.innerHeight * 0.5;
       if (!inView) return;
 
       const current = activeIdxRef.current;
@@ -416,19 +493,47 @@ export default function ProjectGallery() {
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         if (current < PROJECTS.length - 1) {
           e.preventDefault();
-          goToProject(current + 1, 1);
+          const nextIdx = current + 1;
+          goToProject(nextIdx, 1);
+          if (lenis) {
+            const containerTop = window.scrollY + rect.top;
+            const scrollRange = rect.height - window.innerHeight;
+            const targetY = containerTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+            lenis.scrollTo(targetY, { duration: 0.8 });
+          }
         }
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         if (current > 0) {
           e.preventDefault();
-          goToProject(current - 1, -1);
+          const prevIdx = current - 1;
+          goToProject(prevIdx, -1);
+          if (lenis) {
+            const containerTop = window.scrollY + rect.top;
+            const scrollRange = rect.height - window.innerHeight;
+            const targetY = containerTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+            lenis.scrollTo(targetY, { duration: 0.8 });
+          }
         }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToProject, cinemaProject]);
+  }, [goToProject, lenis, cinemaProject]);
+
+  // Tab click handler
+  const handleTabClick = (idx: number) => {
+    if (idx === activeIdxRef.current || isAnimatingRef.current) return;
+    goToProject(idx);
+    const container = containerRef.current;
+    if (container && lenis) {
+      const rect = container.getBoundingClientRect();
+      const containerTop = window.scrollY + rect.top;
+      const scrollRange = rect.height - window.innerHeight;
+      const targetY = containerTop + (idx / (PROJECTS.length - 1)) * scrollRange;
+      lenis.scrollTo(targetY, { duration: 0.8 });
+    }
+  };
 
   // Video Time Update for Progress Line
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -476,350 +581,350 @@ export default function ProjectGallery() {
   return (
     <section
       id="chapter-work"
-      ref={sectionRef}
-      onMouseEnter={() => {
-        isHoveredRef.current = true;
-      }}
-      onMouseLeave={() => {
-        isHoveredRef.current = false;
-      }}
-      className="relative w-full min-h-screen flex flex-col justify-center py-20 sm:py-24 bg-[#0d0d0d] text-off-white select-none border-t border-white/5 overflow-hidden"
+      ref={containerRef}
+      className="relative w-full h-[250vh] bg-[#0d0d0d] text-off-white select-none border-t border-white/5"
     >
-      {/* Dynamic Ambient Background Glow Tinted by Current Project */}
+      {/* ── PINNED / STICKY SHOWCASE STAGE (Locks to viewport while exploring) ── */}
       <div
-        aria-hidden="true"
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[1100px] h-[40vw] max-h-[500px] rounded-full pointer-events-none opacity-15 blur-[140px] transition-colors duration-1000 ease-out z-0"
-        style={{
-          background: `radial-gradient(circle, ${activeProject.color || "#F5A623"} 0%, transparent 70%)`,
-        }}
-      />
+        ref={stickyRef}
+        className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-16 sm:pt-20 pb-8 z-10"
+      >
+        {/* Dynamic Ambient Background Glow Tinted by Current Project */}
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[1100px] h-[40vw] max-h-[500px] rounded-full pointer-events-none opacity-15 blur-[140px] transition-colors duration-1000 ease-out z-0"
+          style={{
+            background: `radial-gradient(circle, ${activeProject.color || "#F5A623"} 0%, transparent 70%)`,
+          }}
+        />
 
-      {/* Subtle Studio Grid Overlay */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"
-      />
+        {/* Subtle Studio Grid Overlay */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"
+        />
 
-      <div className="relative z-10 max-w-[1500px] mx-auto px-6 sm:px-10 lg:px-14 w-full">
-        {/* ── SECTION HEADER & DYNAMIC NAVIGATION ── */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 sm:mb-8">
-          <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
-              <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber font-semibold">
-                CHAPTER 03 // THE WORK
-              </p>
-            </div>
-
-            <h2 className="font-akira text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-off-white uppercase leading-[0.95]">
-              SELECTED <span className="text-amber">PROJECTS.</span>
-            </h2>
-          </div>
-
-          {/* Dynamic Controls: Segmented Tabs & Counter Arrows */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Project Navigation Tabs */}
-            <div className="flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl">
-              {PROJECTS.map((project, idx) => {
-                const isActive = activeIdx === idx;
-                return (
-                  <button
-                    key={project.id}
-                    type="button"
-                    onClick={() => goToProject(idx)}
-                    className={`px-3 sm:px-4 py-1.5 rounded-full font-mono text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 sm:gap-2 ${
-                      isActive
-                        ? "bg-amber text-charcoal font-bold shadow-[0_0_16px_rgba(245,166,35,0.35)] scale-[1.02]"
-                        : "text-off-white/60 hover:text-off-white hover:bg-white/5"
-                    }`}
-                  >
-                    <span>{project.number}</span>
-                    <span className="hidden sm:inline font-semibold">{project.title}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Prev / Next Buttons & Animated Counter */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  if (activeIdx > 0) goToProject(activeIdx - 1, -1);
-                }}
-                disabled={activeIdx === 0}
-                aria-label="Previous project"
-                className={`w-8 h-8 rounded-full border border-white/10 bg-black/40 text-off-white/70 transition-all flex items-center justify-center ${
-                  activeIdx === 0
-                    ? "opacity-30 cursor-not-allowed"
-                    : "hover:text-amber hover:border-amber/50 hover:bg-white/5"
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              {/* Counter with Animated Number */}
-              <div className="font-mono text-xs text-off-white/50 px-1.5 flex items-center overflow-hidden h-6">
-                <span
-                  ref={counterRef}
-                  className="inline-block text-amber font-bold will-change-transform"
-                >
-                  {activeProject.number}
-                </span>
-                <span className="text-off-white/40 ml-1">/ 0{PROJECTS.length}</span>
+        <div className="relative z-10 max-w-[1500px] mx-auto w-full flex flex-col justify-between h-full max-h-[820px]">
+          {/* ── SECTION HEADER & DYNAMIC NAVIGATION ── */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 sm:mb-6">
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
+                <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber font-semibold">
+                  CHAPTER 03 // THE WORK
+                </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  if (activeIdx < PROJECTS.length - 1) goToProject(activeIdx + 1, 1);
-                }}
-                disabled={activeIdx === PROJECTS.length - 1}
-                aria-label="Next project"
-                className={`w-8 h-8 rounded-full border border-white/10 bg-black/40 text-off-white/70 transition-all flex items-center justify-center ${
-                  activeIdx === PROJECTS.length - 1
-                    ? "opacity-30 cursor-not-allowed"
-                    : "hover:text-amber hover:border-amber/50 hover:bg-white/5"
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              <h2 className="font-akira text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-off-white uppercase leading-[0.95]">
+                SELECTED <span className="text-amber">PROJECTS.</span>
+              </h2>
             </div>
-          </div>
-        </div>
 
-        {/* ── MAIN SHOWCASE STAGE (Left Video, Right Details) ── */}
-        <div className="w-full rounded-3xl border border-white/10 bg-[#121316]/90 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)]">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-            {/* ── LEFT: Cinematic Video Preview (Cols 1-7) ── */}
-            <div ref={previewRef} className="lg:col-span-7 flex flex-col gap-2 will-change-transform">
-              <div className="relative w-full aspect-[16/10] max-h-[380px] sm:max-h-[420px] rounded-2xl overflow-hidden bg-black/95 border border-white/15 shadow-2xl group">
-                {/* Preloaded Video Elements */}
+            {/* Dynamic Controls: Segmented Tabs & Counter Arrows */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Project Navigation Tabs */}
+              <div className="flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl">
                 {PROJECTS.map((project, idx) => {
-                  const isCurrent = idx === activeIdx;
+                  const isActive = activeIdx === idx;
                   return (
-                    <div
+                    <button
                       key={project.id}
-                      className={`absolute inset-0 transition-opacity duration-500 ${
-                        isCurrent
-                          ? "opacity-100 pointer-events-auto z-10"
-                          : "opacity-0 pointer-events-none z-0"
+                      type="button"
+                      onClick={() => handleTabClick(idx)}
+                      className={`px-3 sm:px-4 py-1.5 rounded-full font-mono text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 sm:gap-2 ${
+                        isActive
+                          ? "bg-amber text-charcoal font-bold shadow-[0_0_16px_rgba(245,166,35,0.35)] scale-[1.02]"
+                          : "text-off-white/60 hover:text-off-white hover:bg-white/5"
                       }`}
                     >
-                      {project.videoUrl ? (
-                        <video
-                          ref={(el) => {
-                            videoRefs.current[idx] = el;
-                          }}
-                          src={project.videoUrl}
-                          poster={project.posterUrl}
-                          autoPlay
-                          loop
-                          muted={isMuted}
-                          playsInline
-                          onTimeUpdate={handleTimeUpdate}
-                          className="w-full h-full object-cover object-center"
-                        />
-                      ) : (
-                        <Image
-                          src={project.posterUrl}
-                          alt={project.title}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 60vw"
-                          className="object-cover object-center"
-                        />
-                      )}
-                    </div>
+                      <span>{project.number}</span>
+                      <span className="hidden sm:inline font-semibold">{project.title}</span>
+                    </button>
                   );
                 })}
+              </div>
 
-                {/* Subtle Cinematic Vignette */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none z-20" />
-
-                {/* Top Overlay Badge */}
-                <div className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-mono">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-off-white font-medium tracking-wider">
-                    PRODUCTION DEMO
-                  </span>
-                </div>
-
-                {/* Top Right: Fullscreen Cinema Button */}
+              {/* Prev / Next Buttons & Animated Counter */}
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => setCinemaProject(activeProject)}
-                  aria-label="Expand to Cinema Theatre"
-                  className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-off-white/80 hover:text-amber hover:border-amber transition-all shadow-lg"
-                  title="Expand Fullscreen Reel"
+                  onClick={() => {
+                    if (activeIdx > 0) handleTabClick(activeIdx - 1);
+                  }}
+                  disabled={activeIdx === 0}
+                  aria-label="Previous project"
+                  className={`w-8 h-8 rounded-full border border-white/10 bg-black/40 text-off-white/70 transition-all flex items-center justify-center ${
+                    activeIdx === 0
+                      ? "opacity-30 cursor-not-allowed"
+                      : "hover:text-amber hover:border-amber/50 hover:bg-white/5"
+                  }`}
                 >
-                  <Maximize2 className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
 
-                {/* Floating Bottom HUD Controls */}
-                {activeProject.videoUrl && (
-                  <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={togglePlay}
-                        className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider"
-                      >
-                        {isPlaying ? (
-                          <>
-                            <Pause className="w-3 h-3 text-amber" />
-                            <span>PAUSE</span>
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-3 h-3 text-amber" />
-                            <span>PLAY</span>
-                          </>
-                        )}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={toggleMute}
-                        className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center justify-center"
-                        title={isMuted ? "Unmute Audio" : "Mute Audio"}
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-3.5 h-3.5 text-off-white/60" />
-                        ) : (
-                          <Volume2 className="w-3.5 h-3.5 text-amber" />
-                        )}
-                      </button>
-                    </div>
-
-                    <span className="font-mono text-[9px] text-off-white/50 tracking-wider bg-black/60 px-2.5 py-0.5 rounded-md border border-white/10 hidden sm:inline">
-                      1080P // LOOPING
-                    </span>
-                  </div>
-                )}
-
-                {/* Looping Progress Line Indicator */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
-                  <div
-                    className="h-full bg-gradient-to-r from-amber to-amber-lighter transition-all duration-150"
-                    style={{ width: `${videoProgress}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ── RIGHT: Project Details (Cols 8-12) ── */}
-            <div className="lg:col-span-5 flex flex-col justify-center space-y-4">
-              <div>
-                {/* Number & Year Header */}
-                <div className="flex items-center gap-3 mb-1.5 font-mono text-xs">
-                  <span className="text-amber font-bold tracking-[0.25em]">
-                    PROJECT {activeProject.number}
-                  </span>
-                  <span className="text-white/20">•</span>
-                  <span className="text-off-white/50 tracking-wider uppercase">
-                    {activeProject.year}
-                  </span>
-                </div>
-
-                {/* Project Akira Title */}
-                <h3
-                  ref={titleRef}
-                  className="font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform"
-                >
-                  {activeProject.title}
-                </h3>
-
-                {/* Subtitle */}
-                <p
-                  ref={subtitleRef}
-                  className="font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform"
-                >
-                  {activeProject.subtitle}
-                </p>
-              </div>
-
-              {/* Clean Project Description */}
-              <div ref={descRef} className="space-y-2 will-change-transform">
-                <p className="font-body text-xs sm:text-sm text-off-white/85 leading-relaxed font-light">
-                  {activeProject.description}
-                </p>
-                <p className="font-body text-[11px] sm:text-xs text-off-white/60 leading-relaxed font-light">
-                  {activeProject.built}
-                </p>
-              </div>
-
-              {/* Necessary Tech Stack Tags */}
-              <div ref={tagsRef} className="will-change-transform">
-                <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/40 block mb-1.5">
-                  TECH STACK
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeProject.tags.slice(0, 5).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2.5 py-0.5 rounded-md border border-white/10 bg-white/[0.03] font-mono text-[10px] sm:text-[11px] text-off-white/80 tracking-wide hover:border-amber/40 hover:text-off-white transition-colors"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div
-                ref={actionsRef}
-                className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform"
-              >
-                <a
-                  href={activeProject.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase hover:bg-off-white transition-all duration-300 shadow-[0_0_20px_rgba(245,166,35,0.25)] hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <span>LAUNCH DEMO</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-
-                {activeProject.githubUrl && (
-                  <a
-                    href={activeProject.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/20 bg-white/[0.02] font-mono text-xs tracking-[0.15em] text-off-white/80 hover:text-off-white hover:border-amber/60 hover:bg-white/[0.05] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                {/* Counter with Animated Number */}
+                <div className="font-mono text-xs text-off-white/50 px-1.5 flex items-center overflow-hidden h-6">
+                  <span
+                    ref={counterRef}
+                    className="inline-block text-amber font-bold will-change-transform"
                   >
-                    <GithubIcon className="w-3.5 h-3.5" />
-                    <span>REPOSITORY</span>
-                  </a>
-                )}
+                    {activeProject.number}
+                  </span>
+                  <span className="text-off-white/40 ml-1">/ 0{PROJECTS.length}</span>
+                </div>
 
-                {activeProject.number === "01" && (
-                  <a
-                    href="#chapter-case-study"
-                    onClick={scrollToCaseStudy}
-                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] font-mono text-xs tracking-wider text-off-white/60 hover:text-amber hover:border-amber/40 transition-all"
-                  >
-                    <span>CASE STUDY ↓</span>
-                  </a>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeIdx < PROJECTS.length - 1) handleTabClick(activeIdx + 1);
+                  }}
+                  disabled={activeIdx === PROJECTS.length - 1}
+                  aria-label="Next project"
+                  className={`w-8 h-8 rounded-full border border-white/10 bg-black/40 text-off-white/70 transition-all flex items-center justify-center ${
+                    activeIdx === PROJECTS.length - 1
+                      ? "opacity-30 cursor-not-allowed"
+                      : "hover:text-amber hover:border-amber/50 hover:bg-white/5"
+                  }`}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ── BOTTOM INTERACTION HINT ── */}
-        <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-off-white/40 uppercase mt-4">
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber animate-ping" />
-            <span>
-              {activeIdx < PROJECTS.length - 1
-                ? "SCROLL MOUSE WHEEL TO EXPLORE NEXT PROJECT ↓"
-                : "ALL PROJECTS EXPLORED — SCROLL DOWN TO CHAPTER 04 ↓"}
+          {/* ── MAIN SHOWCASE STAGE (Left Video, Right Details) ── */}
+          <div className="w-full rounded-3xl border border-white/10 bg-[#121316]/90 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+              {/* ── LEFT: Cinematic Video Preview (Cols 1-7) ── */}
+              <div ref={previewRef} className="lg:col-span-7 flex flex-col gap-2 will-change-transform">
+                <div className="relative w-full aspect-[16/10] max-h-[380px] sm:max-h-[420px] rounded-2xl overflow-hidden bg-black/95 border border-white/15 shadow-2xl group">
+                  {/* Preloaded Video Elements with Instant Opacity Switching */}
+                  {PROJECTS.map((project, idx) => {
+                    const isCurrent = idx === activeIdx;
+                    return (
+                      <div
+                        key={project.id}
+                        className={`absolute inset-0 transition-opacity duration-500 ${
+                          isCurrent
+                            ? "opacity-100 pointer-events-auto z-10"
+                            : "opacity-0 pointer-events-none z-0"
+                        }`}
+                      >
+                        {project.videoUrl ? (
+                          <video
+                            ref={(el) => {
+                              videoRefs.current[idx] = el;
+                            }}
+                            src={project.videoUrl}
+                            poster={project.posterUrl}
+                            autoPlay
+                            loop
+                            muted={isMuted}
+                            playsInline
+                            onTimeUpdate={handleTimeUpdate}
+                            className="w-full h-full object-cover object-center"
+                          />
+                        ) : (
+                          <Image
+                            src={project.posterUrl}
+                            alt={project.title}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 60vw"
+                            className="object-cover object-center"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Subtle Cinematic Vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none z-20" />
+
+                  {/* Top Overlay Badge */}
+                  <div className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-mono">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-off-white font-medium tracking-wider">
+                      PRODUCTION DEMO
+                    </span>
+                  </div>
+
+                  {/* Top Right: Fullscreen Cinema Button */}
+                  <button
+                    type="button"
+                    onClick={() => setCinemaProject(activeProject)}
+                    aria-label="Expand to Cinema Theatre"
+                    className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-off-white/80 hover:text-amber hover:border-amber transition-all shadow-lg"
+                    title="Expand Fullscreen Reel"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Floating Bottom HUD Controls */}
+                  {activeProject.videoUrl && (
+                    <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={togglePlay}
+                          className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider"
+                        >
+                          {isPlaying ? (
+                            <>
+                              <Pause className="w-3 h-3 text-amber" />
+                              <span>PAUSE</span>
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-3 h-3 text-amber" />
+                              <span>PLAY</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={toggleMute}
+                          className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center justify-center"
+                          title={isMuted ? "Unmute Audio" : "Mute Audio"}
+                        >
+                          {isMuted ? (
+                            <VolumeX className="w-3.5 h-3.5 text-off-white/60" />
+                          ) : (
+                            <Volume2 className="w-3.5 h-3.5 text-amber" />
+                          )}
+                        </button>
+                      </div>
+
+                      <span className="font-mono text-[9px] text-off-white/50 tracking-wider bg-black/60 px-2.5 py-0.5 rounded-md border border-white/10 hidden sm:inline">
+                        1080P // LOOPING
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Looping Progress Line Indicator */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
+                    <div
+                      className="h-full bg-gradient-to-r from-amber to-amber-lighter transition-all duration-150"
+                      style={{ width: `${videoProgress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* ── RIGHT: Project Details (Cols 8-12) ── */}
+              <div className="lg:col-span-5 flex flex-col justify-center space-y-4">
+                <div>
+                  {/* Number & Year Header */}
+                  <div className="flex items-center gap-3 mb-1.5 font-mono text-xs">
+                    <span className="text-amber font-bold tracking-[0.25em]">
+                      PROJECT {activeProject.number}
+                    </span>
+                    <span className="text-white/20">•</span>
+                    <span className="text-off-white/50 tracking-wider uppercase">
+                      {activeProject.year}
+                    </span>
+                  </div>
+
+                  {/* Project Akira Title */}
+                  <h3
+                    ref={titleRef}
+                    className="font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform"
+                  >
+                    {activeProject.title}
+                  </h3>
+
+                  {/* Subtitle */}
+                  <p
+                    ref={subtitleRef}
+                    className="font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform"
+                  >
+                    {activeProject.subtitle}
+                  </p>
+                </div>
+
+                {/* Clean Project Description */}
+                <div ref={descRef} className="space-y-2 will-change-transform">
+                  <p className="font-body text-xs sm:text-sm text-off-white/85 leading-relaxed font-light">
+                    {activeProject.description}
+                  </p>
+                  <p className="font-body text-[11px] sm:text-xs text-off-white/60 leading-relaxed font-light">
+                    {activeProject.built}
+                  </p>
+                </div>
+
+                {/* Necessary Tech Stack Tags */}
+                <div ref={tagsRef} className="will-change-transform">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/40 block mb-1.5">
+                    TECH STACK
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeProject.tags.slice(0, 5).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2.5 py-0.5 rounded-md border border-white/10 bg-white/[0.03] font-mono text-[10px] sm:text-[11px] text-off-white/80 tracking-wide hover:border-amber/40 hover:text-off-white transition-colors"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div
+                  ref={actionsRef}
+                  className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform"
+                >
+                  <a
+                    href={activeProject.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase hover:bg-off-white transition-all duration-300 shadow-[0_0_20px_rgba(245,166,35,0.25)] hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <span>LAUNCH DEMO</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+
+                  {activeProject.githubUrl && (
+                    <a
+                      href={activeProject.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/20 bg-white/[0.02] font-mono text-xs tracking-[0.15em] text-off-white/80 hover:text-off-white hover:border-amber/60 hover:bg-white/[0.05] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <GithubIcon className="w-3.5 h-3.5" />
+                      <span>REPOSITORY</span>
+                    </a>
+                  )}
+
+                  {activeProject.number === "01" && (
+                    <a
+                      href="#chapter-case-study"
+                      onClick={scrollToCaseStudy}
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] font-mono text-xs tracking-wider text-off-white/60 hover:text-amber hover:border-amber/40 transition-all"
+                    >
+                      <span>CASE STUDY ↓</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── BOTTOM INTERACTION HINT ── */}
+          <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-off-white/40 uppercase mt-4">
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber animate-ping" />
+              <span>
+                {activeIdx < PROJECTS.length - 1
+                  ? "SCROLL MOUSE WHEEL TO EXPLORE NEXT PROJECT ↓"
+                  : "ALL PROJECTS EXPLORED — SCROLL DOWN TO CHAPTER 04 ↓"}
+              </span>
             </span>
-          </span>
 
-          <span className="hidden sm:inline-block">
-            NAVIGATE VIA WHEEL, TABS OR ARROWS
-          </span>
+            <span className="hidden sm:inline-block">
+              NAVIGATE VIA WHEEL, TABS OR ARROWS
+            </span>
+          </div>
         </div>
       </div>
 
