@@ -47,7 +47,7 @@ export default function Navbar() {
             href="/#chapter-intro"
             onClick={(e) => handleNavClick(e, "/#chapter-intro")}
             data-cursor-interactive
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-black/20 backdrop-blur-md flex items-center justify-center font-mono font-bold text-xs tracking-wider text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/20 bg-black/20 backdrop-blur-md flex items-center justify-center font-mono font-bold text-xs tracking-wider text-off-white hover:border-amber hover:text-amber hover:bg-amber/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
             aria-label="Rohit Verma Home"
           >
             RV
@@ -66,8 +66,8 @@ export default function Navbar() {
                 data-cursor-interactive
                 className={`text-[13px] tracking-wide transition-all duration-200 ${
                   idx === 0
-                    ? "text-white font-semibold"
-                    : "text-white/65 hover:text-white font-normal"
+                    ? "text-off-white font-semibold"
+                    : "text-off-white/60 hover:text-amber font-normal"
                 }`}
               >
                 {item.label}
@@ -81,7 +81,7 @@ export default function Navbar() {
               href="/#chapter-contact"
               onClick={(e) => handleNavClick(e, "/#chapter-contact")}
               data-cursor-interactive
-              className="h-12 px-7 rounded-full border border-white/25 bg-black/20 backdrop-blur-md flex items-center justify-center text-[13px] font-medium text-white tracking-wide hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
+              className="h-12 px-7 rounded-full border border-white/20 bg-black/20 backdrop-blur-md flex items-center justify-center text-[13px] font-medium text-off-white tracking-wide hover:border-amber hover:text-amber hover:bg-amber/10 hover:scale-105 active:scale-95 transition-all shadow-md select-none"
             >
               Contact
             </Link>

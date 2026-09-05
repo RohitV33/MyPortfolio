@@ -76,6 +76,24 @@ export interface MilestoneItem {
   description: string;
 }
 
+export interface HeroData {
+  name: string;
+  role: string;
+  subtitleParts: string[];
+  keyword: string;
+  location: string;
+  taglineParts: string[];
+}
+
+export const HERO_DATA: HeroData = {
+  name: "ROHIT VERMA",
+  role: "Web Developer, Competitive Programmer and Problem Solver",
+  subtitleParts: ["Web Developer", "Competitive Programmer", "Problem Solver"],
+  keyword: "code",
+  location: "Based in India",
+  taglineParts: ["BUILD", "LEARN", "EXPLORE"],
+};
+
 export const CHAPTERS = [
   { number: "01", name: "Intro", label: "01 / 08", id: "chapter-intro" },
   { number: "02", name: "Capabilities", label: "02 / 08", id: "chapter-capabilities" },

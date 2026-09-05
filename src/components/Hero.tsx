@@ -3,15 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import { useLenis } from "@/components/SmoothScrollProvider";
+import { HERO_DATA } from "@/data/portfolioData";
 
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
+  const textStackRef = useRef<HTMLDivElement>(null);
+  const photoContainerRef = useRef<HTMLDivElement>(null);
+  const bottomUIRef = useRef<HTMLDivElement>(null);
   const { lenis } = useLenis();
 
   // Mouse parallax coordinates (smooth normalized -1 to 1)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  // 1. Interactive Mouse Parallax
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
@@ -22,6 +29,61 @@ export default function Hero() {
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // 2. Mouse Scroll Scrub Animations (GSAP ScrollTrigger)
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Smoothly float up and fade out the text stack on mouse scroll
+      if (textStackRef.current) {
+        gsap.to(textStackRef.current, {
+          y: -120,
+          opacity: 0,
+          scale: 0.94,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom 35%",
+            scrub: 0.8,
+          },
+        });
+      }
+
+      // Cinematic depth parallax on the photograph on mouse scroll
+      if (photoContainerRef.current) {
+        gsap.to(photoContainerRef.current, {
+          y: 70,
+          scale: 1.06,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
+      }
+
+      // Fade out bottom controls on initial scroll
+      if (bottomUIRef.current) {
+        gsap.to(bottomUIRef.current, {
+          opacity: 0,
+          y: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "25% top",
+            scrub: 0.5,
+          },
+        });
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   const scrollToCapabilities = (e: React.MouseEvent) => {
@@ -43,8 +105,9 @@ export default function Hero() {
       className="relative w-full h-screen min-h-[640px] overflow-hidden bg-[#0d0d0d] select-none"
     >
       {/* ── 1. The Photographic Hero Environment (Full-Bleed Canvas) ── */}
-      {/* Breathing 1-3px, subtle micro-tilt, 5-8px mouse parallax */}
+      {/* Responds to both mousemove parallax and mouse scroll depth */}
       <div
+        ref={photoContainerRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-0 will-change-transform"
         style={{
           transform: `translate(${mousePos.x * 6}px, ${mousePos.y * 4}px) rotate(${mousePos.x * 0.25}deg)`,
@@ -67,7 +130,6 @@ export default function Hero() {
           />
 
           {/* ── 2. Atmospheric Double-Exposure Drift Layer ── */}
-          {/* Subtle ghost duplicate drifts independently with slower parallax */}
           <div
             className="absolute inset-0 w-full h-full pointer-events-none mix-blend-screen opacity-25"
             style={{
@@ -97,7 +159,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Seamless Edge Vignette to Guarantee Zero Rectangular Borders ── */}
+      {/* ── Seamless Edge Vignette ── */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none z-10"
@@ -107,61 +169,80 @@ export default function Hero() {
         }}
       />
 
-      {/* ── Central Typographic Stack Layer ── */}
-      {/* Positioned over the chest/torso, exactly matching the reference composition */}
+      {/* ── Central Typographic Stack Layer (Matches Website Fonts & Amber Colors) ── */}
+      {/* Positioned over chest/torso, with mouse parallax and GSAP mouse-scroll animation */}
       <div
-        className="absolute inset-x-0 bottom-[6%] sm:bottom-[7%] md:bottom-[7.5%] z-20 flex flex-col items-center text-center pointer-events-none px-4"
+        ref={textStackRef}
+        className="absolute inset-x-0 bottom-[6%] sm:bottom-[7%] md:bottom-[7.5%] z-20 flex flex-col items-center text-center pointer-events-none px-4 will-change-transform"
         style={{
-          transform: `translate(${mousePos.x * 3}px, ${mousePos.y * 2}px)`,
+          transform: `translate(${mousePos.x * 3.5}px, ${mousePos.y * 2}px)`,
           transition: "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
         }}
       >
-        {/* 1. Identity Layer: ROHIT VERMA */}
-        <h1 className="font-anton text-base sm:text-lg md:text-xl lg:text-[22px] tracking-[0.2em] text-white uppercase drop-shadow-[0_3px_12px_rgba(0,0,0,0.95)] mb-1 pointer-events-auto">
-          ROHIT VERMA
+        {/* 1. Identity Layer: ROHIT VERMA (Matches Chapter 02 font-display Syne/Akira, off-white, wide tracking) */}
+        <h1 className="font-display font-extrabold text-base sm:text-lg md:text-xl lg:text-[23px] tracking-[0.24em] text-off-white uppercase drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] mb-1.5 pointer-events-auto select-none">
+          {HERO_DATA.name}
         </h1>
 
-        {/* 2. Supporting Layer: Web Developer, Competitive Programmer and Problem Solver */}
-        <p className="font-mono text-[11px] sm:text-xs md:text-[13px] lg:text-sm text-[#b0b3ba] tracking-[0.04em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto mb-1.5 sm:mb-2 font-normal">
-          Web Developer, Competitive Programmer and Problem Solver
+        {/* 2. Supporting Layer: Web Developer • Competitive Programmer • Problem Solver (Matches font-mono & amber accents) */}
+        <p className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto mb-1.5 sm:mb-2 font-normal flex items-center justify-center gap-2 flex-wrap select-none">
+          {HERO_DATA.subtitleParts.map((part, idx) => (
+            <span key={part} className="inline-flex items-center gap-2">
+              <span>{part}</span>
+              {idx < HERO_DATA.subtitleParts.length - 1 && (
+                <span className="text-amber font-bold select-none text-[10px]">•</span>
+              )}
+            </span>
+          ))}
         </p>
 
-        {/* 3. Editorial Layer: code. */}
+        {/* 3. Editorial Layer: code. with signature amber period dot matching Chapter 02 accent */}
         <div className="relative pointer-events-none select-none">
-          <span className="font-anton text-[clamp(100px,14.5vw,215px)] font-black tracking-[-0.04em] leading-[0.76] text-white drop-shadow-[0_25px_50px_rgba(0,0,0,0.98)] block">
-            code.
+          <span className="font-anton text-[clamp(100px,14.5vw,215px)] font-black tracking-[-0.04em] leading-[0.76] text-off-white drop-shadow-[0_25px_50px_rgba(0,0,0,0.98)] block">
+            {HERO_DATA.keyword}
+            <span className="text-amber drop-shadow-[0_0_30px_rgba(245,166,35,0.7)]">.</span>
           </span>
         </div>
       </div>
 
       {/* ── Bottom UI: Anchored to Viewport Bottom Edge ── */}
-      <div className="absolute inset-x-0 bottom-6 sm:bottom-7 md:bottom-8 z-30 px-8 sm:px-10 max-w-[1720px] mx-auto flex items-center justify-between select-none pointer-events-none">
-        {/* Bottom-Left: Location information */}
-        <div className="flex items-center gap-3 text-white/50 font-mono text-xs tracking-wider pointer-events-auto">
-          <span className="w-5 sm:w-6 h-px bg-white/40" />
-          <span>Based in India</span>
+      <div
+        ref={bottomUIRef}
+        className="absolute inset-x-0 bottom-6 sm:bottom-7 md:bottom-8 z-30 px-8 sm:px-10 max-w-[1720px] mx-auto flex items-center justify-between select-none pointer-events-none will-change-transform"
+      >
+        {/* Bottom-Left: Location information with signature amber line */}
+        <div className="flex items-center gap-3 text-off-white/60 font-mono text-xs tracking-wider pointer-events-auto">
+          <span className="w-5 sm:w-6 h-px bg-amber/80" />
+          <span>{HERO_DATA.location}</span>
         </div>
 
         {/* Bottom-Right: BUILD / LEARN / EXPLORE + Circular Arrow Button */}
         <div className="flex items-center gap-4 pointer-events-auto">
-          <span className="hidden sm:inline-block text-white/50 font-mono text-[11px] tracking-[0.25em] uppercase">
-            BUILD &nbsp;/&nbsp; LEARN &nbsp;/&nbsp; EXPLORE
+          <span className="hidden sm:inline-block text-off-white/60 font-mono text-[11px] tracking-[0.25em] uppercase">
+            {HERO_DATA.taglineParts.map((part, idx) => (
+              <span key={part}>
+                {part}
+                {idx < HERO_DATA.taglineParts.length - 1 && (
+                  <span className="text-amber mx-2.5 font-bold">/</span>
+                )}
+              </span>
+            ))}
           </span>
 
           <button
             type="button"
             onClick={scrollToCapabilities}
             data-cursor-interactive
-            className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/25 bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:border-white hover:bg-white/10 hover:scale-105 active:scale-95 transition-all shadow-md"
+            className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/20 bg-black/25 backdrop-blur-md flex items-center justify-center text-off-white hover:border-amber hover:bg-amber/10 hover:text-amber hover:scale-105 active:scale-95 transition-all shadow-md"
             aria-label="Scroll to explore"
             title="Scroll to explore"
           >
-            <ArrowDown className="w-4 h-4 text-white transition-transform duration-300 group-hover:translate-y-0.5" />
+            <ArrowDown className="w-4 h-4 text-off-white group-hover:text-amber transition-colors duration-300 group-hover:translate-y-0.5" />
           </button>
         </div>
       </div>
 
-      {/* ── Organic Living Animations (6-10s cycles, smooth easing, no obvious looping) ── */}
+      {/* ── Organic Living Animations ── */}
       <style jsx global>{`
         @keyframes photographicBreathing {
           0% {
