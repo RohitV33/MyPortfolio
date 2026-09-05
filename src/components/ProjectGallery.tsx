@@ -5,7 +5,6 @@ import Image from "next/image";
 import { PROJECTS, Project } from "@/data/portfolioData";
 import { useLenis } from "@/components/SmoothScrollProvider";
 import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import {
   ArrowUpRight,
   Play,
@@ -17,6 +16,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+
+// Each project "chapter" consumes this many pixels of scroll space
+const SCROLL_PER_PROJECT = 700;
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -37,98 +39,64 @@ export default function ProjectGallery() {
   const [videoProgress, setVideoProgress] = useState(0);
   const [cinemaProject, setCinemaProject] = useState<Project | null>(null);
 
-  // Core Section & Pinned Viewport targets
   const sectionRef = useRef<HTMLElement>(null);
-  const stickyViewportRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
-
-  // Independent Project Stack Layer Refs
   const projectLayersRef = useRef<(HTMLDivElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  // State & Sync Refs
   const activeIdxRef = useRef(0);
   const isAnimatingRef = useRef(false);
-  const cooldownRef = useRef(false);
-  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   const { lenis } = useLenis();
   const activeProject = PROJECTS[activeIdx] || PROJECTS[0];
 
-  // ── Controlled Project Transition ──
-  const goToProject = useCallback((targetIdx: number, customDir?: number) => {
+  // ── Smooth project transition via GSAP ────────────────────────────────────
+  const goToProject = useCallback((targetIdx: number, dir?: 1 | -1) => {
     if (targetIdx === activeIdxRef.current || isAnimatingRef.current) return;
     if (targetIdx < 0 || targetIdx >= PROJECTS.length) return;
 
     isAnimatingRef.current = true;
     const currentIdx = activeIdxRef.current;
-    const dir = customDir ?? (targetIdx > currentIdx ? 1 : -1);
+    const direction = dir ?? (targetIdx > currentIdx ? 1 : -1);
 
     const currentLayer = projectLayersRef.current[currentIdx];
     const incomingLayer = projectLayersRef.current[targetIdx];
 
-    const prefersReducedMotion =
+    const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Counter animation
-    if (counterRef.current && !prefersReducedMotion) {
+    // Animate counter
+    if (counterRef.current && !prefersReduced) {
       gsap.to(counterRef.current, {
-        y: dir > 0 ? -16 : 16,
+        y: direction > 0 ? -14 : 14,
         opacity: 0,
         duration: 0.18,
         ease: "power2.inOut",
         onComplete: () => {
-          gsap.set(counterRef.current, { y: dir > 0 ? 16 : -16, opacity: 0 });
-          gsap.to(counterRef.current, {
-            y: 0,
-            opacity: 1,
-            duration: 0.3,
-            ease: "power3.out",
-          });
+          gsap.set(counterRef.current, { y: direction > 0 ? 14 : -14, opacity: 0 });
+          gsap.to(counterRef.current, { y: 0, opacity: 1, duration: 0.28, ease: "power3.out" });
         },
       });
     }
 
-    if (prefersReducedMotion || !currentLayer || !incomingLayer) {
+    if (prefersReduced || !currentLayer || !incomingLayer) {
       setActiveIdx(targetIdx);
       activeIdxRef.current = targetIdx;
       setVideoProgress(0);
-      setTimeout(() => {
-        isAnimatingRef.current = false;
-      }, 100);
+      setTimeout(() => { isAnimatingRef.current = false; }, 80);
       return;
     }
 
-    const currentPreview = currentLayer.querySelector<HTMLElement>(".project-preview");
-    const currentInfo = currentLayer.querySelectorAll<HTMLElement>(".project-info-item");
+    const outPreview = currentLayer.querySelector<HTMLElement>(".proj-preview");
+    const outInfo = currentLayer.querySelectorAll<HTMLElement>(".proj-info");
+    const inPreview = incomingLayer.querySelector<HTMLElement>(".proj-preview");
+    const inInfo = incomingLayer.querySelectorAll<HTMLElement>(".proj-info");
 
-    const incomingPreview = incomingLayer.querySelector<HTMLElement>(".project-preview");
-    const incomingInfo = incomingLayer.querySelectorAll<HTMLElement>(".project-info-item");
-
-    // Make incoming layer active in DOM immediately (positioned on top)
-    gsap.set(incomingLayer, {
-      opacity: 1,
-      zIndex: 20,
-    });
-
-    // Set initial incoming transforms
-    if (incomingPreview) {
-      gsap.set(incomingPreview, {
-        scale: 0.97,
-        y: dir > 0 ? 30 : -30,
-        opacity: 0,
-        filter: "blur(6px)",
-      });
-    }
-
-    if (incomingInfo.length > 0) {
-      gsap.set(incomingInfo, {
-        y: dir > 0 ? 22 : -22,
-        opacity: 0,
-        filter: "blur(4px)",
-      });
-    }
+    // Stage incoming layer
+    gsap.set(incomingLayer, { opacity: 1, zIndex: 20 });
+    if (inPreview) gsap.set(inPreview, { scale: 0.96, y: direction > 0 ? 28 : -28, opacity: 0, filter: "blur(8px)" });
+    if (inInfo.length) gsap.set(inInfo, { y: direction > 0 ? 20 : -20, opacity: 0, filter: "blur(4px)" });
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -136,311 +104,137 @@ export default function ProjectGallery() {
         activeIdxRef.current = targetIdx;
         setVideoProgress(0);
 
-        // Explicitly clear all inline transforms and filters to prevent blur leakage
-        if (incomingPreview) {
-          gsap.set(incomingPreview, { clearProps: "all" });
-        }
-        if (incomingInfo) {
-          incomingInfo.forEach((el) => gsap.set(el, { clearProps: "all" }));
-        }
-        if (currentPreview) {
-          gsap.set(currentPreview, { clearProps: "all" });
-        }
-        if (currentInfo) {
-          currentInfo.forEach((el) => gsap.set(el, { clearProps: "all" }));
-        }
+        // Cleanup
+        [inPreview, outPreview].forEach(el => el && gsap.set(el, { clearProps: "all" }));
+        inInfo.forEach(el => gsap.set(el, { clearProps: "all" }));
+        outInfo.forEach(el => gsap.set(el, { clearProps: "all" }));
 
-        // Hide outgoing layer
-        gsap.set(currentLayer, {
-          opacity: 0,
-          zIndex: 0,
-        });
-
-        // Ensure incoming layer is clean
+        gsap.set(currentLayer, { opacity: 0, zIndex: 0 });
         gsap.set(incomingLayer, { clearProps: "zIndex" });
 
-        // Play active video, pause others
+        // Video management
         videoRefs.current.forEach((vid, i) => {
-          if (vid) {
-            if (i === targetIdx) {
-              vid.currentTime = 0;
-              vid.play().catch(() => {});
-            } else {
-              vid.pause();
-            }
-          }
+          if (!vid) return;
+          if (i === targetIdx) { vid.currentTime = 0; vid.play().catch(() => {}); }
+          else vid.pause();
         });
 
         isAnimatingRef.current = false;
       },
     });
 
-    // ── Phase 1: Animate Outgoing Elements ──
-    if (currentPreview) {
-      tl.to(
-        currentPreview,
-        {
-          scale: 0.97,
-          y: dir > 0 ? -28 : 28,
-          opacity: 0,
-          filter: "blur(6px)",
-          duration: 0.35,
-          ease: "power2.inOut",
-        },
-        0
-      );
-    }
+    // Out
+    if (outPreview) tl.to(outPreview, { scale: 0.97, y: direction > 0 ? -24 : 24, opacity: 0, filter: "blur(6px)", duration: 0.32, ease: "power2.inOut" }, 0);
+    if (outInfo.length) tl.to(outInfo, { y: direction > 0 ? -16 : 16, opacity: 0, filter: "blur(3px)", stagger: 0.02, duration: 0.28, ease: "power2.inOut" }, 0);
 
-    if (currentInfo.length > 0) {
-      tl.to(
-        currentInfo,
-        {
-          y: dir > 0 ? -18 : 18,
-          opacity: 0,
-          filter: "blur(4px)",
-          stagger: 0.02,
-          duration: 0.3,
-          ease: "power2.inOut",
-        },
-        0
-      );
-    }
-
-    // ── Phase 2: Animate Incoming Elements with Stagger ──
-    if (incomingPreview) {
-      tl.to(
-        incomingPreview,
-        {
-          scale: 1,
-          y: 0,
-          opacity: 1,
-          filter: "blur(0px)",
-          duration: 0.5,
-          ease: "power3.out",
-        },
-        0.1
-      );
-    }
-
-    if (incomingInfo.length > 0) {
-      tl.to(
-        incomingInfo,
-        {
-          y: 0,
-          opacity: 1,
-          filter: "blur(0px)",
-          stagger: 0.03,
-          duration: 0.45,
-          ease: "power3.out",
-        },
-        0.15
-      );
-    }
+    // In
+    if (inPreview) tl.to(inPreview, { scale: 1, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.48, ease: "power3.out" }, 0.1);
+    if (inInfo.length) tl.to(inInfo, { y: 0, opacity: 1, filter: "blur(0px)", stagger: 0.03, duration: 0.44, ease: "power3.out" }, 0.16);
   }, []);
-
-  // ── GSAP ScrollTrigger Pinning ──
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    if (!sectionRef.current || !stickyViewportRef.current) return;
-
-    const ctx = gsap.context(() => {
-      const scrollDistance = (PROJECTS.length - 1) * window.innerHeight * 0.9;
-
-      const st = ScrollTrigger.create({
-        trigger: sectionRef.current,
-        pin: stickyViewportRef.current,
-        start: "top top",
-        end: () => `+=${scrollDistance}`,
-        pinSpacing: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          if (isAnimatingRef.current || cooldownRef.current) return;
-          const p = self.progress;
-          const targetStep = p < 0.35 ? 0 : p < 0.7 ? 1 : 2;
-          if (targetStep !== activeIdxRef.current) {
-            goToProject(targetStep);
-          }
-        },
-      });
-
-      scrollTriggerRef.current = st;
-    });
-
-    return () => ctx.revert();
-  }, [goToProject]);
 
   // ── Discrete Mouse Wheel Step Interception ──
   useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      const st = scrollTriggerRef.current;
-      if (!st || !st.isActive) return;
+    let cooldown = false;
+    const onWheel = (e: WheelEvent) => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      // Only intercept when section is overlapping the viewport
+      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
+      const cur = activeIdxRef.current;
 
-      const current = activeIdxRef.current;
-
-      // ── Scroll DOWN (01 → 02 → 03) ──
-      if (e.deltaY > 15) {
-        if (current < PROJECTS.length - 1) {
-          // Intercept scroll inside projects showcase
-          e.preventDefault();
-          (e as unknown as { lenisStopPropagation: boolean }).lenisStopPropagation = true;
-
-          if (!isAnimatingRef.current && !cooldownRef.current) {
-            cooldownRef.current = true;
-            const nextIdx = current + 1;
-            goToProject(nextIdx, 1);
-
-            // Sync page scroll to the matching segment
-            if (lenis && st) {
-              const scrollRange = st.end - st.start;
-              const targetY = st.start + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
-              lenis.scrollTo(targetY, { duration: 0.7 });
-            }
-
-            setTimeout(() => {
-              cooldownRef.current = false;
-            }, 550);
-          }
-        }
-        // When on Project 03 (last project), do NOT preventDefault!
-        // The wheel event continues naturally into Chapter 04!
+      if (e.deltaY > 12 && cur < PROJECTS.length - 1) {
+        // Intercept: go to next project
+        e.preventDefault();
+        if (cooldown || isAnimatingRef.current) return;
+        cooldown = true;
+        const next = cur + 1;
+        goToProject(next, 1);
+        if (lenis) lenis.scrollTo(section.offsetTop + next * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
+        setTimeout(() => { cooldown = false; }, 600);
+      } else if (e.deltaY < -12 && cur > 0) {
+        // Intercept: go to prev project
+        e.preventDefault();
+        if (cooldown || isAnimatingRef.current) return;
+        cooldown = true;
+        const prev = cur - 1;
+        goToProject(prev, -1);
+        if (lenis) lenis.scrollTo(section.offsetTop + prev * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
+        setTimeout(() => { cooldown = false; }, 600);
       }
-      // ── Scroll UP (03 → 02 → 01) ──
-      else if (e.deltaY < -15) {
-        if (current > 0) {
-          // Intercept scroll inside projects showcase
-          e.preventDefault();
-          (e as unknown as { lenisStopPropagation: boolean }).lenisStopPropagation = true;
-
-          if (!isAnimatingRef.current && !cooldownRef.current) {
-            cooldownRef.current = true;
-            const prevIdx = current - 1;
-            goToProject(prevIdx, -1);
-
-            // Sync page scroll
-            if (lenis && st) {
-              const scrollRange = st.end - st.start;
-              const targetY = st.start + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
-              lenis.scrollTo(targetY, { duration: 0.7 });
-            }
-
-            setTimeout(() => {
-              cooldownRef.current = false;
-            }, 550);
-          }
-        }
-        // When on Project 01 (first project), do NOT preventDefault!
-        // The wheel event continues naturally into Chapter 02!
-      }
+      // On last/first project boundary: don't preventDefault → page scrolls naturally
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
   }, [goToProject, lenis]);
 
   // ── Touch Swipe Support (Mobile) ──
   useEffect(() => {
-    let touchStartY = 0;
+    let startY = 0;
+    let cooldown = false;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
+    const onTouchStart = (e: TouchEvent) => { startY = e.touches[0].clientY; };
+    const onTouchMove = (e: TouchEvent) => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
+      const delta = startY - e.touches[0].clientY;
+      const cur = activeIdxRef.current;
 
-    const handleTouchMove = (e: TouchEvent) => {
-      const st = scrollTriggerRef.current;
-      if (!st || !st.isActive) return;
-
-      const deltaY = touchStartY - e.touches[0].clientY;
-      const current = activeIdxRef.current;
-
-      if (deltaY > 50) {
-        // Swipe UP = Next Project
-        if (current < PROJECTS.length - 1 && !isAnimatingRef.current && !cooldownRef.current) {
-          e.preventDefault();
-          cooldownRef.current = true;
-          const nextIdx = current + 1;
-          goToProject(nextIdx, 1);
-
-          if (lenis && st) {
-            const scrollRange = st.end - st.start;
-            const targetY = st.start + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
-            lenis.scrollTo(targetY, { duration: 0.7 });
-          }
-
-          setTimeout(() => {
-            cooldownRef.current = false;
-          }, 550);
-        }
-      } else if (deltaY < -50) {
-        // Swipe DOWN = Prev Project
-        if (current > 0 && !isAnimatingRef.current && !cooldownRef.current) {
-          e.preventDefault();
-          cooldownRef.current = true;
-          const prevIdx = current - 1;
-          goToProject(prevIdx, -1);
-
-          if (lenis && st) {
-            const scrollRange = st.end - st.start;
-            const targetY = st.start + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
-            lenis.scrollTo(targetY, { duration: 0.7 });
-          }
-
-          setTimeout(() => {
-            cooldownRef.current = false;
-          }, 550);
-        }
+      if (delta > 45 && cur < PROJECTS.length - 1) {
+        e.preventDefault();
+        if (cooldown || isAnimatingRef.current) return;
+        cooldown = true;
+        const next = cur + 1;
+        goToProject(next, 1);
+        if (lenis) lenis.scrollTo(section.offsetTop + next * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
+        setTimeout(() => { cooldown = false; }, 600);
+      } else if (delta < -45 && cur > 0) {
+        e.preventDefault();
+        if (cooldown || isAnimatingRef.current) return;
+        cooldown = true;
+        const prev = cur - 1;
+        goToProject(prev, -1);
+        if (lenis) lenis.scrollTo(section.offsetTop + prev * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
+        setTimeout(() => { cooldown = false; }, 600);
       }
     };
 
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
     return () => {
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
     };
   }, [goToProject, lenis]);
 
   // ── Keyboard Navigation (Arrow Keys) ──
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (cinemaProject) {
-        if (e.key === "Escape") setCinemaProject(null);
-        return;
-      }
-
-      const st = scrollTriggerRef.current;
-      if (!st || !st.isActive) return;
-
-      const current = activeIdxRef.current;
-
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-        if (current < PROJECTS.length - 1) {
-          e.preventDefault();
-          handleTabClick(current + 1);
-        }
-      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-        if (current > 0) {
-          e.preventDefault();
-          handleTabClick(current - 1);
-        }
+    const onKey = (e: KeyboardEvent) => {
+      if (cinemaProject) { if (e.key === "Escape") setCinemaProject(null); return; }
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
+      const cur = activeIdxRef.current;
+      if ((e.key === "ArrowDown" || e.key === "ArrowRight") && cur < PROJECTS.length - 1) {
+        e.preventDefault(); jumpToProject(cur + 1);
+      } else if ((e.key === "ArrowUp" || e.key === "ArrowLeft") && cur > 0) {
+        e.preventDefault(); jumpToProject(cur - 1);
       }
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [cinemaProject]);
 
-  // Direct Tab Click Handler
-  const handleTabClick = (idx: number) => {
+  // Tab / button click — jump directly to project
+  const jumpToProject = (idx: number) => {
     if (idx === activeIdxRef.current || isAnimatingRef.current) return;
     goToProject(idx);
-    const st = scrollTriggerRef.current;
-    if (st && lenis) {
-      const scrollRange = st.end - st.start;
-      const targetY = st.start + (idx / (PROJECTS.length - 1)) * scrollRange;
-      lenis.scrollTo(targetY, { duration: 0.7 });
+    if (lenis && sectionRef.current) {
+      lenis.scrollTo(sectionRef.current.offsetTop + idx * SCROLL_PER_PROJECT, { duration: 0.7, force: true });
     }
   };
 
@@ -475,28 +269,29 @@ export default function ProjectGallery() {
   };
 
   // Scroll smoothly to Chapter 04 Case Study
-  const scrollToCaseStudy = (e: React.MouseEvent) => {
+  const scrollToGitHub = (e: React.MouseEvent) => {
     e.preventDefault();
-    const el = document.getElementById("chapter-case-study");
+    const el = document.getElementById("chapter-github");
     if (el) {
-      if (lenis) {
-        lenis.scrollTo(el, { duration: 1.2 });
-      } else {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
+      if (lenis) lenis.scrollTo(el, { duration: 1.2 });
+      else el.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  // Total section height = 100vh (visible frame) + scroll budget for project transitions
+  const sectionHeight = `calc(100vh + ${(PROJECTS.length - 1) * SCROLL_PER_PROJECT}px)`;
 
   return (
     <section
       id="chapter-work"
       ref={sectionRef}
       className="relative w-full bg-[#0d0d0d] text-off-white select-none border-t border-white/5"
+      style={{ height: sectionHeight }}
     >
-      {/* ── PINNED PROJECTS VIEWPORT (Locked by GSAP ScrollTrigger) ── */}
+      {/* ── STICKY VIEWPORT (CSS sticky — no GSAP pin needed) ── */}
       <div
-        ref={stickyViewportRef}
-        className="w-full min-h-screen flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-28 sm:pt-32 pb-8 z-10"
+        ref={stickyRef}
+        className="sticky top-0 w-full h-screen flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-24 sm:pt-28 pb-6 z-10"
       >
         {/* Dynamic Ambient Background Glow Tinted by Current Project */}
         <div
@@ -513,9 +308,9 @@ export default function ProjectGallery() {
           className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"
         />
 
-        <div className="relative z-10 max-w-[1500px] mx-auto w-full flex flex-col justify-between h-full max-h-[800px]">
-          {/* ── SECTION HEADER & DYNAMIC NAVIGATION (Accounts for Fixed Navbar) ── */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 sm:mb-6">
+        <div className="relative z-10 max-w-[1500px] mx-auto w-full flex flex-col h-full max-h-[820px]">
+          {/* ── SECTION HEADER & DYNAMIC NAVIGATION ── */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-4 sm:mb-5 flex-shrink-0">
             <div>
               <div className="flex items-center gap-2.5 mb-2">
                 <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
@@ -539,7 +334,7 @@ export default function ProjectGallery() {
                     <button
                       key={project.id}
                       type="button"
-                      onClick={() => handleTabClick(idx)}
+                      onClick={() => jumpToProject(idx)}
                       className={`px-3 sm:px-4 py-1.5 rounded-full font-mono text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 sm:gap-2 ${
                         isActive
                           ? "bg-amber text-charcoal font-bold shadow-[0_0_16px_rgba(245,166,35,0.35)] scale-[1.02]"
@@ -558,7 +353,7 @@ export default function ProjectGallery() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (activeIdx > 0) handleTabClick(activeIdx - 1);
+                    if (activeIdx > 0) jumpToProject(activeIdx - 1);
                   }}
                   disabled={activeIdx === 0}
                   aria-label="Previous project"
@@ -585,7 +380,7 @@ export default function ProjectGallery() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (activeIdx < PROJECTS.length - 1) handleTabClick(activeIdx + 1);
+                    if (activeIdx < PROJECTS.length - 1) jumpToProject(activeIdx + 1);
                   }}
                   disabled={activeIdx === PROJECTS.length - 1}
                   aria-label="Next project"
@@ -601,8 +396,8 @@ export default function ProjectGallery() {
             </div>
           </div>
 
-          {/* ── PROJECT STACK: Independent Layer per Project (Never Disappears) ── */}
-          <div className="relative w-full rounded-3xl border border-white/10 bg-[#121316]/95 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)] min-h-[460px] sm:min-h-[500px]">
+          {/* ── PROJECT STACK ── */}
+          <div className="relative flex-1 rounded-3xl border border-white/10 bg-[#121316]/95 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)] overflow-hidden">
             {PROJECTS.map((project, idx) => {
               const isCurrent = idx === activeIdx;
 
@@ -619,8 +414,8 @@ export default function ProjectGallery() {
                   }`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-                    {/* ── LEFT: Cinematic Video Preview (Cols 1-7) ── */}
-                    <div className="project-preview lg:col-span-7 flex flex-col gap-2 will-change-transform">
+                    {/* ── LEFT: Video Preview ── */}
+                    <div className="proj-preview lg:col-span-7 flex flex-col gap-2 will-change-transform">
                       <div className="relative w-full aspect-[16/10] max-h-[380px] sm:max-h-[420px] rounded-2xl overflow-hidden bg-black/95 border border-white/15 shadow-2xl group">
                         {project.videoUrl ? (
                           <video
@@ -722,8 +517,8 @@ export default function ProjectGallery() {
 
                     {/* ── RIGHT: Project Details (Cols 8-12) ── */}
                     <div className="lg:col-span-5 flex flex-col justify-center space-y-4">
-                      {/* Number & Date */}
-                      <div className="project-info-item flex items-center gap-3 mb-1 font-mono text-xs will-change-transform">
+                      {/* Number & Year */}
+                      <div className="proj-info flex items-center gap-3 mb-1 font-mono text-xs will-change-transform">
                         <span className="text-amber font-bold tracking-[0.25em]">
                           PROJECT {project.number}
                         </span>
@@ -733,18 +528,18 @@ export default function ProjectGallery() {
                         </span>
                       </div>
 
-                      {/* Project Akira Title */}
-                      <h3 className="project-info-item font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform">
+                      {/* Title */}
+                      <h3 className="proj-info font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform">
                         {project.title}
                       </h3>
 
                       {/* Subtitle */}
-                      <p className="project-info-item font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform">
+                      <p className="proj-info font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform">
                         {project.subtitle}
                       </p>
 
-                      {/* Clean Project Description */}
-                      <div className="project-info-item space-y-2 will-change-transform">
+                      {/* Description */}
+                      <div className="proj-info space-y-2 will-change-transform">
                         <p className="font-body text-xs sm:text-sm text-off-white/85 leading-relaxed font-light">
                           {project.description}
                         </p>
@@ -753,8 +548,8 @@ export default function ProjectGallery() {
                         </p>
                       </div>
 
-                      {/* Tech Stack Tags */}
-                      <div className="project-info-item will-change-transform">
+                      {/* Tech Stack */}
+                      <div className="proj-info will-change-transform">
                         <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/40 block mb-1.5">
                           TECH STACK
                         </span>
@@ -771,7 +566,7 @@ export default function ProjectGallery() {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="project-info-item flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform">
+                      <div className="proj-info flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform">
                         <a
                           href={project.liveUrl}
                           target="_blank"
@@ -796,11 +591,11 @@ export default function ProjectGallery() {
 
                         {project.number === "01" && (
                           <a
-                            href="#chapter-case-study"
-                            onClick={scrollToCaseStudy}
+                            href="#chapter-github"
+                            onClick={scrollToGitHub}
                             className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] font-mono text-xs tracking-wider text-off-white/60 hover:text-amber hover:border-amber/40 transition-all pointer-events-auto"
                           >
-                            <span>CASE STUDY ↓</span>
+                            <span>GITHUB ↓</span>
                           </a>
                         )}
                       </div>
@@ -811,17 +606,16 @@ export default function ProjectGallery() {
             })}
           </div>
 
-          {/* ── BOTTOM INTERACTION HINT ── */}
-          <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-off-white/40 uppercase mt-4">
+          {/* ── BOTTOM HINT ── */}
+          <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-off-white/35 uppercase mt-3 flex-shrink-0">
             <span className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-amber animate-ping" />
               <span>
                 {activeIdx < PROJECTS.length - 1
-                  ? "SCROLL MOUSE WHEEL TO EXPLORE NEXT PROJECT ↓"
-                  : "ALL PROJECTS EXPLORED — SCROLL DOWN TO CHAPTER 04 ↓"}
+                  ? "SCROLL TO EXPLORE NEXT PROJECT ↓"
+                  : "ALL PROJECTS EXPLORED — SCROLL DOWN ↓"}
               </span>
             </span>
-
             <span className="hidden sm:inline-block">
               NAVIGATE VIA WHEEL, TABS OR ARROWS
             </span>

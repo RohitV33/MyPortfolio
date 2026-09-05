@@ -113,7 +113,7 @@ export const CHAPTERS = [
   { number: "01", name: "Intro", label: "01 / 08", id: "chapter-intro" },
   { number: "02", name: "Capabilities", label: "02 / 08", id: "chapter-capabilities" },
   { number: "03", name: "Work", label: "03 / 08", id: "chapter-work" },
-  { number: "04", name: "Case Study", label: "04 / 08", id: "chapter-case-study" },
+  { number: "04", name: "GitHub", label: "04 / 08", id: "chapter-github" },
   { number: "05", name: "Stack", label: "05 / 08", id: "chapter-stack" },
   { number: "06", name: "About", label: "06 / 08", id: "chapter-about" },
   { number: "07", name: "Currently", label: "07 / 08", id: "chapter-currently" },

@@ -3,7 +3,7 @@
 import Hero from "@/components/Hero";
 import CapabilitiesSection from "@/components/CapabilitiesSection";
 import ProjectGallery from "@/components/ProjectGallery";
-import CaseStudySection from "@/components/CaseStudySection";
+import GitHubSection from "@/components/GitHubSection";
 import TechStackSection from "@/components/TechStackSection";
 import MindsetGallery from "@/components/MindsetGallery";
 import AboutSection from "@/components/AboutSection";
@@ -22,8 +22,8 @@ export default function HomePage() {
       {/* Chapter 03: The Work */}
       <ProjectGallery />
 
-      {/* Chapter 04: Case Study Moment */}
-      <CaseStudySection />
+      {/* Chapter 04: GitHub Activity & Stats */}
+      <GitHubSection />
 
       {/* Chapter 05: The Stack */}
       <TechStackSection />
