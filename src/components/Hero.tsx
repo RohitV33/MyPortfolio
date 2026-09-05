@@ -173,19 +173,19 @@ export default function Hero() {
       {/* Positioned over chest/torso, with mouse parallax and GSAP mouse-scroll animation */}
       <div
         ref={textStackRef}
-        className="absolute inset-x-0 bottom-[6%] sm:bottom-[7%] md:bottom-[7.5%] z-20 flex flex-col items-center text-center pointer-events-none px-4 will-change-transform"
+        className="absolute inset-x-0 bottom-[18%] sm:bottom-[20%] md:bottom-[22%] z-20 flex flex-col items-center text-center pointer-events-none px-4 will-change-transform"
         style={{
           transform: `translate(${mousePos.x * 3.5}px, ${mousePos.y * 2}px)`,
           transition: "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
         }}
       >
         {/* 1. Identity Layer: ROHIT VERMA (Matches Chapter 02 font-display Syne/Akira, off-white, wide tracking) */}
-        <h1 className="font-display font-extrabold text-base sm:text-lg md:text-xl lg:text-[23px] tracking-[0.24em] text-off-white uppercase drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] mb-1.5 pointer-events-auto select-none">
+        <h1 className="font-display font-extrabold text-lg sm:text-xl md:text-2xl lg:text-[28px] tracking-[0.26em] text-off-white uppercase drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] mb-2.5 pointer-events-auto select-none">
           {HERO_DATA.name}
         </h1>
 
         {/* 2. Supporting Layer: Web Developer • Competitive Programmer • Problem Solver (Matches font-mono & amber accents) */}
-        <p className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto mb-1.5 sm:mb-2 font-normal flex items-center justify-center gap-2 flex-wrap select-none">
+        <p className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto font-normal flex items-center justify-center gap-2 flex-wrap select-none">
           {HERO_DATA.subtitleParts.map((part, idx) => (
             <span key={part} className="inline-flex items-center gap-2">
               <span>{part}</span>
@@ -195,14 +195,6 @@ export default function Hero() {
             </span>
           ))}
         </p>
-
-        {/* 3. Editorial Layer: code. with signature amber period dot matching Chapter 02 accent */}
-        <div className="relative pointer-events-none select-none">
-          <span className="font-anton text-[clamp(100px,14.5vw,215px)] font-black tracking-[-0.04em] leading-[0.76] text-off-white drop-shadow-[0_25px_50px_rgba(0,0,0,0.98)] block">
-            {HERO_DATA.keyword}
-            <span className="text-amber drop-shadow-[0_0_30px_rgba(245,166,35,0.7)]">.</span>
-          </span>
-        </div>
       </div>
 
       {/* ── Bottom UI: Anchored to Viewport Bottom Edge ── */}
