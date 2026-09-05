@@ -213,6 +213,7 @@ export const PROJECTS: Project[] = [
     description: "An AI-powered civic platform combining computer vision with modern web services to automate waste detection and issue reporting.",
     liveUrl: "https://github.com/RohitV33",
     githubUrl: "https://github.com/RohitV33",
+    videoUrl: "/videos/project5.mp4",
     posterUrl: "/images/civiclens_poster.png",
     color: "#E58A13",
     featured: true,
@@ -267,6 +268,7 @@ export const FEATURED_CASE_STUDY: CaseStudy = {
   liveUrl: "https://github.com/RohitV33",
   githubUrl: "https://github.com/RohitV33",
   visualPoster: "/images/civiclens_poster.png",
+  visualVideo: "/videos/project5.mp4",
   sections: [
     {
       title: "THE PROBLEM",

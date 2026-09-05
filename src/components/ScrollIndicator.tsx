@@ -68,7 +68,7 @@ export default function ScrollIndicator() {
           </span>
           <span className="font-mono text-[10px] text-foreground/30">/</span>
           <span className="font-mono text-[10px] text-foreground/40 tracking-wider">
-            09
+            0{CHAPTERS.length}
           </span>
         </div>
       </div>
