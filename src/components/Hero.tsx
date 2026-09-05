@@ -107,12 +107,6 @@ export default function Hero() {
         }}
       />
 
-      {/* Subtle Cinematic Studio Grain */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-[0.022] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] z-10"
-      />
-
       {/* ── Central Typographic Stack Layer ── */}
       {/* Positioned over the chest/torso, exactly matching the reference composition */}
       <div

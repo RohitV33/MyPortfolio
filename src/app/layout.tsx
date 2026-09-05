@@ -80,7 +80,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={`${outfit.variable} ${spaceGrotesk.variable} ${syne.variable} ${jetbrainsMono.variable} ${playfair.variable} ${caveat.variable} ${anton.variable} noise-overlay`}>
+      <body className={`${outfit.variable} ${spaceGrotesk.variable} ${syne.variable} ${jetbrainsMono.variable} ${playfair.variable} ${caveat.variable} ${anton.variable}`}>
         <SmoothScrollProvider>
           <CustomCursor />
           <ScrollIndicator />
