@@ -61,7 +61,6 @@ export const metadata: Metadata = {
   description: "Crafting high-end digital experiences with React, Node.js, and motion design. Editorial-inspired developer portfolio.",
 };
 
-import CustomCursor from "@/components/CustomCursor";
 import ScrollIndicator from "@/components/ScrollIndicator";
 
 export default function RootLayout({
@@ -82,7 +81,6 @@ export default function RootLayout({
       </head>
       <body className={`${outfit.variable} ${spaceGrotesk.variable} ${syne.variable} ${jetbrainsMono.variable} ${playfair.variable} ${caveat.variable} ${anton.variable}`}>
         <SmoothScrollProvider>
-          <CustomCursor />
           <ScrollIndicator />
           <Navbar />
           <PageTransition>{children}</PageTransition>
