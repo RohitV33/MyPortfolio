@@ -37,19 +37,20 @@ export default function ProjectGallery() {
   const [videoProgress, setVideoProgress] = useState(0);
   const [cinemaProject, setCinemaProject] = useState<Project | null>(null);
 
-  // Section & Pinning targets
+  // Core Section & Pinned Viewport targets
   const sectionRef = useRef<HTMLElement>(null);
   const stickyViewportRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
 
-  // Stack of independent project layer elements
+  // Independent Project Stack Layer Refs
   const projectLayersRef = useRef<(HTMLDivElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  // Interaction & transition flags
+  // State & Sync Refs
   const activeIdxRef = useRef(0);
   const isAnimatingRef = useRef(false);
   const cooldownRef = useRef(false);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   const { lenis } = useLenis();
   const activeProject = PROJECTS[activeIdx] || PROJECTS[0];
@@ -75,14 +76,14 @@ export default function ProjectGallery() {
       gsap.to(counterRef.current, {
         y: dir > 0 ? -16 : 16,
         opacity: 0,
-        duration: 0.2,
+        duration: 0.18,
         ease: "power2.inOut",
         onComplete: () => {
           gsap.set(counterRef.current, { y: dir > 0 ? 16 : -16, opacity: 0 });
           gsap.to(counterRef.current, {
             y: 0,
             opacity: 1,
-            duration: 0.35,
+            duration: 0.3,
             ease: "power3.out",
           });
         },
@@ -107,9 +108,7 @@ export default function ProjectGallery() {
 
     // Make incoming layer active in DOM immediately (positioned on top)
     gsap.set(incomingLayer, {
-      display: "block",
       opacity: 1,
-      visibility: "visible",
       zIndex: 20,
     });
 
@@ -117,7 +116,7 @@ export default function ProjectGallery() {
     if (incomingPreview) {
       gsap.set(incomingPreview, {
         scale: 0.97,
-        y: dir > 0 ? 35 : -35,
+        y: dir > 0 ? 30 : -30,
         opacity: 0,
         filter: "blur(6px)",
       });
@@ -125,7 +124,7 @@ export default function ProjectGallery() {
 
     if (incomingInfo.length > 0) {
       gsap.set(incomingInfo, {
-        y: dir > 0 ? 25 : -25,
+        y: dir > 0 ? 22 : -22,
         opacity: 0,
         filter: "blur(4px)",
       });
@@ -153,9 +152,7 @@ export default function ProjectGallery() {
 
         // Hide outgoing layer
         gsap.set(currentLayer, {
-          display: "none",
           opacity: 0,
-          visibility: "hidden",
           zIndex: 0,
         });
 
@@ -184,10 +181,10 @@ export default function ProjectGallery() {
         currentPreview,
         {
           scale: 0.97,
-          y: dir > 0 ? -30 : 30,
+          y: dir > 0 ? -28 : 28,
           opacity: 0,
           filter: "blur(6px)",
-          duration: 0.38,
+          duration: 0.35,
           ease: "power2.inOut",
         },
         0
@@ -198,11 +195,11 @@ export default function ProjectGallery() {
       tl.to(
         currentInfo,
         {
-          y: dir > 0 ? -20 : 20,
+          y: dir > 0 ? -18 : 18,
           opacity: 0,
           filter: "blur(4px)",
           stagger: 0.02,
-          duration: 0.32,
+          duration: 0.3,
           ease: "power2.inOut",
         },
         0
@@ -218,10 +215,10 @@ export default function ProjectGallery() {
           y: 0,
           opacity: 1,
           filter: "blur(0px)",
-          duration: 0.52,
+          duration: 0.5,
           ease: "power3.out",
         },
-        0.12
+        0.1
       );
     }
 
@@ -232,35 +229,43 @@ export default function ProjectGallery() {
           y: 0,
           opacity: 1,
           filter: "blur(0px)",
-          stagger: 0.04,
-          duration: 0.48,
+          stagger: 0.03,
+          duration: 0.45,
           ease: "power3.out",
         },
-        0.18
+        0.15
       );
     }
   }, []);
 
-  // ── Sync with ScrollTrigger for Continuous Scrollbar Dragging ──
+  // ── GSAP ScrollTrigger Pinning ──
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || !stickyViewportRef.current) return;
 
     const ctx = gsap.context(() => {
-      ScrollTrigger.create({
+      const scrollDistance = (PROJECTS.length - 1) * window.innerHeight * 0.9;
+
+      const st = ScrollTrigger.create({
         trigger: sectionRef.current,
+        pin: stickyViewportRef.current,
         start: "top top",
-        end: "bottom bottom",
+        end: () => `+=${scrollDistance}`,
+        pinSpacing: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           if (isAnimatingRef.current || cooldownRef.current) return;
           const p = self.progress;
-          const targetStep = p < 0.33 ? 0 : p < 0.66 ? 1 : 2;
+          const targetStep = p < 0.35 ? 0 : p < 0.7 ? 1 : 2;
           if (targetStep !== activeIdxRef.current) {
             goToProject(targetStep);
           }
         },
       });
+
+      scrollTriggerRef.current = st;
     });
 
     return () => ctx.revert();
@@ -269,14 +274,8 @@ export default function ProjectGallery() {
   // ── Discrete Mouse Wheel Step Interception ──
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      const section = sectionRef.current;
-      if (!section) return;
-
-      const rect = section.getBoundingClientRect();
-      // Section is active in viewport when it has reached top (or near top) and hasn't completely scrolled away
-      const isPinnedInView = rect.top <= 90 && rect.bottom >= window.innerHeight * 0.5;
-
-      if (!isPinnedInView) return;
+      const st = scrollTriggerRef.current;
+      if (!st || !st.isActive) return;
 
       const current = activeIdxRef.current;
 
@@ -292,21 +291,20 @@ export default function ProjectGallery() {
             const nextIdx = current + 1;
             goToProject(nextIdx, 1);
 
-            // Synchronize page scroll to the matching third of the section
-            if (lenis) {
-              const sectionTop = window.scrollY + rect.top;
-              const scrollRange = rect.height - window.innerHeight;
-              const targetY = sectionTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
-              lenis.scrollTo(targetY, { duration: 0.8 });
+            // Sync page scroll to the matching segment
+            if (lenis && st) {
+              const scrollRange = st.end - st.start;
+              const targetY = st.start + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+              lenis.scrollTo(targetY, { duration: 0.7 });
             }
 
             setTimeout(() => {
               cooldownRef.current = false;
-            }, 600);
+            }, 550);
           }
         }
         // When on Project 03 (last project), do NOT preventDefault!
-        // The wheel event continues naturally to Chapter 04!
+        // The wheel event continues naturally into Chapter 04!
       }
       // ── Scroll UP (03 → 02 → 01) ──
       else if (e.deltaY < -15) {
@@ -320,21 +318,20 @@ export default function ProjectGallery() {
             const prevIdx = current - 1;
             goToProject(prevIdx, -1);
 
-            // Synchronize page scroll
-            if (lenis) {
-              const sectionTop = window.scrollY + rect.top;
-              const scrollRange = rect.height - window.innerHeight;
-              const targetY = sectionTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
-              lenis.scrollTo(targetY, { duration: 0.8 });
+            // Sync page scroll
+            if (lenis && st) {
+              const scrollRange = st.end - st.start;
+              const targetY = st.start + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+              lenis.scrollTo(targetY, { duration: 0.7 });
             }
 
             setTimeout(() => {
               cooldownRef.current = false;
-            }, 600);
+            }, 550);
           }
         }
         // When on Project 01 (first project), do NOT preventDefault!
-        // The wheel event continues naturally to Chapter 02!
+        // The wheel event continues naturally into Chapter 02!
       }
     };
 
@@ -351,12 +348,8 @@ export default function ProjectGallery() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      const section = sectionRef.current;
-      if (!section) return;
-
-      const rect = section.getBoundingClientRect();
-      const isPinnedInView = rect.top <= 90 && rect.bottom >= window.innerHeight * 0.5;
-      if (!isPinnedInView) return;
+      const st = scrollTriggerRef.current;
+      if (!st || !st.isActive) return;
 
       const deltaY = touchStartY - e.touches[0].clientY;
       const current = activeIdxRef.current;
@@ -369,16 +362,15 @@ export default function ProjectGallery() {
           const nextIdx = current + 1;
           goToProject(nextIdx, 1);
 
-          if (lenis) {
-            const sectionTop = window.scrollY + rect.top;
-            const scrollRange = rect.height - window.innerHeight;
-            const targetY = sectionTop + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
-            lenis.scrollTo(targetY, { duration: 0.8 });
+          if (lenis && st) {
+            const scrollRange = st.end - st.start;
+            const targetY = st.start + (nextIdx / (PROJECTS.length - 1)) * scrollRange;
+            lenis.scrollTo(targetY, { duration: 0.7 });
           }
 
           setTimeout(() => {
             cooldownRef.current = false;
-          }, 600);
+          }, 550);
         }
       } else if (deltaY < -50) {
         // Swipe DOWN = Prev Project
@@ -388,16 +380,15 @@ export default function ProjectGallery() {
           const prevIdx = current - 1;
           goToProject(prevIdx, -1);
 
-          if (lenis) {
-            const sectionTop = window.scrollY + rect.top;
-            const scrollRange = rect.height - window.innerHeight;
-            const targetY = sectionTop + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
-            lenis.scrollTo(targetY, { duration: 0.8 });
+          if (lenis && st) {
+            const scrollRange = st.end - st.start;
+            const targetY = st.start + (prevIdx / (PROJECTS.length - 1)) * scrollRange;
+            lenis.scrollTo(targetY, { duration: 0.7 });
           }
 
           setTimeout(() => {
             cooldownRef.current = false;
-          }, 600);
+          }, 550);
         }
       }
     };
@@ -419,11 +410,8 @@ export default function ProjectGallery() {
         return;
       }
 
-      const section = sectionRef.current;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const inView = rect.top <= 100 && rect.bottom >= window.innerHeight * 0.4;
-      if (!inView) return;
+      const st = scrollTriggerRef.current;
+      if (!st || !st.isActive) return;
 
       const current = activeIdxRef.current;
 
@@ -448,13 +436,11 @@ export default function ProjectGallery() {
   const handleTabClick = (idx: number) => {
     if (idx === activeIdxRef.current || isAnimatingRef.current) return;
     goToProject(idx);
-    const section = sectionRef.current;
-    if (section && lenis) {
-      const rect = section.getBoundingClientRect();
-      const sectionTop = window.scrollY + rect.top;
-      const scrollRange = rect.height - window.innerHeight;
-      const targetY = sectionTop + (idx / (PROJECTS.length - 1)) * scrollRange;
-      lenis.scrollTo(targetY, { duration: 0.8 });
+    const st = scrollTriggerRef.current;
+    if (st && lenis) {
+      const scrollRange = st.end - st.start;
+      const targetY = st.start + (idx / (PROJECTS.length - 1)) * scrollRange;
+      lenis.scrollTo(targetY, { duration: 0.7 });
     }
   };
 
@@ -506,12 +492,11 @@ export default function ProjectGallery() {
       id="chapter-work"
       ref={sectionRef}
       className="relative w-full bg-[#0d0d0d] text-off-white select-none border-t border-white/5"
-      style={{ height: `${PROJECTS.length * 100}vh` }}
     >
-      {/* ── STICKY PROJECTS VIEWPORT (Pinned inside the scroll distance) ── */}
+      {/* ── PINNED PROJECTS VIEWPORT (Locked by GSAP ScrollTrigger) ── */}
       <div
         ref={stickyViewportRef}
-        className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-28 sm:pt-32 pb-8 z-10"
+        className="w-full min-h-screen flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-28 sm:pt-32 pb-8 z-10"
       >
         {/* Dynamic Ambient Background Glow Tinted by Current Project */}
         <div
@@ -617,7 +602,7 @@ export default function ProjectGallery() {
           </div>
 
           {/* ── PROJECT STACK: Independent Layer per Project (Never Disappears) ── */}
-          <div className="relative w-full rounded-3xl border border-white/10 bg-[#121316]/95 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)] min-h-[460px] sm:min-h-[500px] flex items-center">
+          <div className="relative w-full rounded-3xl border border-white/10 bg-[#121316]/95 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)] min-h-[460px] sm:min-h-[500px]">
             {PROJECTS.map((project, idx) => {
               const isCurrent = idx === activeIdx;
 
@@ -627,10 +612,10 @@ export default function ProjectGallery() {
                   ref={(el) => {
                     projectLayersRef.current[idx] = el;
                   }}
-                  className={`w-full transition-none ${
+                  className={`w-full ${
                     isCurrent
-                      ? "relative z-10 block opacity-100"
-                      : "absolute inset-0 p-5 sm:p-7 lg:p-9 pointer-events-none hidden opacity-0"
+                      ? "relative opacity-100 pointer-events-auto z-10"
+                      : "absolute inset-0 p-5 sm:p-7 lg:p-9 opacity-0 pointer-events-none z-0"
                   }`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
