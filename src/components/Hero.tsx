@@ -153,20 +153,20 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Balanced Name Typography (Geometric Grotesk) */}
+        {/* Name Typography (Original Display Font) */}
         <div
           ref={nameGroupRef}
-          className="flex flex-col items-center justify-center leading-[0.92] tracking-tighter will-change-transform mb-5 sm:mb-8"
+          className="flex flex-col items-center justify-center leading-[0.88] tracking-tighter will-change-transform mb-5 sm:mb-8"
         >
           <h1
             ref={rohitRef}
-            className="font-grotesk text-[clamp(2.8rem,8.5vw,6rem)] font-extrabold text-off-white uppercase will-change-transform"
+            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-off-white uppercase will-change-transform"
           >
             ROHIT
           </h1>
           <h1
             ref={vermaRef}
-            className="font-grotesk text-[clamp(2.8rem,8.5vw,6rem)] font-extrabold text-amber uppercase will-change-transform"
+            className="font-display text-[clamp(3.2rem,8.5vw,6.5rem)] font-extrabold text-amber uppercase will-change-transform"
           >
             VERMA
           </h1>
