@@ -1,3 +1,9 @@
+export interface ProjectMetric {
+  value: string;
+  label: string;
+  sub?: string;
+}
+
 export interface Project {
   id: string;
   number: string;
@@ -16,6 +22,7 @@ export interface Project {
   posterUrl: string;
   color: string;
   featured?: boolean;
+  metrics?: ProjectMetric[];
 }
 
 export interface CaseStudySection {
@@ -91,9 +98,14 @@ export const HERO_DATA: HeroData = {
   firstName: "ROHIT",
   lastName: "VERMA",
   name: "ROHIT VERMA",
-  role: "Web Developer, Competitive Programmer and Problem Solver",
-  subtitleParts: ["Web Developer", "Competitive Programmer", "Problem Solver"],
-  location: "Based in India",
+ role: "Building Products, Solving Problems and Breaking Systems",
+
+subtitleParts: [
+  "Building Products",
+  "Solving Problems",
+  "Breaking Systems"
+],
+  location: "Uttar Pradesh,India",
   taglineParts: ["BUILD", "LEARN", "EXPLORE"],
 };
 
@@ -224,7 +236,7 @@ export const PROJECTS: Project[] = [
     id: "civiclens",
     number: "01",
     title: "CIVICLENS-AI",
-    subtitle: "Civic Issue Reporting Platform",
+    subtitle: "Civic Issue Reporting & Vision Platform",
     year: "Aug 2026",
     role: "Lead Full-Stack & AI Developer",
     tags: ["React.js", "Node.js", "Express.js", "Python", "FastAPI", "YOLOv8", "MongoDB", "Tailwind CSS"],
@@ -238,6 +250,11 @@ export const PROJECTS: Project[] = [
     posterUrl: "/images/civiclens_poster.png",
     color: "#E58A13",
     featured: true,
+    metrics: [
+      { value: "<800ms", label: "Inference Latency", sub: "FastAPI + YOLOv8" },
+      { value: "100%", label: "Auto-Routing", sub: "Municipal Dispatch" },
+      { value: "REST", label: "Architecture", sub: "Full-Stack Node / React" },
+    ],
   },
   {
     id: "fuzzr",
@@ -257,12 +274,17 @@ export const PROJECTS: Project[] = [
     posterUrl: "/images/fuzzr_poster.png",
     color: "#B45309",
     featured: false,
+    metrics: [
+      { value: "40%", label: "Faster Discovery", sub: "Concurrent Engine" },
+      { value: "0 ms", label: "Timeout Rate", sub: "Resilient Sockets" },
+      { value: "Team", label: "Collaboration", sub: "Target Scope Sync" },
+    ],
   },
   {
     id: "bartr",
     number: "03",
     title: "BARTR",
-    subtitle: "Skill Exchange Platform",
+    subtitle: "Real-Time Peer-to-Peer Skill Exchange",
     year: "Feb 2026 — Jun 2026",
     role: "Full-Stack Developer",
     tags: ["React.js", "Node.js", "Express.js", "MongoDB", "Socket.IO", "JWT"],
@@ -276,6 +298,11 @@ export const PROJECTS: Project[] = [
     posterUrl: "/images/bartr_poster.png",
     color: "#D97706",
     featured: false,
+    metrics: [
+      { value: "<50ms", label: "Chat Latency", sub: "Socket.IO Engine" },
+      { value: "P2P", label: "Matchmaking", sub: "Trade Logic" },
+      { value: "JWT", label: "Auth Protocol", sub: "Cookie Security" },
+    ],
   },
 ];
 
