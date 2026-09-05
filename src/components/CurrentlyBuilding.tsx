@@ -35,106 +35,135 @@ const ITEMS = [
   },
 ];
 
-// Split text into word spans for scrubbed blur animation
-function ScrubText({ text, rowRef }: { text: string; rowRef: React.RefObject<HTMLDivElement | null> }) {
-  const containerRef = useRef<HTMLParagraphElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const trigger = rowRef.current;
-    if (!container || !trigger) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const spans = container.querySelectorAll<HTMLSpanElement>(".scrub-word");
-
-    // Set initial state
-    gsap.set(spans, { opacity: 0.1, filter: "blur(5px)" });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger,
-        start: "top 75%",
-        end: "bottom 35%",
-        scrub: 1.2,
-      },
-    });
-
-    // Stagger words in
-    tl.to(spans, {
-      opacity: 1,
-      filter: "blur(0px)",
-      stagger: {
-        each: 0.04,
-        from: "start",
-      },
-      ease: "none",
-    });
-
-    // Then blur back out as section scrolls past
-    tl.to(spans, {
-      opacity: 0.08,
-      filter: "blur(4px)",
-      stagger: {
-        each: 0.03,
-        from: "start",
-      },
-      ease: "none",
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.vars.trigger === trigger) st.kill();
-      });
-    };
-  }, [rowRef]);
-
-  const words = text.split(" ");
-
-  return (
-    <p
-      ref={containerRef}
-      className="font-body text-sm text-off-white/80 leading-relaxed font-light max-w-lg"
-      style={{ wordSpacing: "0.05em" }}
-    >
-      {words.map((word, i) => (
-        <span
-          key={i}
-          className="scrub-word inline-block mr-[0.28em]"
-        >
-          {word}
-        </span>
-      ))}
-    </p>
-  );
-}
-
 export default function CurrentlyBuilding() {
   const sectionRef = useRef<HTMLElement>(null);
-  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const titleRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+
     const ctx = gsap.context(() => {
-      // Entrance animation for each row's header (title + number)
-      titleRefs.current.forEach((el, i) => {
-        if (!el) return;
-        gsap.fromTo(
-          el,
-          { y: 20, opacity: 0 },
-          {
-            y: 0,
+      // Header entrance animation
+      gsap.fromTo(
+        ".workshop-header",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".workshop-header",
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Animate each row and its text scrub
+      const rows = gsap.utils.toArray<HTMLElement>(".workshop-row");
+      rows.forEach((row) => {
+        const title = row.querySelector<HTMLElement>(".workshop-title");
+        const tags = row.querySelector<HTMLElement>(".workshop-tags");
+        const words = row.querySelectorAll<HTMLSpanElement>(".scrub-word");
+
+        // Row title entrance
+        if (title) {
+          gsap.fromTo(
+            title,
+            { y: 18, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.6,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: row,
+                start: "top 88%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        }
+
+        // Row tags entrance
+        if (tags) {
+          gsap.fromTo(
+            tags,
+            { y: 12, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.6,
+              delay: 0.1,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: row,
+                start: "top 88%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        }
+
+        // Exact scroll-scrubbed text blur cascade:
+        // 1. START (out of view): opacity 0.1, blur(5px)
+        // 2. SCROLLING INTO VIEW: cascade in left-to-right to opacity 1, blur(0px)
+        // 3. READING ZONE: holds sharp and readable
+        // 4. SCROLLING PAST: cascade back out left-to-right to opacity 0.08, blur(4px)
+        if (words.length > 0) {
+          gsap.set(words, {
+            opacity: 0.1,
+            filter: "blur(5px)",
+            willChange: "opacity, filter, transform",
+          });
+
+          const scrubTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: row,
+              start: "top 90%",
+              end: "bottom 18%",
+              scrub: 0.8,
+            },
+          });
+
+          // Cascade in one-by-one, left to right
+          scrubTl.to(words, {
             opacity: 1,
-            duration: 0.6,
-            ease: "power3.out",
-            delay: i * 0.07,
-            scrollTrigger: { trigger: el, start: "top 88%", once: true },
-          }
-        );
+            filter: "blur(0px)",
+            stagger: {
+              each: 0.035,
+              from: "start",
+            },
+            duration: 0.45,
+            ease: "none",
+          });
+
+          // Sweet spot — stay sharp and readable while row is centered in view
+          scrubTl.to({}, { duration: 0.35 });
+
+          // Cascade back out one-by-one, left to right as row scrolls past
+          scrubTl.to(words, {
+            opacity: 0.08,
+            filter: "blur(4px)",
+            stagger: {
+              each: 0.03,
+              from: "start",
+            },
+            duration: 0.45,
+            ease: "none",
+          });
+        }
       });
     }, sectionRef);
-    return () => ctx.revert();
+
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -144,7 +173,7 @@ export default function CurrentlyBuilding() {
       className="relative w-full bg-[#0a0a0a] text-off-white py-20 md:py-32 px-6 sm:px-10 md:px-16 border-t border-white/5 overflow-hidden select-none"
     >
       {/* ── Header ── */}
-      <div className="max-w-7xl mx-auto w-full mb-14 md:mb-20">
+      <div className="workshop-header max-w-7xl mx-auto w-full mb-14 md:mb-20">
         <div className="flex items-center gap-2.5 mb-3">
           <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
           <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber font-semibold">
@@ -164,65 +193,67 @@ export default function CurrentlyBuilding() {
 
       {/* ── Editorial List ── */}
       <div className="max-w-7xl mx-auto w-full">
-        {ITEMS.map((item, i) => {
-          // create a stable ref for each row
-          const rowRef = { current: rowRefs.current[i] } as React.RefObject<HTMLDivElement | null>;
+        {ITEMS.map((item) => (
+          <div
+            key={item.n}
+            className="workshop-row group relative border-t border-white/[0.07] py-8 md:py-10 grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_auto] gap-x-6 md:gap-x-10 gap-y-4 items-start hover:border-amber/20 transition-colors duration-300 cursor-default"
+          >
+            {/* Faded giant number watermark */}
+            <span className="workshop-num font-akira text-5xl md:text-6xl font-black text-white/[0.05] group-hover:text-white/[0.12] transition-colors duration-500 leading-none pt-1 select-none row-span-2 md:row-span-1">
+              {item.n}
+            </span>
 
-          return (
-            <div
-              key={item.n}
-              ref={(el) => {
-                rowRefs.current[i] = el;
-                (rowRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-              }}
-              className="group relative border-t border-white/[0.07] py-8 md:py-10 grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_auto] gap-x-6 md:gap-x-10 gap-y-4 items-start hover:border-amber/20 transition-colors duration-300 cursor-default"
-            >
-              {/* Faded giant number */}
-              <span className="font-akira text-5xl md:text-6xl font-black text-white/[0.05] group-hover:text-white/[0.10] transition-colors duration-500 leading-none pt-1 select-none row-span-2 md:row-span-1">
-                {item.n}
-              </span>
-
-              {/* Title + scrubbed paragraph */}
-              <div
-                ref={(el) => { titleRefs.current[i] = el; }}
-                className="flex flex-col gap-3"
-                style={{ opacity: 0 }}
-              >
-                <div className="flex items-center gap-3">
-                  <h3 className="font-akira text-xl sm:text-2xl md:text-3xl font-black uppercase text-off-white group-hover:text-amber transition-colors duration-300 tracking-tight">
-                    {item.title}
-                  </h3>
-                  {item.live && (
-                    <span className="relative flex h-2 w-2 shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                    </span>
-                  )}
-                </div>
-
-                {/* Scroll-scrubbed blur text */}
-                <ScrubText
-                  text={item.what}
-                  rowRef={{ current: rowRefs.current[i] } as React.RefObject<HTMLDivElement | null>}
-                />
+            {/* Title + scrubbed paragraph */}
+            <div className="flex flex-col gap-3">
+              <div className="workshop-title flex items-center gap-3">
+                <h3 className="font-akira text-xl sm:text-2xl md:text-3xl font-black uppercase text-off-white group-hover:text-amber transition-colors duration-300 tracking-tight">
+                  {item.title}
+                </h3>
+                {item.live && (
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                  </span>
+                )}
               </div>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-x-2 gap-y-1 md:justify-end items-start col-start-2 md:col-start-3 pt-1">
-                {item.tags.map((tag, ti) => (
-                  <span key={tag} className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] tracking-widest uppercase text-off-white/25 group-hover:text-off-white/45 transition-colors duration-300">
-                      {tag}
-                    </span>
-                    {ti < item.tags.length - 1 && (
-                      <span className="font-mono text-[10px] text-white/10">/</span>
-                    )}
+              {/* Scroll-scrubbed blur text */}
+              <p
+                className="font-body text-sm sm:text-base text-off-white/90 leading-relaxed font-light max-w-lg"
+                style={{ wordSpacing: "0.05em" }}
+              >
+                {item.what.split(" ").map((word, wi) => (
+                  <span
+                    key={wi}
+                    className="scrub-word inline-block mr-[0.28em]"
+                    style={{
+                      opacity: 0.1,
+                      filter: "blur(5px)",
+                      willChange: "opacity, filter, transform",
+                      transform: "translateZ(0)",
+                    }}
+                  >
+                    {word}
                   </span>
                 ))}
-              </div>
+              </p>
             </div>
-          );
-        })}
+
+            {/* Tags */}
+            <div className="workshop-tags flex flex-wrap gap-x-2 gap-y-1 md:justify-end items-start col-start-2 md:col-start-3 pt-1">
+              {item.tags.map((tag, ti) => (
+                <span key={tag} className="flex items-center gap-2">
+                  <span className="font-mono text-[10px] tracking-widest uppercase text-off-white/25 group-hover:text-off-white/45 transition-colors duration-300">
+                    {tag}
+                  </span>
+                  {ti < item.tags.length - 1 && (
+                    <span className="font-mono text-[10px] text-white/10">/</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
 
         {/* Bottom rule */}
         <div className="border-t border-white/[0.07]" />
