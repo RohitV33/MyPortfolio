@@ -167,7 +167,7 @@ export default function ContactSection() {
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
             <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber font-semibold">
-              CHAPTER 08 // CONNECTION
+              CHAPTER 08 - CONNECTION
             </p>
           </div>
           

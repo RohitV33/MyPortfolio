@@ -128,7 +128,7 @@ export default function MindsetGallery() {
         <div className="flex items-center gap-3 mb-2.5 sm:mb-3">
           <span className="w-2 h-2 rounded-full bg-amber" />
           <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.35em] text-amber font-semibold">
-            ATMOSPHERE // MINDSET &amp; CRAFT
+            ATMOSPHERE - MINDSET &amp; CRAFT
           </p>
         </div>
 

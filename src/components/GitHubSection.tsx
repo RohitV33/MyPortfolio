@@ -243,7 +243,7 @@ export default function GitHubSection() {
           <div className="flex items-center gap-2.5 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
             <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber font-semibold">
-              CHAPTER 04 // GITHUB ACTIVITY
+              CHAPTER 04 - GITHUB ACTIVITY
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">

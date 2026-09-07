@@ -151,7 +151,7 @@ export default function StorySection() {
           <div className="flex items-center gap-3 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber" />
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-              CHAPTER 02 // THE STORY
+              CHAPTER 02 - THE STORY
             </p>
           </div>
           <h2 className="font-grotesk text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.98]">

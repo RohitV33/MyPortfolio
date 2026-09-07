@@ -67,7 +67,7 @@ export default function CapabilitiesSection() {
           <div className="flex items-center gap-3 mb-3">
             <span className="w-2 h-2 rounded-full bg-amber" />
             <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.35em] text-amber">
-              CHAPTER 02 // WHAT I DO
+              CHAPTER 02 - WHAT I DO
             </p>
           </div>
           <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95]">
@@ -92,7 +92,7 @@ export default function CapabilitiesSection() {
               <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6">
                 <div>
                   <span className="cap-num font-mono text-xs text-amber font-bold tracking-[0.25em] block mb-2">
-                    {cap.number} // CAPABILITY
+                    {cap.number} - CAPABILITY
                   </span>
                   <h3 className="cap-title font-grotesk text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-off-white uppercase leading-tight">
                     {cap.title}

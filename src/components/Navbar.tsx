@@ -107,7 +107,7 @@ export default function Navbar() {
       >
         <div className="flex flex-col gap-6 pt-10">
           <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-white/40">
-            ROHIT VERMA // NAVIGATION
+            ROHIT VERMA - NAVIGATION
           </p>
           {NAV_ITEMS.map((item, idx) => (
             <Link
