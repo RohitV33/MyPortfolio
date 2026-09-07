@@ -158,36 +158,9 @@ export default function Hero() {
             alt="Rohit Verma — Cinematic Portrait Environment"
             fill
             priority
-            sizes="100vw"
+            quality={100}
+            unoptimized
             className="object-cover object-[51%_35%] select-none"
-          />
-
-          {/* ── 2. Atmospheric Double-Exposure Drift Layer ── */}
-          <div
-            className="absolute inset-0 w-full h-full pointer-events-none mix-blend-screen opacity-25"
-            style={{
-              transform: `translate(${mousePos.x * -4 - 3}px, ${mousePos.y * -2 - 2}px)`,
-              animation: "ghostAtmosphericDrift 9.5s ease-in-out infinite alternate",
-            }}
-          >
-            <Image
-              src="/images/rohit_ghost_overlay.png"
-              alt="Rohit Verma Double Exposure Atmosphere"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-[51%_35%] select-none filter blur-[1px]"
-            />
-          </div>
-
-          {/* ── 3. Subtle Living Facial Lighting Shift ── */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-30"
-            style={{
-              background: `radial-gradient(ellipse at ${52 + mousePos.x * 2}% ${35 + mousePos.y * 2}%, rgba(255, 245, 230, 0.4) 0%, transparent 48%)`,
-              animation: "facialLightShift 8.5s ease-in-out infinite alternate",
-            }}
           />
         </div>
       </div>
