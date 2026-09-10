@@ -232,30 +232,38 @@ export const CAPABILITIES: Capability[] = [
 ];
 
 export const PROJECTS: Project[] = [
-  {
-    id: "civiclens",
-    number: "01",
-    title: "CIVICLENS-AI",
-    subtitle: "Civic Issue Reporting & Vision Platform",
-    year: "Aug 2026",
-    role: "Lead Full-Stack & AI Developer",
-    tags: ["React.js", "Node.js", "Express.js", "Python", "FastAPI", "YOLOv8", "MongoDB", "Tailwind CSS"],
-    problem: "Municipal civic issues like illegal dumping take days to report and categorize due to manual inspection bottlenecks.",
-    built: "Built a full-stack platform integrating a YOLOv8 waste classification model via a Python FastAPI service with a Node.js backend and React frontend.",
-    result: "Sub-800ms automated image classification, REST APIs for issue telemetry, and streamlined municipal report verification.",
-    description: "An AI-powered civic platform combining computer vision with modern web services to automate waste detection and issue reporting.",
-    liveUrl: "https://github.com/RohitV33",
-    githubUrl: "https://github.com/RohitV33",
-    videoUrl: "/videos/project5.mp4",
-    posterUrl: "/images/civiclens_poster.png",
-    color: "#E58A13",
-    featured: true,
-    metrics: [
+      {
+      id: "civiclens",
+      number: "01",
+      title: "CIVICLENS-AI",
+      subtitle: "AI-Powered Civic Issue Reporting Platform",
+      year: "Aug 2026",
+      role: "Lead Full-Stack & AI Developer",
+      tags: ["React.js", "Node.js", "Express.js", "Python", "FastAPI", "YOLOv8", "MongoDB", "Tailwind CSS"],
+
+      problem: "Reporting civic issues like illegal dumping can be slow and difficult to categorize, especially when it depends on manual inspection.",
+
+      built: "Built a full-stack platform that uses YOLOv8 to identify waste from uploaded images, with a Python FastAPI service handling AI inference and a Node.js backend powering the application.",
+
+      result: "Enabled fast automated waste classification, structured issue reporting through REST APIs, and a smoother workflow for reviewing and routing civic complaints.",
+
+      description: "CIVICLENS-AI combines computer vision and web technologies to make civic issue reporting faster, easier, and more automated.",
+
+      liveUrl: "https://civic-lens-blush.vercel.app/",
+      githubUrl: "https://github.com/RohitV33/CivicLens",
+      videoUrl: "/videos/project5.mp4",
+      posterUrl: "/images/civiclens_poster.png",
+
+      color: "#E58A13",
+      featured: true,
+
+      metrics: [
       { value: "<800ms", label: "Inference Latency", sub: "FastAPI + YOLOv8" },
-      { value: "100%", label: "Auto-Routing", sub: "Municipal Dispatch" },
-      { value: "REST", label: "Architecture", sub: "Full-Stack Node / React" },
-    ],
-  },
+      { value: "100%", label: "Automated Routing", sub: "Issue Classification" },
+      { value: "REST", label: "API Architecture", sub: "Node.js + React" },
+      ],
+      }
+,
   {
     id: "fuzzr",
     number: "02",
@@ -268,7 +276,7 @@ export const PROJECTS: Project[] = [
     built: "Developed backend REST APIs to orchestrate automated scans, handle concurrent requests, and stream results to the frontend interface.",
     result: "Automated vulnerability recon, synchronized scanning logic, and 40% faster directory brute-forcing.",
     description: "A team-based web security testing platform built for automated vulnerability scanning and real-time endpoint analysis.",
-    liveUrl: "https://github.com/RohitV33/Web-Fuzzing-Tool",
+    liveUrl: "https://vulntest-three.vercel.app/",
     githubUrl: "https://github.com/RohitV33/Web-Fuzzing-Tool",
     videoUrl: "/videos/project3.mp4",
     posterUrl: "/images/fuzzr_poster.png",
