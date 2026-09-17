@@ -151,7 +151,7 @@ export default function MindsetGallery() {
       </div>
 
       {/* ── Scroll Parallax Track 1 (Drifts Left) ── */}
-      <div className="relative w-full overflow-hidden mb-4 sm:mb-6 md:mb-8">
+      <div className="relative w-full overflow-hidden mb-8 sm:mb-10 md:mb-14">
         <div
           ref={row1Ref}
           className="flex gap-4 sm:gap-6 md:gap-8 w-max will-change-transform pl-4 sm:pl-8 md:pl-16"
@@ -248,7 +248,7 @@ export default function MindsetGallery() {
                       &ldquo;{selectedImage.quote}&rdquo;
                     </span>
                   ) : selectedImage.id === "mindset-4" ? (
-                    <span className="font-mono text-xs sm:text-sm text-cyan-300 leading-relaxed">
+                    <span className="font-mono text-xs sm:text-sm text-off-white/80 leading-relaxed">
                       {selectedImage.quote}
                     </span>
                   ) : (
@@ -302,18 +302,18 @@ function MindsetCard({
       </div>
 
       {/* Bottom Content Metadata with Contextual Typography */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 z-10 flex flex-col justify-end">
-        <h4 className="font-grotesk text-base sm:text-lg md:text-xl font-extrabold text-off-white tracking-tight uppercase group-hover:text-amber transition-colors mb-1 leading-snug">
+      <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-7 z-10 flex flex-col justify-end">
+        <h3 className="font-grotesk text-base sm:text-lg md:text-xl font-extrabold text-off-white tracking-tight group-hover:text-amber transition-colors mb-1 leading-snug">
           {item.title}
-        </h4>
+        </h3>
 
         {/* Context-aware Subtitle */}
         {item.id === "mindset-5" ? (
-          <p className="font-handwriting text-lg sm:text-xl text-amber font-bold leading-tight">
+          <p className="font-grotesk text-lg sm:text-xl text-amber font-bold leading-tight">
             {item.subtitle}
           </p>
         ) : item.id === "mindset-4" ? (
-          <p className="font-mono text-[10px] sm:text-[11px] text-cyan-300/90 leading-tight">
+          <p className="font-mono text-[12px] sm:text-[13px] text-off-white/80 leading-tight">
             {item.subtitle}
           </p>
         ) : item.id === "mindset-3" ? (

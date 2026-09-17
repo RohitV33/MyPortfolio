@@ -70,7 +70,7 @@ export default function TechStackSection() {
           {[...FLOWING_TECHS[0], ...FLOWING_TECHS[0], ...FLOWING_TECHS[0]].map((tech, i) => (
             <span
               key={`r1-${tech}-${i}`}
-              className={`font-akira text-[clamp(2rem,5vw,4.5rem)] font-black uppercase tracking-tight select-none transition-colors duration-300 ${
+              className={`font-akira text-[clamp(2rem,5vw,3.5rem)] font-black uppercase tracking-tight select-none transition-colors duration-300 ${
                 i % 3 === 0 ? "text-amber" : i % 2 === 0 ? "text-off-white/80" : "text-white/10"
               }`}
             >
@@ -84,7 +84,7 @@ export default function TechStackSection() {
           {[...FLOWING_TECHS[1], ...FLOWING_TECHS[1], ...FLOWING_TECHS[1]].map((tech, i) => (
             <span
               key={`r2-${tech}-${i}`}
-              className={`font-akira text-[clamp(2rem,5vw,4.5rem)] font-black uppercase tracking-tight select-none transition-colors duration-300 ${
+              className={`font-akira text-[clamp(2rem,5vw,3.5rem)] font-black uppercase tracking-tight select-none transition-colors duration-300 ${
                 i % 4 === 0 ? "text-amber" : i % 3 === 1 ? "text-off-white/80" : "text-white/10"
               }`}
             >
@@ -98,7 +98,7 @@ export default function TechStackSection() {
           {[...FLOWING_TECHS[2], ...FLOWING_TECHS[2], ...FLOWING_TECHS[2]].map((tech, i) => (
             <span
               key={`r3-${tech}-${i}`}
-              className={`font-akira text-[clamp(2rem,5vw,4.5rem)] font-black uppercase tracking-tight select-none transition-colors duration-300 ${
+              className={`font-akira text-[clamp(2rem,5vw,3.5rem)] font-black uppercase tracking-tight select-none transition-colors duration-300 ${
                 i % 3 === 1 ? "text-amber" : i % 2 === 0 ? "text-off-white/80" : "text-white/10"
               }`}
             >
@@ -113,14 +113,14 @@ export default function TechStackSection() {
       <div className="max-w-7xl mx-auto w-full px-6 sm:px-10 md:px-16 mt-14 md:mt-20">
         <div className="flex items-center gap-4 mb-8">
           <div className="flex-1 h-px bg-white/8" />
-          <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-off-white/30">FULL STACK ECOSYSTEM</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-off-white/30">FULL STACK ECOSYSTEM</span>
           <div className="flex-1 h-px bg-white/8" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {TECH_STACK_CATEGORIES.map((cat) => (
             <div key={cat.category} className="flex flex-col gap-3 p-5 rounded-2xl border border-white/8 bg-white/[0.02]">
-              <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-amber">{cat.category}</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em] text-amber">{cat.category}</span>
               <div className="flex flex-wrap gap-2">
                 {cat.items.map((item) => (
                   <span

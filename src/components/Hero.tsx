@@ -187,23 +187,26 @@ export default function Hero() {
         }}
       >
         {/* Stacked Akira Expanded Heading (ROHIT white / VERMA amber) */}
-        <div className="flex flex-col items-center leading-[0.84] select-none pointer-events-auto">
-          {/* 1. ROHIT (Glides to the RIGHT on mouse scroll) */}
-          <div
-            ref={rohitRef}
-            className="font-akira text-[clamp(42px,8.2vw,108px)] font-black tracking-[-0.02em] text-off-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.98)] will-change-transform uppercase"
-          >
-            {HERO_DATA.firstName}
-          </div>
+        {/* h1 uses display:contents — zero layout impact, full semantic value */}
+        <h1 className="contents">
+          <div className="flex flex-col items-center leading-[0.84] select-none pointer-events-auto">
+            {/* 1. ROHIT (Glides to the RIGHT on mouse scroll) */}
+            <div
+              ref={rohitRef}
+              className="font-akira text-[clamp(42px,8.2vw,108px)] font-black tracking-[-0.02em] text-off-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.98)] will-change-transform uppercase"
+            >
+              {HERO_DATA.firstName}
+            </div>
 
-          {/* 2. VERMA (Glides to the LEFT on mouse scroll) */}
-          <div
-            ref={vermaRef}
-            className="font-akira text-[clamp(42px,8.2vw,108px)] font-black tracking-[-0.02em] text-amber drop-shadow-[0_8px_35px_rgba(245,166,35,0.45)] will-change-transform uppercase mt-[-0.08em]"
-          >
-            {HERO_DATA.lastName}
+            {/* 2. VERMA (Glides to the LEFT on mouse scroll) */}
+            <div
+              ref={vermaRef}
+              className="font-akira text-[clamp(42px,8.2vw,108px)] font-black tracking-[-0.02em] text-amber drop-shadow-[0_8px_35px_rgba(245,166,35,0.45)] will-change-transform uppercase mt-[-0.08em]"
+            >
+              {HERO_DATA.lastName}
+            </div>
           </div>
-        </div>
+        </h1>
 
         {/* Supporting Layer: Web Developer • Competitive Programmer • Problem Solver */}
         <p

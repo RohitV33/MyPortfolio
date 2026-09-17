@@ -180,7 +180,7 @@ export default function ContactSection() {
         <h2
           ref={headlineRef}
           className="font-akira font-black uppercase leading-[0.85] tracking-tight text-off-white mb-8 overflow-hidden"
-          style={{ fontSize: "clamp(2.8rem, 9.5vw, 9rem)" }}
+          style={{ fontSize: "clamp(2.8rem, 9.5vw, 7rem)" }}
         >
           {headline.map((word, i) => (
             <span key={i} className="word inline-block mr-[0.18em] last:mr-0 origin-bottom" style={{ opacity: 0 }}>
@@ -199,7 +199,7 @@ export default function ContactSection() {
         </p>
 
         {/* ── Main 2-col layout ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-16 lg:gap-24 mb-24 md:mb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-16 lg:gap-24 mb-24 md:mb-32">
 
           {/* LEFT: Contact form */}
           <div className="relative z-10">

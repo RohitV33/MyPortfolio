@@ -608,6 +608,7 @@ function ProjectItem({
 
   return (
     <div
+      id={`project-${index}`}
       ref={itemRef}
       className="project-section grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-24 items-center min-h-[90vh]"
     >
@@ -687,6 +688,40 @@ function ProjectItem({
             Live Site // →
           </a>
         </div>
+
+        {/* ── Project Navigation (inline, close to content) ── */}
+        <nav
+          aria-label="Project navigation"
+          className="flex items-center gap-4 pt-2"
+        >
+          <a
+            href={index > 0 ? `#project-${index - 1}` : undefined}
+            aria-disabled={index === 0}
+            aria-label="Previous project"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center font-mono text-xs transition-all duration-300 ${
+              index === 0
+                ? "border-white/10 text-white/20 cursor-not-allowed"
+                : "border-white/20 text-off-white/60 hover:border-amber hover:text-amber"
+            }`}
+          >
+            ←
+          </a>
+          <span className="font-mono text-[10px] tracking-[0.3em] text-foreground/40 uppercase tabular-nums">
+            {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+          </span>
+          <a
+            href={index < projects.length - 1 ? `#project-${index + 1}` : undefined}
+            aria-disabled={index === projects.length - 1}
+            aria-label="Next project"
+            className={`w-8 h-8 rounded-full border flex items-center justify-center font-mono text-xs transition-all duration-300 ${
+              index === projects.length - 1
+                ? "border-white/10 text-white/20 cursor-not-allowed"
+                : "border-white/20 text-off-white/60 hover:border-amber hover:text-amber"
+            }`}
+          >
+            →
+          </a>
+        </nav>
       </div>
 
       {/* ── Visual column ── */}
@@ -709,7 +744,7 @@ function ProjectItem({
 
         {/* Main visual frame */}
         <div
-          className="relative rounded-[32px] overflow-hidden border border-white/10 pointer-events-none"
+          className="relative rounded-3xl overflow-hidden border border-white/10 pointer-events-none"
           style={{
             aspectRatio: "16/10",
             boxShadow: isActive ? "0 60px 120px -20px rgba(0,0,0,0.5)" : "0 30px 60px -10px rgba(0,0,0,0.3)",

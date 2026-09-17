@@ -199,14 +199,14 @@ export default function CurrentlyBuilding() {
             className="workshop-row group relative border-t border-white/[0.07] py-8 md:py-10 grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_auto] gap-x-6 md:gap-x-10 gap-y-4 items-start hover:border-amber/20 transition-colors duration-300 cursor-default"
           >
             {/* Faded giant number watermark */}
-            <span className="workshop-num font-akira text-5xl md:text-6xl font-black text-white/[0.05] group-hover:text-white/[0.12] transition-colors duration-500 leading-none pt-1 select-none row-span-2 md:row-span-1">
+            <span className="workshop-num font-akira text-5xl md:text-6xl font-black text-white/[0.03] group-hover:text-white/[0.07] transition-colors duration-500 leading-none pt-1 select-none row-span-2 md:row-span-1">
               {item.n}
             </span>
 
             {/* Title + scrubbed paragraph */}
             <div className="flex flex-col gap-3">
               <div className="workshop-title flex items-center gap-3">
-                <h3 className="font-akira text-xl sm:text-2xl md:text-3xl font-black uppercase text-off-white group-hover:text-amber transition-colors duration-300 tracking-tight">
+                <h3 className="font-akira text-xl sm:text-2xl md:text-3xl font-black text-off-white group-hover:text-amber transition-colors duration-300 tracking-tight">
                   {item.title}
                 </h3>
                 {item.live && (

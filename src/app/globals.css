@@ -20,6 +20,18 @@
 
   --border-subtle: rgba(255, 255, 255, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.03);
+
+  /* ── Type Scale (10-step) ──────────────────────────────── */
+  --fs-2xs: 0.625rem;  /* 10px – decorative labels only      */
+  --fs-xs:  0.75rem;   /* 12px – min readable body           */
+  --fs-sm:  0.875rem;  /* 14px */
+  --fs-base: 1rem;     /* 16px */
+  --fs-lg:  1.125rem;  /* 18px */
+  --fs-xl:  1.25rem;   /* 20px */
+  --fs-2xl: 1.5rem;    /* 24px */
+  --fs-3xl: 1.875rem;  /* 30px */
+  --fs-4xl: 2.25rem;   /* 36px */
+  --fs-display: clamp(2.5rem, 8vw, 7rem);
 }
 
 /* Light Mode Overrides */
@@ -68,9 +80,10 @@ html.light {
   --font-grotesk: var(--font-space-grotesk), sans-serif;
   --font-body: var(--font-outfit), sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
-  --font-serif: var(--font-playfair), Georgia, serif;
-  --font-editorial: var(--font-playfair), Georgia, serif;
-  --font-handwriting: var(--font-caveat), cursive;
+  /* serif & handwriting consolidated into Syne/Space Grotesk to keep font count ≤4 */
+  --font-serif: var(--font-syne), sans-serif;
+  --font-editorial: var(--font-syne), sans-serif;
+  --font-handwriting: var(--font-space-grotesk), sans-serif;
   --font-syne: var(--font-syne), sans-serif;
   --font-akira: "Akira Expanded", sans-serif;
 }
@@ -246,8 +259,36 @@ footer,
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-.font-anton {
-  font-family: var(--font-anton), 'Impact', 'Bebas Neue', sans-serif;
+/* ── Shared Tab Button ─────────────────────────────────── */
+.btn-tab {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-tab[data-active="true"] {
+  background-color: var(--amber);
+  color: var(--charcoal);
+  font-weight: 700;
+  border-color: var(--amber);
+}
+
+.btn-tab[data-active="false"] {
+  background-color: transparent;
+  color: rgba(242, 240, 235, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-tab:hover[data-active="false"] {
+  border-color: rgba(245, 166, 35, 0.4);
+  color: var(--off-white);
 }
 
 .font-akira {

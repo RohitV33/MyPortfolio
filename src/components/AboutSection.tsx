@@ -127,10 +127,10 @@ export default function AboutSection() {
                         {item.year}
                       </span>
                     </div>
-                    <h6 className="font-display text-sm md:text-base font-bold text-off-white mb-1">
+                    <h5 className="font-display text-sm md:text-base font-bold text-off-white mb-1">
                       {item.title}
-                    </h6>
-                    <p className="font-mono text-[10px] text-foreground/45 mb-2">
+                    </h5>
+                    <p className="font-mono text-xs text-foreground/45 mb-2">
                       {item.issuer}
                     </p>
                     <p className="font-body text-xs text-foreground/60 leading-relaxed">

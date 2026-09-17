@@ -598,27 +598,24 @@ function PhaseVisualRenderer({ statement }: { statement: StoryStatement }) {
               <button
                 type="button"
                 onClick={() => setSelectedPoster(null)}
-                className={`text-[9px] uppercase px-2 py-0.5 rounded border transition-colors cursor-pointer ${
-                  !selectedPoster ? "bg-amber text-charcoal font-bold border-amber" : "border-white/10 text-foreground/50"
-                }`}
+                className="btn-tab"
+                data-active={String(!selectedPoster)}
               >
                 Video
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedPoster("/images/civiclens_poster.png")}
-                className={`text-[9px] uppercase px-2 py-0.5 rounded border transition-colors cursor-pointer ${
-                  selectedPoster === "/images/civiclens_poster.png" ? "bg-amber text-charcoal font-bold border-amber" : "border-white/10 text-foreground/50"
-                }`}
+                className="btn-tab"
+                data-active={String(selectedPoster === "/images/civiclens_poster.png")}
               >
                 AI
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedPoster("/images/bartr_poster.png")}
-                className={`text-[9px] uppercase px-2 py-0.5 rounded border transition-colors cursor-pointer ${
-                  selectedPoster === "/images/bartr_poster.png" ? "bg-amber text-charcoal font-bold border-amber" : "border-white/10 text-foreground/50"
-                }`}
+                className="btn-tab"
+                data-active={String(selectedPoster === "/images/bartr_poster.png")}
               >
                 Bartr
               </button>
