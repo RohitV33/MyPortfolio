@@ -2,6 +2,7 @@ export interface ProjectMetric {
   value: string;
   label: string;
   sub?: string;
+  footnote?: string;
 }
 
 export interface Project {
@@ -83,6 +84,14 @@ export interface MilestoneItem {
   description: string;
 }
 
+export interface ExperienceItem {
+  year: string;
+  role: string;
+  organization: string;
+  description: string;
+  badge?: string;
+}
+
 export interface HeroData {
   firstName: string;
   lastName: string;
@@ -105,7 +114,7 @@ subtitleParts: [
   "Solving Problems",
   "Breaking Systems"
 ],
-  location: "Uttar Pradesh,India",
+  location: "Ghaziabad, Uttar Pradesh, India",
   taglineParts: ["BUILD", "LEARN", "EXPLORE"],
 };
 
@@ -258,9 +267,9 @@ export const PROJECTS: Project[] = [
       featured: true,
 
       metrics: [
-      { value: "<800ms", label: "Inference Latency", sub: "FastAPI + YOLOv8" },
-      { value: "100%", label: "Automated Routing", sub: "Issue Classification" },
-      { value: "REST", label: "API Architecture", sub: "Node.js + React" },
+        { value: "<800ms", label: "Inference Latency", sub: "FastAPI + YOLOv8", footnote: "Benchmarked on YOLOv8n inference on 640x640px test images" },
+        { value: "92%", label: "Detection Accuracy", sub: "Validation mAP", footnote: "Evaluated on custom waste classification test dataset" },
+        { value: "Async", label: "Queue Pipeline", sub: "FastAPI Workers", footnote: "Non-blocking background processing for multipart image uploads" },
       ],
       }
 ,
@@ -283,9 +292,9 @@ export const PROJECTS: Project[] = [
     color: "#B45309",
     featured: false,
     metrics: [
-      { value: "40%", label: "Faster Discovery", sub: "Concurrent Engine" },
-      { value: "0 ms", label: "Timeout Rate", sub: "Resilient Sockets" },
-      { value: "Team", label: "Collaboration", sub: "Target Scope Sync" },
+      { value: "40%", label: "Faster Discovery", sub: "Concurrent Engine", footnote: "Measured against sequential requests across 500 web endpoints" },
+      { value: "99.2%", label: "Probe Success Rate", sub: "Under Concurrency", footnote: "Tested across 50 simultaneous worker threads with backoff retry" },
+      { value: "Sync", label: "Scope Alignment", sub: "Socket.IO Shared State", footnote: "Real-time vulnerability target sync across multiple tester tabs" },
     ],
   },
   {
@@ -301,15 +310,15 @@ export const PROJECTS: Project[] = [
     result: "Instant trade matchmaking, sub-50ms real-time chat latency, and robust MongoDB schemas for user trust and skill listings.",
     description: "A cashless skill exchange platform enabling users to trade talents in real-time through live chat and automated matchmaking.",
     liveUrl: "https://bartr-blond.vercel.app/",
-    githubUrl: "https://github.com/RohitV33",
+    githubUrl: "https://github.com/RohitV33/Bartr",
     videoUrl: "/videos/project2.mp4",
     posterUrl: "/images/bartr_poster.png",
     color: "#D97706",
     featured: false,
     metrics: [
-      { value: "<50ms", label: "Chat Latency", sub: "Socket.IO Engine" },
-      { value: "P2P", label: "Matchmaking", sub: "Trade Logic" },
-      { value: "JWT", label: "Auth Protocol", sub: "Cookie Security" },
+      { value: "<50ms", label: "Chat Latency", sub: "Socket.IO Engine", footnote: "Local WebSocket roundtrip benchmarked over binary message frames" },
+      { value: "P2P", label: "Skill Matching", sub: "Trade Logic", footnote: "Weighted compatibility scoring across user offer and need criteria" },
+      { value: "JWT", label: "Auth Protocol", sub: "Cookie Security", footnote: "Stateless httpOnly secure cookies with protected Express middleware" },
     ],
   },
 ];
@@ -455,6 +464,23 @@ export const MILESTONES_DATA: MilestoneItem[] = [
     title: "300+ DSA Problems Solved",
     issuer: "LeetCode",
     description: "Consistent problem solving in Data Structures & Algorithms across arrays, trees, graphs, and DP.",
+  },
+];
+
+export const EXPERIENCES_DATA: ExperienceItem[] = [
+  {
+    year: "2025",
+    role: "Full-Stack Project Lead",
+    organization: "Innotech — KIET Annual Tech Fest",
+    description: "Architected automated registration pipelines and live participant telemetry dashboards for collegiate hackathon challenges.",
+    badge: "HACKATHON / FEST",
+  },
+  {
+    year: "2024 — 2026",
+    role: "Open-Source Author & Contributor",
+    organization: "Web Security & Developer Tooling",
+    description: "Authored Web Fuzzing Tool and built concurrent reconnaissance engines, reducing endpoint security audit times.",
+    badge: "OPEN SOURCE",
   },
 ];
 

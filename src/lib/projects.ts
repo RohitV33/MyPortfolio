@@ -48,7 +48,7 @@ export const projects: Project[] = [
     color: "#8BA8C4",
     accentColor: "#2D4A6B",
     liveUrl: "https://bartr-blond.vercel.app/",
-    githubUrl: "https://github.com/RohitV33",
+    githubUrl: "https://github.com/RohitV33/Bartr",
     gradient: "from-[#C5D8E8] to-[#D8C5E8]",
     svgPattern: "M10 70 Q30 20 50 60 Q70 90 90 40",
     videoUrl: "/videos/project2.mp4",

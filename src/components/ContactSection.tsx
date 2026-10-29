@@ -56,9 +56,16 @@ function LocalTime() {
   return (
     <div className="flex items-center gap-2">
       <Clock className="w-3.5 h-3.5 text-off-white/40" />
-      <span className="font-mono text-xs text-off-white/60 tracking-wider">
-        {time ? `${time} (IST)` : "Loading..."}
-      </span>
+      {time ? (
+        <span className="font-mono text-xs text-off-white/70 tracking-wider transition-opacity duration-300">
+          {time} (IST)
+        </span>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="inline-block w-24 h-3.5 bg-white/10 rounded animate-pulse"
+        />
+      )}
     </div>
   );
 }
@@ -69,7 +76,7 @@ export default function ContactSection() {
   const subRef = useRef<HTMLParagraphElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
-  const [formState, setFormState] = useState({ name: "", email: "", message: "" });
+  const [formState, setFormState] = useState({ name: "", email: "", message: "", honeypot: "" });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -151,13 +158,14 @@ export default function ContactSection() {
           email: formState.email,
           subject: `Portfolio Message from ${formState.name}`,
           message: formState.message,
+          honeypot: formState.honeypot,
         }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
         setSent(true);
-        setFormState({ name: "", email: "", message: "" });
+        setFormState({ name: "", email: "", message: "", honeypot: "" });
       } else {
         setErrorMessage(data.error || "Unable to send message. Please retry.");
       }
@@ -208,14 +216,17 @@ export default function ContactSection() {
         {/* ── Giant Headline ── */}
         <h2
           ref={headlineRef}
+          aria-label={headline.join(" ")}
           className="font-akira font-black uppercase leading-[0.85] tracking-tight text-off-white mb-8 overflow-hidden"
           style={{ fontSize: "clamp(2.8rem, 9.5vw, 7rem)" }}
         >
-          {headline.map((word, i) => (
-            <span key={i} className="word inline-block mr-[0.18em] last:mr-0 origin-bottom" style={{ opacity: 0 }}>
-              {i === 1 ? <span className="text-amber drop-shadow-[0_0_15px_rgba(245,166,35,0.3)]">{word}</span> : word}
-            </span>
-          ))}
+          <span aria-hidden="true" className="contents">
+            {headline.map((word, i) => (
+              <span key={i} className="word inline-block mr-[0.18em] last:mr-0 origin-bottom" style={{ opacity: 0 }}>
+                {i === 1 ? <span className="text-amber drop-shadow-[0_0_15px_rgba(245,166,35,0.3)]">{word}</span> : word}
+              </span>
+            ))}
+          </span>
         </h2>
 
         <p
@@ -223,8 +234,8 @@ export default function ContactSection() {
           className="font-body text-lg md:text-2xl font-light text-off-white/60 max-w-2xl leading-relaxed mb-16 md:mb-24"
           style={{ opacity: 0 }}
         >
-          Have an idea, a role, or just want to talk code? 
-          <span className="text-off-white"> I read every message.</span> Let&apos;s build something that matters.
+          Have an idea, an engineering opportunity, or a systems challenge? 
+          <span className="text-off-white"> Send a transmission</span> — I respond to all direct inquiries promptly.
         </p>
 
         {/* ── Main 2-col layout ── */}
@@ -294,31 +305,53 @@ export default function ContactSection() {
                   />
                 </div>
 
+                {/* Honeypot field for bot spam protection */}
+                <input
+                  type="text"
+                  name="website_probe"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="sr-only opacity-0 absolute pointer-events-none"
+                  value={formState.honeypot || ""}
+                  onChange={(e) => setFormState((prev) => ({ ...prev, honeypot: e.target.value }))}
+                />
+
                 {errorMessage && (
                   <p className="font-mono text-xs text-red-400 bg-red-400/10 border border-red-400/20 px-4 py-2.5 rounded-xl">
                     {errorMessage}
                   </p>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={sending}
-                  className="group relative overflow-hidden inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.25em] uppercase transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(245,166,35,0.15)] hover:shadow-[0_0_40px_rgba(245,166,35,0.3)] mt-4 self-start"
-                >
-                  {sending ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-charcoal/30 border-t-charcoal rounded-full animate-spin" />
-                      <span>TRANSMITTING...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="relative z-10">SEND MESSAGE</span>
-                      <Send className="relative z-10 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-                    </>
-                  )}
-                  {/* Button shine effect */}
-                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
-                </button>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-4">
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="group relative overflow-hidden inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.25em] uppercase transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(245,166,35,0.15)] hover:shadow-[0_0_40px_rgba(245,166,35,0.3)] self-start"
+                  >
+                    {sending ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-charcoal/30 border-t-charcoal rounded-full animate-spin" />
+                        <span>TRANSMITTING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="relative z-10">SEND MESSAGE</span>
+                        <Send className="relative z-10 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                      </>
+                    )}
+                    {/* Button shine effect */}
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+                  </button>
+
+                  <a
+                    href="mailto:verma61421st@gmail.com"
+                    className="font-mono text-[11px] text-off-white/40 hover:text-amber transition-colors tracking-wider flex items-center gap-1.5 py-2"
+                  >
+                    <span>Or direct mailto fallback</span>
+                    <span>↗</span>
+                  </a>
+                </div>
               </form>
             )}
           </div>
@@ -360,7 +393,7 @@ export default function ContactSection() {
               </div>
               <p className="font-body text-sm text-off-white/60 leading-relaxed relative z-10">
                 Open to full-time engineering roles, internships, and select freelance projects. 
-                <span className="text-off-white"> Based in India — remote-first, open to relocation.</span>
+                <span className="text-off-white"> Based in Ghaziabad, Uttar Pradesh, India — remote-first, open to relocation.</span>
               </p>
             </div>
             

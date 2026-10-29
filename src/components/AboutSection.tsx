@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { EDUCATION_DATA, MILESTONES_DATA } from "@/data/portfolioData";
+import { EDUCATION_DATA, MILESTONES_DATA, EXPERIENCES_DATA } from "@/data/portfolioData";
 import { GraduationCap, Award, Compass } from "lucide-react";
 import SplitTextReveal from "@/components/SplitTextReveal";
 
@@ -144,14 +144,14 @@ export default function AboutSection() {
                 Full-Stack Engineer • KIET &apos;27
               </p>
               <p className="font-body text-sm text-foreground/70 leading-relaxed mb-6">
-                Based in India, I engineer web architectures from interface to database. Driven by computational curiosity, minimal design aesthetics, and a deep appreciation for software that solves tangible human friction.
+                Based in Ghaziabad, Uttar Pradesh, India, I engineer web architectures from interface to database. Driven by computational curiosity, minimal design aesthetics, and a deep appreciation for software that solves tangible human friction.
               </p>
             </div>
 
             <div className="border-t border-white/10 pt-6 space-y-3 font-mono text-xs text-foreground/50 relative z-10">
               <div className="flex justify-between">
                 <span>LOCATION</span>
-                <span className="text-off-white">Delhi-NCR, India</span>
+                <span className="text-off-white">Ghaziabad, Uttar Pradesh, India</span>
               </div>
               <div className="flex justify-between">
                 <span>DEGREE</span>
@@ -241,16 +241,49 @@ export default function AboutSection() {
               </div>
             </div>
 
-            {/* Placeholder for Upcoming Experiences / Hackathons */}
-            <div className="p-5 rounded-2xl border border-dashed border-white/10 text-foreground/40 flex items-center justify-between font-mono text-xs group hover:border-amber/30 transition-colors duration-300">
-              <div className="flex items-center gap-2">
-                <Compass className="w-4 h-4 text-amber/60 group-hover:rotate-45 transition-transform duration-500" />
-                <span>EXPERIENCE &amp; HACKATHONS</span>
+            {/* Experience & Hackathons Track */}
+            {EXPERIENCES_DATA.length > 0 && (
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 rounded-full border border-amber/30 bg-amber/10 flex items-center justify-center text-amber">
+                    <Compass className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-foreground/50">Track 03</h3>
+                    <p className="font-heading font-black text-lg text-off-white uppercase">Experience &amp; Hackathons</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {EXPERIENCES_DATA.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] hover:border-amber/30 hover:bg-white/[0.04] transition-all duration-300 relative group"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <span className="font-heading font-bold text-sm text-off-white group-hover:text-amber transition-colors">
+                          {item.role}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {item.badge && (
+                            <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber/10 border border-amber/30 text-amber">
+                              {item.badge}
+                            </span>
+                          )}
+                          <span className="font-mono text-[10px] text-foreground/40">{item.year}</span>
+                        </div>
+                      </div>
+                      <p className="font-mono text-xs text-amber/80 mb-1">
+                        {item.organization}
+                      </p>
+                      <p className="font-body text-xs text-foreground/60 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <span className="text-[10px] uppercase tracking-widest text-amber/70">
-                ACTIVE / IN PURSUIT
-              </span>
-            </div>
+            )}
 
             {/* Quick Action Links */}
             <div className="flex flex-wrap items-center gap-4 pt-2">

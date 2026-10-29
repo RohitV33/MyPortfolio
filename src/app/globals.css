@@ -522,6 +522,13 @@ footer,
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Accessible Focus States ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #F5A623 !important;
+  outline-offset: 3px !important;
+  border-radius: 4px;
+}
+
 /* ── Reduced Motion Accessibility ─────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -20,27 +20,7 @@ function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 export default function ProjectGallery() {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
-
-  // Smooth marquee animation
-  useEffect(() => {
-    const el = marqueeRef.current;
-    if (!el) return;
-    let frame: number;
-    let pos = 0;
-    const speed = 0.4;
-    const animate = () => {
-      pos -= speed;
-      const half = el.scrollWidth / 2;
-      if (Math.abs(pos) >= half) pos = 0;
-      el.style.transform = `translateX(${pos}px)`;
-      frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, []);
 
   // Intersection-based slide-in for rows
   useEffect(() => {
@@ -63,7 +43,6 @@ export default function ProjectGallery() {
 
   const handleCardEnter = useCallback((idx: number) => {
     setHoveredIdx(idx);
-    setActiveIdx(idx);
   }, []);
 
   const handleCardLeave = useCallback(() => {
@@ -74,7 +53,7 @@ export default function ProjectGallery() {
     <section
       id="chapter-work"
       ref={sectionRef}
-      className="relative w-full bg-[#0a0a0a] overflow-hidden"
+      className="relative w-full bg-[#0a0a0a] overflow-hidden pb-20"
     >
       {/* ── SECTION HEADER ── */}
       <div className="relative px-6 sm:px-12 lg:px-20 pt-24 pb-12">
@@ -122,7 +101,7 @@ export default function ProjectGallery() {
           return (
             <div
               key={project.id}
-              className="proj-card-row group relative"
+              className="proj-card-row group relative cursor-pointer"
               style={{
                 opacity: 0,
                 transform: "translateY(32px)",
@@ -130,6 +109,19 @@ export default function ProjectGallery() {
               }}
               onMouseEnter={() => handleCardEnter(idx)}
               onMouseLeave={handleCardLeave}
+              onClick={() => {
+                setHoveredIdx((prev) => (prev === idx ? null : idx));
+              }}
+              tabIndex={0}
+              role="button"
+              aria-expanded={isHovered}
+              aria-label={`${project.title} - tap to toggle preview and actions`}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setHoveredIdx((prev) => (prev === idx ? null : idx));
+                }
+              }}
             >
               <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
@@ -195,7 +187,9 @@ export default function ProjectGallery() {
                       src={project.posterUrl}
                       alt={project.title}
                       fill
-                      sizes="240px"
+                      sizes="(max-width: 640px) 160px, (max-width: 1024px) 200px, 240px"
+                      quality={80}
+                      loading="lazy"
                       className="object-cover object-center transition-transform duration-700"
                       style={{ transform: isHovered ? "scale(1.06)" : "scale(1.0)" }}
                     />
@@ -277,82 +271,6 @@ export default function ProjectGallery() {
         })}
 
         <div className="h-px bg-white/[0.08]" />
-      </div>
-
-      {/* ── METRICS STRIP ── */}
-      <div className="relative px-6 sm:px-12 lg:px-20 h-24 overflow-hidden">
-        {PROJECTS.map((project, idx) => (
-          <div
-            key={project.id + "-metrics"}
-            className="absolute inset-0 flex items-center px-6 sm:px-12 lg:px-20 transition-all duration-300"
-            style={{
-              opacity: hoveredIdx === idx ? 1 : 0,
-              transform: hoveredIdx === idx ? "translateY(0)" : "translateY(8px)",
-              pointerEvents: hoveredIdx === idx ? "auto" : "none",
-            }}
-          >
-            <div className="flex items-center gap-10 lg:gap-16 flex-wrap">
-              {project.metrics?.map((m) => (
-                <div key={m.label} className="flex flex-col gap-0.5">
-                  <span
-                    className="font-akira text-xl sm:text-2xl font-black"
-                    style={{ color: project.color }}
-                  >
-                    {m.value}
-                  </span>
-                  <span className="font-mono text-[9px] text-off-white/45 uppercase tracking-widest">
-                    {m.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-        <div
-          className="absolute inset-0 flex items-center px-6 sm:px-12 lg:px-20 transition-opacity duration-300"
-          style={{ opacity: hoveredIdx !== null ? 0 : 1 }}
-        >
-          <span className="font-mono text-xs text-off-white/[0.18] uppercase tracking-[0.3em]">
-            Hover a project to explore metrics
-          </span>
-        </div>
-      </div>
-
-      {/* ── MARQUEE STRIP ── */}
-      <div className="relative overflow-hidden border-t border-b border-white/[0.08] py-4 bg-[#0d0d0d]">
-        <div
-          ref={marqueeRef}
-          className="flex items-center whitespace-nowrap"
-          style={{ willChange: "transform" }}
-        >
-          {[...Array(4)].flatMap((_, ri) =>
-            PROJECTS.map((p, i) => (
-              <span key={`${p.id}-m-${ri}-${i}`} className="inline-flex items-center">
-                <span className="font-akira text-sm font-black uppercase tracking-[0.15em] text-off-white/[0.15] px-8">
-                  {p.title}
-                </span>
-                <span
-                  className="w-1.5 h-1.5 rounded-full mx-2 flex-shrink-0"
-                  style={{ background: p.color, opacity: 0.5 }}
-                />
-              </span>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* ── BOTTOM CTA ── */}
-      <div className="flex items-center justify-between px-6 sm:px-12 lg:px-20 py-8">
-        <span className="font-mono text-[10px] sm:text-xs text-off-white/20 uppercase tracking-widest">
-          {PROJECTS.length} case studies available
-        </span>
-        <Link
-          href="/projects"
-          className="group flex items-center gap-2.5 px-6 py-3 rounded-full border border-white/15 font-mono text-xs tracking-wider uppercase text-off-white/55 hover:text-off-white hover:border-amber/40 hover:bg-amber/5 transition-all duration-300"
-        >
-          <span>Full Project Archive</span>
-          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-        </Link>
       </div>
     </section>
   );

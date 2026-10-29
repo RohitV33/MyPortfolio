@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { CAPABILITIES } from "@/data/portfolioData";
@@ -129,9 +130,17 @@ export default function CapabilitiesSection() {
                     {cap.title}
                   </h3>
                 </div>
-                <p className="cap-tag font-body text-base md:text-xl font-light text-off-white/85 max-w-xl leading-relaxed">
-                  {cap.tagline}
-                </p>
+                <div className="flex flex-col sm:items-end gap-3">
+                  <p className="cap-tag font-body text-base md:text-xl font-light text-off-white/85 max-w-xl leading-relaxed">
+                    {cap.tagline}
+                  </p>
+                  {cap.number === "01" && (
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 font-mono text-[11px] font-semibold tracking-wider self-start sm:self-end">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>⚡ Lighthouse: 98 Perf · 100 A11y · 100 SEO</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 border-t border-white/10 pt-6 relative z-20">
@@ -144,6 +153,36 @@ export default function CapabilitiesSection() {
                     <span>{detail}</span>
                   </div>
                 ))}
+              </div>
+
+              {/* Verifiable Project Link */}
+              <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-mono relative z-20">
+                <span className="text-off-white/30 uppercase tracking-widest text-[10px]">Verifiable Implementation</span>
+                <Link
+                  href={
+                    cap.number === "01"
+                      ? "/projects/bartr"
+                      : cap.number === "02"
+                      ? "/projects/fuzzr"
+                      : cap.number === "03"
+                      ? "/projects/civiclens"
+                      : "https://github.com/RohitV33/Web-Fuzzing-Tool"
+                  }
+                  target={cap.number === "04" ? "_blank" : undefined}
+                  rel={cap.number === "04" ? "noopener noreferrer" : undefined}
+                  className="inline-flex items-center gap-1.5 text-amber hover:text-off-white transition-colors tracking-wider"
+                >
+                  <span>
+                    {cap.number === "01"
+                      ? "Inspect Bartr & App Architecture"
+                      : cap.number === "02"
+                      ? "Inspect Web Fuzzing Scanner"
+                      : cap.number === "03"
+                      ? "Inspect CivicLens AI Pipeline"
+                      : "Inspect Security CLI on GitHub"}
+                  </span>
+                  <span>↗</span>
+                </Link>
               </div>
             </div>
           ))}

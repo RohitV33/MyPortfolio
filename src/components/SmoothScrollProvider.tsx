@@ -19,6 +19,11 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
   useEffect(() => {
+    // Respect user's reduced motion preferences
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     gsap.registerPlugin(ScrollTrigger);
 
     const lenisInstance = new Lenis({

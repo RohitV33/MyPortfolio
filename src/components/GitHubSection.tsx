@@ -150,44 +150,13 @@ export default function GitHubSection() {
   useEffect(() => {
     async function fetchGitHub() {
       try {
-        const [userRes, reposRes] = await Promise.all([
-          fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
-            headers: { Accept: "application/vnd.github+json" },
-            next: { revalidate: 3600 },
-          } as RequestInit),
-          fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`, {
-            headers: { Accept: "application/vnd.github+json" },
-          }),
-        ]);
-
-        if (!userRes.ok || !reposRes.ok) throw new Error("GitHub API error");
-
-        const user = await userRes.json();
-        const repos: Repo[] = await reposRes.json();
-
-        // Aggregate languages
-        const languages: Record<string, number> = {};
-        let totalStars = 0;
-        for (const r of repos) {
-          if (r.language) languages[r.language] = (languages[r.language] ?? 0) + 1;
-          totalStars += r.stargazers_count;
-        }
-
-        // Sort by stars for top repos
-        const topRepos = [...repos]
-          .sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count)
-          .slice(0, 6);
-
-        setStats({
-          publicRepos: user.public_repos,
-          followers: user.followers,
-          totalStars,
-          languages,
-          topRepos,
-        });
+        const res = await fetch("/api/github");
+        if (!res.ok) throw new Error("API error");
+        const data: GithubStats = await res.json();
+        setStats(data);
       } catch {
         setError(true);
-        // Fallback static data
+        // Fallback static data with real repository links
         setStats({
           publicRepos: 18,
           followers: 12,
@@ -195,11 +164,11 @@ export default function GitHubSection() {
           languages: { JavaScript: 8, Python: 5, TypeScript: 4, Java: 3 },
           topRepos: [
             { id: 1, name: "Web-Fuzzing-Tool", description: "Team-based automated web security testing platform with concurrent endpoint scanning.", html_url: "https://github.com/RohitV33/Web-Fuzzing-Tool", stargazers_count: 3, forks_count: 1, language: "JavaScript", updated_at: new Date(Date.now() - 86400000 * 5).toISOString(), topics: [] },
-            { id: 2, name: "bartr", description: "Peer-to-peer cashless skill exchange with real-time matchmaking and Socket.IO chat.", html_url: "https://github.com/RohitV33", stargazers_count: 2, forks_count: 0, language: "TypeScript", updated_at: new Date(Date.now() - 86400000 * 20).toISOString(), topics: [] },
-            { id: 3, name: "CivicLens-AI", description: "AI civic issue reporting platform powered by YOLOv8 computer vision and FastAPI.", html_url: "https://github.com/RohitV33", stargazers_count: 2, forks_count: 1, language: "Python", updated_at: new Date(Date.now() - 86400000 * 2).toISOString(), topics: [] },
-            { id: 4, name: "dsa-practice", description: "300+ LeetCode solutions in Java and Python covering arrays, trees, graphs, and DP.", html_url: "https://github.com/RohitV33", stargazers_count: 0, forks_count: 0, language: "Java", updated_at: new Date(Date.now() - 86400000 * 10).toISOString(), topics: [] },
-            { id: 5, name: "portfolio", description: "Personal portfolio built with Next.js, GSAP, and Lenis scroll choreography.", html_url: "https://github.com/RohitV33", stargazers_count: 0, forks_count: 0, language: "TypeScript", updated_at: new Date(Date.now() - 86400000 * 1).toISOString(), topics: [] },
-            { id: 6, name: "express-auth-starter", description: "Reusable JWT + cookie authentication starter for Node.js / Express APIs.", html_url: "https://github.com/RohitV33", stargazers_count: 0, forks_count: 0, language: "JavaScript", updated_at: new Date(Date.now() - 86400000 * 30).toISOString(), topics: [] },
+            { id: 2, name: "Bartr", description: "Peer-to-peer cashless skill exchange with real-time matchmaking and Socket.IO chat.", html_url: "https://github.com/RohitV33/Bartr", stargazers_count: 2, forks_count: 0, language: "TypeScript", updated_at: new Date(Date.now() - 86400000 * 20).toISOString(), topics: [] },
+            { id: 3, name: "CivicLens", description: "AI civic issue reporting platform powered by YOLOv8 computer vision and FastAPI.", html_url: "https://github.com/RohitV33/CivicLens", stargazers_count: 2, forks_count: 1, language: "Python", updated_at: new Date(Date.now() - 86400000 * 2).toISOString(), topics: [] },
+            { id: 4, name: "Java-DSA", description: "300+ LeetCode solutions in Java and Python covering arrays, trees, graphs, and DP.", html_url: "https://github.com/RohitV33/Java-DSA", stargazers_count: 1, forks_count: 0, language: "Java", updated_at: new Date(Date.now() - 86400000 * 10).toISOString(), topics: [] },
+            { id: 5, name: "MyPortfolio", description: "Personal portfolio built with Next.js, GSAP, and Lenis scroll choreography.", html_url: "https://github.com/RohitV33/MyPortfolio", stargazers_count: 1, forks_count: 0, language: "TypeScript", updated_at: new Date(Date.now() - 86400000 * 1).toISOString(), topics: [] },
+            { id: 6, name: "Nazara-E-Commerce", description: "Modern full-stack e-commerce web application featuring scalable backend architecture.", html_url: "https://github.com/RohitV33/Nazara-E-Commerce", stargazers_count: 3, forks_count: 0, language: "JavaScript", updated_at: new Date(Date.now() - 86400000 * 30).toISOString(), topics: [] },
           ],
         });
       } finally {

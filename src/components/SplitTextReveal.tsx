@@ -69,20 +69,23 @@ export default function SplitTextReveal({
       ref={containerRef as unknown as React.RefObject<HTMLHeadingElement>}
       className={`${className} overflow-hidden`}
       style={{ perspective: "600px" }}
+      aria-label={children}
     >
-      {words.map((word, wi) => (
-        <span key={wi} className="inline-block mr-[0.22em] last:mr-0">
-          {word.split("").map((char, ci) => (
-            <span
-              key={`${wi}-${ci}`}
-              className="split-char inline-block"
-              style={{ opacity: 0 }}
-            >
-              {char}
-            </span>
-          ))}
-        </span>
-      ))}
+      <span aria-hidden="true" className="contents">
+        {words.map((word, wi) => (
+          <span key={wi} className="inline-block mr-[0.22em] last:mr-0">
+            {word.split("").map((char, ci) => (
+              <span
+                key={`${wi}-${ci}`}
+                className="split-char inline-block"
+                style={{ opacity: 0 }}
+              >
+                {char}
+              </span>
+            ))}
+          </span>
+        ))}
+      </span>
     </Tag>
   );
 }

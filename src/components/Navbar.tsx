@@ -57,6 +57,35 @@ export default function Navbar() {
     setIsDark(!isDark);
   };
 
+  const [activeSection, setActiveSection] = useState<string>("chapter-intro");
+
+  // Track active section on scroll for spy highlighting
+  useEffect(() => {
+    if (pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const sectionIds = ["chapter-intro", "chapter-work", "chapter-stack", "chapter-about"];
+    const handleScrollSpy = () => {
+      const scrollPos = window.scrollY + 200;
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sectionIds[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleSpyScroll, { passive: true });
+    handleSpyScroll();
+    return () => window.removeEventListener("scroll", handleSpyScroll);
+    function handleSpyScroll() {
+      handleScrollSpy();
+    }
+  }, [pathname]);
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("/#") && pathname === "/") {
       e.preventDefault();
@@ -100,23 +129,33 @@ export default function Navbar() {
               scrolled ? "bg-black/50" : "bg-black/35"
             }`}
           >
-            {NAV_ITEMS.map((item, idx) => (
-              <Magnetic key={item.label} strength={0.2}>
-                <Link
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  data-cursor-interactive
-                  className={`text-[13px] tracking-wide transition-all duration-200 relative group ${
-                    idx === 0
-                      ? "text-off-white font-semibold"
-                      : "text-off-white/60 hover:text-amber font-normal"
-                  }`}
-                >
-                  {item.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-amber group-hover:w-full transition-all duration-300 ease-out" />
-                </Link>
-              </Magnetic>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive =
+                (pathname === "/resume" && item.href === "/resume") ||
+                (pathname === "/" && item.href === `/#${activeSection}`);
+
+              return (
+                <Magnetic key={item.label} strength={0.2}>
+                  <Link
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    data-cursor-interactive
+                    className={`text-[13px] tracking-wide transition-all duration-200 relative group ${
+                      isActive
+                        ? "text-amber font-semibold"
+                        : "text-off-white/60 hover:text-amber font-normal"
+                    }`}
+                  >
+                    {item.label}
+                    <span
+                      className={`absolute -bottom-1 left-0 h-[1.5px] bg-amber transition-all duration-300 ease-out ${
+                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    />
+                  </Link>
+                </Magnetic>
+              );
+            })}
           </nav>
 
           {/* Top-Right: Search + Theme toggle + Contact */}

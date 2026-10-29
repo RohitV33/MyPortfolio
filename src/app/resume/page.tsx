@@ -111,7 +111,7 @@ export default function ResumePage() {
       ],
       technologies: ["React.js", "Node.js", "Express.js", "MongoDB", "Socket.IO", "JWT"],
       liveUrl: "https://bartr-blond.vercel.app/",
-      githubUrl: "https://github.com/RohitV33",
+      githubUrl: "https://github.com/RohitV33/Bartr",
     },
   ];
 

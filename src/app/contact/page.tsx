@@ -156,7 +156,7 @@ export default function ContactPage() {
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
                 <span className="uppercase text-foreground/30">Node Location</span>
-                <span className="text-foreground">India // UTC+5:30</span>
+                <span className="text-foreground">Ghaziabad, Uttar Pradesh, India // UTC+5:30</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
                 <span className="uppercase text-foreground/30">System Time</span>

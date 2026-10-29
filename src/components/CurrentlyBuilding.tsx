@@ -8,29 +8,33 @@ const ITEMS = [
   {
     n: "01",
     title: "CivicLens-AI",
-    what: "Extending the computer vision pipeline — region heatmaps, multi-class issue clustering, and a FastAPI async queue for real-time civic telemetry.",
+    what: "v2 Roadmap — adding YOLOv8 region heatmaps, multi-class issue clustering, and an async FastAPI worker queue for real-time civic telemetry.",
     tags: ["YOLOv8", "FastAPI", "Python"],
+    statusBadge: "Live · Iterating",
     live: true,
   },
   {
     n: "02",
     title: "Web Fuzzing Tool",
-    what: "Hardening the concurrent scanner — fixing race conditions under high parallelism, adding structured JSON telemetry output for team-wide auditing.",
+    what: "Hardening the concurrent scanner — eliminating race conditions under high parallelism, adding structured JSON telemetry reports for team-wide security auditing.",
     tags: ["Node.js", "Security", "Socket.IO"],
+    statusBadge: "Live · Iterating",
     live: true,
   },
   {
     n: "03",
     title: "Bartr",
-    what: "Final stretch — polishing the matchmaking UX, squashing edge cases in the real-time bid logic, and wiring up the production deploy pipeline.",
+    what: "v2 Iterations — integrating user reputational trust tiers, socket-based voice note previews in chat, and indexed MongoDB aggregation pipelines for instant trade matching.",
     tags: ["React", "Socket.IO", "MongoDB"],
-    live: false,
+    statusBadge: "Live · Iterating",
+    live: true,
   },
   {
     n: "04",
     title: "DSA & Systems",
-    what: "Working through trees, graphs, and dynamic programming on LeetCode daily. Parallel reading on OS scheduling and DBMS concurrency internals.",
+    what: "Continuous Mastery — maintaining a 300+ problem streak on LeetCode with focus on graph algorithms, DP optimization, and OS concurrency primitives.",
     tags: ["Java", "Python", "Algorithms"],
+    statusBadge: "Active · Ongoing",
     live: true,
   },
 ];
@@ -205,26 +209,31 @@ export default function CurrentlyBuilding() {
 
             {/* Title + scrubbed paragraph */}
             <div className="flex flex-col gap-3">
-              <div className="workshop-title flex items-center gap-3">
+              <div className="workshop-title flex flex-wrap items-center gap-3">
                 <h3 className="font-akira text-xl sm:text-2xl md:text-3xl font-black text-off-white group-hover:text-amber transition-colors duration-300 tracking-tight">
                   {item.title}
                 </h3>
-                {item.live && (
-                  <span className="relative flex h-2 w-2 shrink-0">
+                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/25">
+                  <span className="relative flex h-1.5 w-1.5 shrink-0">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
                   </span>
-                )}
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-400 font-medium">
+                    {item.statusBadge}
+                  </span>
+                </div>
               </div>
 
-              {/* Scroll-scrubbed blur text */}
+              {/* Scroll-scrubbed blur text with accessibility support */}
               <p
+                aria-label={item.what}
                 className="font-body text-sm sm:text-base text-off-white/90 leading-relaxed font-light max-w-lg"
                 style={{ wordSpacing: "0.05em" }}
               >
                 {item.what.split(" ").map((word, wi) => (
                   <span
                     key={wi}
+                    aria-hidden="true"
                     className="scrub-word inline-block mr-[0.28em]"
                     style={{
                       opacity: 0.1,

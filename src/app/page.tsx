@@ -11,7 +11,7 @@ import ContactSection from "@/components/ContactSection";
 
 export default function HomePage() {
   return (
-    <main className="bg-charcoal text-off-white min-h-screen relative selection:bg-amber selection:text-charcoal">
+    <main id="main-content" className="bg-charcoal text-off-white min-h-screen relative selection:bg-amber selection:text-charcoal">
       {/* Chapter 01: The Introduction */}
       <Hero />
 

@@ -196,8 +196,8 @@ export default function Hero() {
             alt="Rohit Verma — Cinematic Portrait Environment"
             fill
             priority
-            quality={100}
-            unoptimized
+            sizes="100vw"
+            quality={85}
             className="object-cover object-[51%_35%] select-none"
           />
         </div>
@@ -251,7 +251,6 @@ export default function Hero() {
           ref={subtitleRef}
           className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto font-normal flex items-center justify-center gap-1 select-none mt-4 sm:mt-5 will-change-transform h-[1.5em]"
         >
-          <span className="text-amber">&gt;</span>
           <span className="text-off-white/90">{typewriterText}</span>
           <span className="typewriter-cursor" />
         </p>
