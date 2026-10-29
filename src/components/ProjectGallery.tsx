@@ -2,23 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { PROJECTS, Project } from "@/data/portfolioData";
-import { useLenis } from "@/components/SmoothScrollProvider";
-import gsap from "gsap";
-import {
-  ArrowUpRight,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize2,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-
-// Each project "chapter" consumes this many pixels of scroll space
-const SCROLL_PER_PROJECT = 700;
+import Link from "next/link";
+import { PROJECTS } from "@/data/portfolioData";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -33,670 +19,341 @@ function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
 }
 
 export default function ProjectGallery() {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [videoProgress, setVideoProgress] = useState(0);
-  const [cinemaProject, setCinemaProject] = useState<Project | null>(null);
-
   const sectionRef = useRef<HTMLElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const projectLayersRef = useRef<(HTMLDivElement | null)[]>([]);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const activeIdxRef = useRef(0);
-  const isAnimatingRef = useRef(false);
+  const marqueeRef = useRef<HTMLDivElement>(null);
 
-  const { lenis } = useLenis();
-  const activeProject = PROJECTS[activeIdx] || PROJECTS[0];
-
-  // ── Smooth project transition via GSAP ────────────────────────────────────
-  const goToProject = useCallback((targetIdx: number, dir?: 1 | -1) => {
-    if (targetIdx === activeIdxRef.current || isAnimatingRef.current) return;
-    if (targetIdx < 0 || targetIdx >= PROJECTS.length) return;
-
-    isAnimatingRef.current = true;
-    const currentIdx = activeIdxRef.current;
-    const direction = dir ?? (targetIdx > currentIdx ? 1 : -1);
-
-    const currentLayer = projectLayersRef.current[currentIdx];
-    const incomingLayer = projectLayersRef.current[targetIdx];
-
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // Animate counter
-    if (counterRef.current && !prefersReduced) {
-      gsap.to(counterRef.current, {
-        y: direction > 0 ? -14 : 14,
-        opacity: 0,
-        duration: 0.18,
-        ease: "power2.inOut",
-        onComplete: () => {
-          gsap.set(counterRef.current, { y: direction > 0 ? 14 : -14, opacity: 0 });
-          gsap.to(counterRef.current, { y: 0, opacity: 1, duration: 0.28, ease: "power3.out" });
-        },
-      });
-    }
-
-    if (prefersReduced || !currentLayer || !incomingLayer) {
-      setActiveIdx(targetIdx);
-      activeIdxRef.current = targetIdx;
-      setVideoProgress(0);
-      setTimeout(() => { isAnimatingRef.current = false; }, 80);
-      return;
-    }
-
-    const outPreview = currentLayer.querySelector<HTMLElement>(".proj-preview");
-    const outInfo = currentLayer.querySelectorAll<HTMLElement>(".proj-info");
-    const inPreview = incomingLayer.querySelector<HTMLElement>(".proj-preview");
-    const inInfo = incomingLayer.querySelectorAll<HTMLElement>(".proj-info");
-
-    // Stage incoming layer
-    gsap.set(incomingLayer, { opacity: 1, zIndex: 20 });
-    if (inPreview) gsap.set(inPreview, { scale: 0.96, y: direction > 0 ? 28 : -28, opacity: 0, filter: "blur(8px)" });
-    if (inInfo.length) gsap.set(inInfo, { y: direction > 0 ? 20 : -20, opacity: 0, filter: "blur(4px)" });
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setActiveIdx(targetIdx);
-        activeIdxRef.current = targetIdx;
-        setVideoProgress(0);
-
-        // Cleanup
-        [inPreview, outPreview].forEach(el => el && gsap.set(el, { clearProps: "all" }));
-        inInfo.forEach(el => gsap.set(el, { clearProps: "all" }));
-        outInfo.forEach(el => gsap.set(el, { clearProps: "all" }));
-
-        gsap.set(currentLayer, { opacity: 0, zIndex: 0 });
-        gsap.set(incomingLayer, { clearProps: "zIndex" });
-
-        // Video management
-        videoRefs.current.forEach((vid, i) => {
-          if (!vid) return;
-          if (i === targetIdx) { vid.currentTime = 0; vid.play().catch(() => {}); }
-          else vid.pause();
-        });
-
-        isAnimatingRef.current = false;
-      },
-    });
-
-    // Out
-    if (outPreview) tl.to(outPreview, { scale: 0.97, y: direction > 0 ? -24 : 24, opacity: 0, filter: "blur(6px)", duration: 0.32, ease: "power2.inOut" }, 0);
-    if (outInfo.length) tl.to(outInfo, { y: direction > 0 ? -16 : 16, opacity: 0, filter: "blur(3px)", stagger: 0.02, duration: 0.28, ease: "power2.inOut" }, 0);
-
-    // In
-    if (inPreview) tl.to(inPreview, { scale: 1, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.48, ease: "power3.out" }, 0.1);
-    if (inInfo.length) tl.to(inInfo, { y: 0, opacity: 1, filter: "blur(0px)", stagger: 0.03, duration: 0.44, ease: "power3.out" }, 0.16);
+  // Smooth marquee animation
+  useEffect(() => {
+    const el = marqueeRef.current;
+    if (!el) return;
+    let frame: number;
+    let pos = 0;
+    const speed = 0.4;
+    const animate = () => {
+      pos -= speed;
+      const half = el.scrollWidth / 2;
+      if (Math.abs(pos) >= half) pos = 0;
+      el.style.transform = `translateX(${pos}px)`;
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
   }, []);
 
-  // ── Discrete Mouse Wheel Step Interception ──
+  // Intersection-based slide-in for rows
   useEffect(() => {
-    let cooldown = false;
-    const onWheel = (e: WheelEvent) => {
-      const section = sectionRef.current;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      // Only intercept when section is overlapping the viewport
-      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
-      const cur = activeIdxRef.current;
+    const cards = document.querySelectorAll(".proj-card-row");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0px)";
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    cards.forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, []);
 
-      if (e.deltaY > 12 && cur < PROJECTS.length - 1) {
-        // Intercept: go to next project
-        e.preventDefault();
-        if (cooldown || isAnimatingRef.current) return;
-        cooldown = true;
-        const next = cur + 1;
-        goToProject(next, 1);
-        if (lenis) lenis.scrollTo(section.offsetTop + next * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
-        setTimeout(() => { cooldown = false; }, 600);
-      } else if (e.deltaY < -12 && cur > 0) {
-        // Intercept: go to prev project
-        e.preventDefault();
-        if (cooldown || isAnimatingRef.current) return;
-        cooldown = true;
-        const prev = cur - 1;
-        goToProject(prev, -1);
-        if (lenis) lenis.scrollTo(section.offsetTop + prev * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
-        setTimeout(() => { cooldown = false; }, 600);
-      }
-      // On last/first project boundary: don't preventDefault → page scrolls naturally
-    };
+  const handleCardEnter = useCallback((idx: number) => {
+    setHoveredIdx(idx);
+    setActiveIdx(idx);
+  }, []);
 
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, [goToProject, lenis]);
-
-  // ── Touch Swipe Support (Mobile) ──
-  useEffect(() => {
-    let startY = 0;
-    let cooldown = false;
-
-    const onTouchStart = (e: TouchEvent) => { startY = e.touches[0].clientY; };
-    const onTouchMove = (e: TouchEvent) => {
-      const section = sectionRef.current;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
-      const delta = startY - e.touches[0].clientY;
-      const cur = activeIdxRef.current;
-
-      if (delta > 45 && cur < PROJECTS.length - 1) {
-        e.preventDefault();
-        if (cooldown || isAnimatingRef.current) return;
-        cooldown = true;
-        const next = cur + 1;
-        goToProject(next, 1);
-        if (lenis) lenis.scrollTo(section.offsetTop + next * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
-        setTimeout(() => { cooldown = false; }, 600);
-      } else if (delta < -45 && cur > 0) {
-        e.preventDefault();
-        if (cooldown || isAnimatingRef.current) return;
-        cooldown = true;
-        const prev = cur - 1;
-        goToProject(prev, -1);
-        if (lenis) lenis.scrollTo(section.offsetTop + prev * SCROLL_PER_PROJECT, { duration: 0.6, force: true });
-        setTimeout(() => { cooldown = false; }, 600);
-      }
-    };
-
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    return () => {
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-    };
-  }, [goToProject, lenis]);
-
-  // ── Keyboard Navigation (Arrow Keys) ──
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (cinemaProject) { if (e.key === "Escape") setCinemaProject(null); return; }
-      const section = sectionRef.current;
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      if (rect.top > 10 || rect.bottom < window.innerHeight - 10) return;
-      const cur = activeIdxRef.current;
-      if ((e.key === "ArrowDown" || e.key === "ArrowRight") && cur < PROJECTS.length - 1) {
-        e.preventDefault(); jumpToProject(cur + 1);
-      } else if ((e.key === "ArrowUp" || e.key === "ArrowLeft") && cur > 0) {
-        e.preventDefault(); jumpToProject(cur - 1);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [cinemaProject]);
-
-  // Tab / button click — jump directly to project
-  const jumpToProject = (idx: number) => {
-    if (idx === activeIdxRef.current || isAnimatingRef.current) return;
-    goToProject(idx);
-    if (lenis && sectionRef.current) {
-      lenis.scrollTo(sectionRef.current.offsetTop + idx * SCROLL_PER_PROJECT, { duration: 0.7, force: true });
-    }
-  };
-
-  // Video Time Update for Looping Progress Bar
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    const vid = e.currentTarget;
-    if (vid.duration) {
-      setVideoProgress((vid.currentTime / vid.duration) * 100);
-    }
-  };
-
-  // Video Play/Pause Toggle
-  const togglePlay = () => {
-    const vid = videoRefs.current[activeIdx];
-    if (!vid) return;
-    if (isPlaying) {
-      vid.pause();
-      setIsPlaying(false);
-    } else {
-      vid.play();
-      setIsPlaying(true);
-    }
-  };
-
-  // Video Mute/Unmute Toggle
-  const toggleMute = () => {
-    const nextMuted = !isMuted;
-    videoRefs.current.forEach((vid) => {
-      if (vid) vid.muted = nextMuted;
-    });
-    setIsMuted(nextMuted);
-  };
-
-  // Scroll smoothly to Chapter 04 Case Study
-  const scrollToGitHub = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const el = document.getElementById("chapter-github");
-    if (el) {
-      if (lenis) lenis.scrollTo(el, { duration: 1.2 });
-      else el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // Total section height = 100vh (visible frame) + scroll budget for project transitions
-  const sectionHeight = `calc(100vh + ${(PROJECTS.length - 1) * SCROLL_PER_PROJECT}px)`;
+  const handleCardLeave = useCallback(() => {
+    setHoveredIdx(null);
+  }, []);
 
   return (
     <section
       id="chapter-work"
       ref={sectionRef}
-      className="relative w-full bg-[#0d0d0d] text-off-white select-none border-t border-white/5"
-      style={{ height: sectionHeight }}
+      className="relative w-full bg-[#0a0a0a] overflow-hidden"
     >
-      {/* ── STICKY VIEWPORT (CSS sticky — no GSAP pin needed) ── */}
-      <div
-        ref={stickyRef}
-        className="sticky top-0 w-full h-screen flex flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-14 pt-24 sm:pt-28 pb-6 z-10"
-      >
-        {/* Dynamic Ambient Background Glow Tinted by Current Project */}
-        <div
-          aria-hidden="true"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[1100px] h-[40vw] max-h-[500px] rounded-full pointer-events-none opacity-15 blur-[140px] transition-colors duration-1000 ease-out z-0"
-          style={{
-            background: `radial-gradient(circle, ${activeProject.color || "#F5A623"} 0%, transparent 70%)`,
-          }}
-        />
+      {/* ── SECTION HEADER ── */}
+      <div className="relative px-6 sm:px-12 lg:px-20 pt-24 pb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="w-2 h-2 rounded-full bg-amber animate-pulse shadow-[0_0_12px_#F5A623]" />
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.35em] text-amber font-semibold">
+            Chapter 03 — The Work
+          </span>
+        </div>
 
-        {/* Subtle Studio Grid Overlay */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"
-        />
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <h2 className="font-akira text-[2.8rem] sm:text-[4rem] lg:text-[5.5rem] font-black tracking-tight leading-[0.88] uppercase text-off-white">
+            SELECTED
+            <br />
+            <span
+              className="text-transparent"
+              style={{ WebkitTextStroke: "2px #F5A623" }}
+            >
+              WORK.
+            </span>
+          </h2>
 
-        <div className="relative z-10 max-w-[1500px] mx-auto w-full flex flex-col h-full max-h-[820px]">
-          {/* ── SECTION HEADER & DYNAMIC NAVIGATION ── */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 mb-4 sm:mb-5 flex-shrink-0">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <span className="w-2 h-2 rounded-full bg-amber shadow-[0_0_10px_#F5A623] animate-pulse" />
-                <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-amber font-semibold">
-                  CHAPTER 03 - THE WORK
-                </p>
-              </div>
-
-              <h2 className="font-akira text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-off-white uppercase leading-[0.95]">
-                SELECTED <span className="text-amber">PROJECTS.</span>
-              </h2>
-            </div>
-
-            {/* Dynamic Controls: Segmented Tabs & Counter Arrows */}
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Project Navigation Tabs */}
-              <div className="flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl">
-                {PROJECTS.map((project, idx) => {
-                  const isActive = activeIdx === idx;
-                  return (
-                    <button
-                      key={project.id}
-                      type="button"
-                      onClick={() => jumpToProject(idx)}
-                      className={`px-3 sm:px-4 py-1.5 rounded-full font-mono text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 sm:gap-2 ${
-                        isActive
-                          ? "bg-amber text-charcoal font-bold shadow-[0_0_16px_rgba(245,166,35,0.35)] scale-[1.02]"
-                          : "text-off-white/60 hover:text-off-white hover:bg-white/5"
-                      }`}
-                    >
-                      <span>{project.number}</span>
-                      <span className="hidden sm:inline font-semibold">{project.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Prev / Next Buttons & Animated Counter */}
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activeIdx > 0) jumpToProject(activeIdx - 1);
-                  }}
-                  disabled={activeIdx === 0}
-                  aria-label="Previous project"
-                  className={`w-8 h-8 rounded-full border border-white/10 bg-black/40 text-off-white/70 transition-all flex items-center justify-center ${
-                    activeIdx === 0
-                      ? "opacity-30 cursor-not-allowed"
-                      : "hover:text-amber hover:border-amber/50 hover:bg-white/5"
-                  }`}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                {/* Counter with Animated Number */}
-                <div className="font-mono text-xs text-off-white/50 px-1.5 flex items-center overflow-hidden h-6">
-                  <span
-                    ref={counterRef}
-                    className="inline-block text-amber font-bold will-change-transform"
-                  >
-                    {activeProject.number}
-                  </span>
-                  <span className="text-off-white/40 ml-1">/ 0{PROJECTS.length}</span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activeIdx < PROJECTS.length - 1) jumpToProject(activeIdx + 1);
-                  }}
-                  disabled={activeIdx === PROJECTS.length - 1}
-                  aria-label="Next project"
-                  className={`w-8 h-8 rounded-full border border-white/10 bg-black/40 text-off-white/70 transition-all flex items-center justify-center ${
-                    activeIdx === PROJECTS.length - 1
-                      ? "opacity-30 cursor-not-allowed"
-                      : "hover:text-amber hover:border-amber/50 hover:bg-white/5"
-                  }`}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+          <div className="flex flex-col gap-2 sm:items-end pb-1">
+            <p className="font-mono text-xs text-off-white/45 tracking-widest uppercase max-w-[260px] sm:text-right leading-relaxed">
+              {PROJECTS.length} projects shipped
+            </p>
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 text-amber font-mono text-xs tracking-wider uppercase hover:gap-3 transition-all duration-300 group"
+            >
+              <span>View All Archives</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Link>
           </div>
+        </div>
 
-          {/* ── PROJECT STACK ── */}
-          <div className="relative flex-1 rounded-3xl border border-white/10 bg-[#121316]/95 backdrop-blur-xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_70px_rgba(0,0,0,0.7)] overflow-hidden">
-            {PROJECTS.map((project, idx) => {
-              const isCurrent = idx === activeIdx;
+        <div className="mt-10 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+      </div>
 
-              return (
-                <div
-                  key={project.id}
-                  ref={(el) => {
-                    projectLayersRef.current[idx] = el;
-                  }}
-                  className={`w-full ${
-                    isCurrent
-                      ? "relative opacity-100 pointer-events-auto z-10"
-                      : "absolute inset-0 p-5 sm:p-7 lg:p-9 opacity-0 pointer-events-none z-0"
-                  }`}
-                >
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-                    {/* ── LEFT: Video Preview ── */}
-                    <div className="proj-preview lg:col-span-7 flex flex-col gap-2 will-change-transform">
-                      <div className="relative w-full aspect-[16/10] max-h-[380px] sm:max-h-[420px] rounded-2xl overflow-hidden bg-black/95 border border-white/15 shadow-2xl group">
-                        {project.videoUrl ? (
-                          <video
-                            ref={(el) => {
-                              videoRefs.current[idx] = el;
-                            }}
-                            src={project.videoUrl}
-                            poster={project.posterUrl}
-                            autoPlay={isCurrent}
-                            loop
-                            muted={isMuted}
-                            playsInline
-                            onTimeUpdate={isCurrent ? handleTimeUpdate : undefined}
-                            className="w-full h-full object-cover object-center"
-                          />
-                        ) : (
-                          <Image
-                            src={project.posterUrl}
-                            alt={project.title}
-                            fill
-                            sizes="(max-width: 1024px) 100vw, 60vw"
-                            className="object-cover object-center"
-                          />
-                        )}
+      {/* ── PROJECT LIST ── */}
+      <div className="relative px-6 sm:px-12 lg:px-20">
+        {PROJECTS.map((project, idx) => {
+          const isHovered = hoveredIdx === idx;
 
-                        {/* Subtle Cinematic Vignette */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none z-20" />
+          return (
+            <div
+              key={project.id}
+              className="proj-card-row group relative"
+              style={{
+                opacity: 0,
+                transform: "translateY(32px)",
+                transition: `opacity 0.7s ease ${idx * 0.12}s, transform 0.7s ease ${idx * 0.12}s`,
+              }}
+              onMouseEnter={() => handleCardEnter(idx)}
+              onMouseLeave={handleCardLeave}
+            >
+              <div className="absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
 
-                        {/* Top Overlay Badge */}
-                        <div className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-mono">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                          <span className="text-off-white font-medium tracking-wider">
-                            PRODUCTION DEMO
-                          </span>
-                        </div>
-
-                        {/* Top Right: Fullscreen Cinema Button */}
-                        <button
-                          type="button"
-                          onClick={() => setCinemaProject(project)}
-                          aria-label="Expand to Cinema Theatre"
-                          className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-off-white/80 hover:text-amber hover:border-amber transition-all shadow-lg pointer-events-auto"
-                          title="Expand Fullscreen Reel"
-                        >
-                          <Maximize2 className="w-3.5 h-3.5" />
-                        </button>
-
-                        {/* Floating Bottom HUD Controls */}
-                        {project.videoUrl && (
-                          <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2 pointer-events-auto">
-                              <button
-                                type="button"
-                                onClick={togglePlay}
-                                className="px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider"
-                              >
-                                {isPlaying ? (
-                                  <>
-                                    <Pause className="w-3 h-3 text-amber" />
-                                    <span>PAUSE</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Play className="w-3 h-3 text-amber" />
-                                    <span>PLAY</span>
-                                  </>
-                                )}
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={toggleMute}
-                                className="w-7 h-7 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-off-white hover:border-amber hover:text-amber transition-all flex items-center justify-center"
-                                title={isMuted ? "Unmute Audio" : "Mute Audio"}
-                              >
-                                {isMuted ? (
-                                  <VolumeX className="w-3.5 h-3.5 text-off-white/60" />
-                                ) : (
-                                  <Volume2 className="w-3.5 h-3.5 text-amber" />
-                                )}
-                              </button>
-                            </div>
-
-                            <span className="font-mono text-[9px] text-off-white/50 tracking-wider bg-black/60 px-2.5 py-0.5 rounded-md border border-white/10 hidden sm:inline">
-                              1080P // LOOPING
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Looping Progress Line Indicator */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-30">
-                          <div
-                            className="h-full bg-gradient-to-r from-amber to-amber-lighter transition-all duration-150"
-                            style={{ width: `${isCurrent ? videoProgress : 0}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* ── RIGHT: Project Details (Cols 8-12) ── */}
-                    <div className="lg:col-span-5 flex flex-col justify-center space-y-4">
-                      {/* Number & Year */}
-                      <div className="proj-info flex items-center gap-3 mb-1 font-mono text-xs will-change-transform">
-                        <span className="text-amber font-bold tracking-[0.25em]">
-                          PROJECT {project.number}
-                        </span>
-                        <span className="text-white/20">•</span>
-                        <span className="text-off-white/50 tracking-wider uppercase">
-                          {project.year}
-                        </span>
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="proj-info font-akira text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-off-white uppercase leading-tight will-change-transform">
-                        {project.title}
-                      </h3>
-
-                      {/* Subtitle */}
-                      <p className="proj-info font-serif italic text-sm sm:text-base text-amber/90 mt-1 font-normal will-change-transform">
-                        {project.subtitle}
-                      </p>
-
-                      {/* Description */}
-                      <div className="proj-info space-y-2 will-change-transform">
-                        <p className="font-body text-xs sm:text-sm text-off-white/85 leading-relaxed font-light">
-                          {project.description}
-                        </p>
-                        <p className="font-body text-[11px] sm:text-xs text-off-white/60 leading-relaxed font-light">
-                          {project.built}
-                        </p>
-                      </div>
-
-                      {/* Tech Stack */}
-                      <div className="proj-info will-change-transform">
-                        <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/40 block mb-1.5">
-                          TECH STACK
-                        </span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {project.tags.slice(0, 5).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-2.5 py-0.5 rounded-md border border-white/10 bg-white/[0.03] font-mono text-[10px] sm:text-[11px] text-off-white/80 tracking-wide hover:border-amber/40 hover:text-off-white transition-colors"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="proj-info flex flex-wrap items-center gap-3 pt-3 border-t border-white/10 will-change-transform">
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-amber text-charcoal font-mono font-bold text-xs tracking-[0.2em] uppercase hover:bg-off-white transition-all duration-300 shadow-[0_0_20px_rgba(245,166,35,0.25)] hover:scale-[1.02] active:scale-[0.98] pointer-events-auto"
-                        >
-                          <span>LAUNCH DEMO</span>
-                          <ArrowUpRight className="w-3.5 h-3.5" />
-                        </a>
-
-                        {project.githubUrl && (
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/20 bg-white/[0.02] font-mono text-xs tracking-[0.15em] text-off-white/80 hover:text-off-white hover:border-amber/60 hover:bg-white/[0.05] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] pointer-events-auto"
-                          >
-                            <GithubIcon className="w-3.5 h-3.5" />
-                            <span>REPOSITORY</span>
-                          </a>
-                        )}
-
-                        {project.number === "01" && (
-                          <a
-                            href="#chapter-github"
-                            onClick={scrollToGitHub}
-                            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] font-mono text-xs tracking-wider text-off-white/60 hover:text-amber hover:border-amber/40 transition-all pointer-events-auto"
-                          >
-                            <span>GITHUB ↓</span>
-                          </a>
-                        )}
-                      </div>
-                    </div>
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-0 py-8 lg:py-10">
+                {/* Number + Year */}
+                <div className="flex items-center gap-5 lg:w-[18%] flex-shrink-0">
+                  <span
+                    className="font-akira text-[3.5rem] lg:text-[4rem] font-black leading-none transition-colors duration-500"
+                    style={{ color: isHovered ? project.color : "rgba(255,255,255,0.06)" }}
+                  >
+                    {project.number}
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-off-white/35">
+                      {project.year}
+                    </span>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-off-white/25">
+                      {project.role.split(" ")[0]}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* ── BOTTOM HINT ── */}
-          <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-off-white/35 uppercase mt-3 flex-shrink-0">
-            <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber animate-ping" />
-              <span>
-                {activeIdx < PROJECTS.length - 1
-                  ? "SCROLL TO EXPLORE NEXT PROJECT ↓"
-                  : "ALL PROJECTS EXPLORED — SCROLL DOWN ↓"}
-              </span>
-            </span>
-            <span className="hidden sm:inline-block">
-              NAVIGATE VIA WHEEL, TABS OR ARROWS
-            </span>
+                {/* Title + Subtitle + Tags */}
+                <div className="flex-1 lg:px-8">
+                  <h3
+                    className="font-akira text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight leading-tight mb-2 transition-colors duration-300"
+                    style={{ color: isHovered ? "#FAFAF8" : "rgba(250,250,248,0.6)" }}
+                  >
+                    {project.title}
+                  </h3>
+                  <p className="font-body text-sm text-off-white/40 leading-relaxed max-w-xl line-clamp-2 transition-colors duration-300 group-hover:text-off-white/60">
+                    {project.subtitle}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {project.tags.slice(0, 4).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded font-mono text-[9px] tracking-wider uppercase transition-all duration-300"
+                        style={{
+                          color: isHovered ? "rgba(250,250,248,0.65)" : "rgba(250,250,248,0.25)",
+                          border: `1px solid ${isHovered ? project.color + "45" : "rgba(255,255,255,0.08)"}`,
+                          background: isHovered ? project.color + "0A" : "transparent",
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Preview + Actions */}
+                <div className="flex items-center gap-5 lg:w-[38%] flex-shrink-0 justify-between lg:justify-end">
+                  {/* Image card */}
+                  <div
+                    className="relative w-[160px] sm:w-[200px] lg:w-[240px] aspect-[16/10] rounded-xl overflow-hidden border border-white/10 flex-shrink-0 transition-all duration-500"
+                    style={{
+                      transform: isHovered ? "scale(1.04)" : "scale(0.95)",
+                      opacity: isHovered ? 1 : 0.3,
+                      boxShadow: isHovered ? `0 20px 60px ${project.color}35` : "none",
+                    }}
+                  >
+                    <Image
+                      src={project.posterUrl}
+                      alt={project.title}
+                      fill
+                      sizes="240px"
+                      className="object-cover object-center transition-transform duration-700"
+                      style={{ transform: isHovered ? "scale(1.06)" : "scale(1.0)" }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm border border-white/15">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="font-mono text-[8px] text-white/70 tracking-wider">LIVE</span>
+                    </div>
+                  </div>
+
+                  {/* Action buttons - slide in on hover */}
+                  <div
+                    className="flex flex-col gap-2 transition-all duration-300"
+                    style={{
+                      opacity: isHovered ? 1 : 0,
+                      transform: isHovered ? "translateX(0)" : "translateX(12px)",
+                      pointerEvents: isHovered ? "auto" : "none",
+                    }}
+                  >
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 rounded-full font-mono text-[10px] tracking-widest uppercase text-charcoal font-bold transition-all duration-200 hover:scale-105 whitespace-nowrap"
+                      style={{ background: project.color }}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      <span>DEMO</span>
+                    </a>
+                    {project.githubUrl && (
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 font-mono text-[10px] tracking-widest uppercase text-off-white/70 hover:text-off-white hover:border-white/40 transition-all duration-200 hover:scale-105 bg-white/[0.03] whitespace-nowrap"
+                      >
+                        <GithubIcon className="w-3 h-3" />
+                        <span>CODE</span>
+                      </a>
+                    )}
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full border font-mono text-[10px] tracking-widest uppercase transition-all duration-200 hover:scale-105 whitespace-nowrap"
+                      style={{
+                        borderColor: project.color + "55",
+                        color: project.color,
+                        background: project.color + "0A",
+                      }}
+                    >
+                      <span>CASE STUDY</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  {/* Default arrow (fades out on hover) */}
+                  <div
+                    className="flex items-center justify-center w-9 h-9 rounded-full border border-white/15 transition-all duration-300 flex-shrink-0"
+                    style={{
+                      opacity: isHovered ? 0 : 0.45,
+                      transform: isHovered ? "rotate(45deg) scale(0.8)" : "rotate(0deg) scale(1)",
+                    }}
+                  >
+                    <ArrowUpRight className="w-4 h-4 text-off-white/40" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Animated bottom glow line */}
+              <div
+                className="absolute bottom-0 left-0 h-px transition-all duration-500 ease-out"
+                style={{
+                  background: `linear-gradient(to right, transparent, ${project.color}, transparent)`,
+                  width: isHovered ? "100%" : "0%",
+                  opacity: isHovered ? 1 : 0,
+                }}
+              />
+            </div>
+          );
+        })}
+
+        <div className="h-px bg-white/[0.08]" />
+      </div>
+
+      {/* ── METRICS STRIP ── */}
+      <div className="relative px-6 sm:px-12 lg:px-20 h-24 overflow-hidden">
+        {PROJECTS.map((project, idx) => (
+          <div
+            key={project.id + "-metrics"}
+            className="absolute inset-0 flex items-center px-6 sm:px-12 lg:px-20 transition-all duration-300"
+            style={{
+              opacity: hoveredIdx === idx ? 1 : 0,
+              transform: hoveredIdx === idx ? "translateY(0)" : "translateY(8px)",
+              pointerEvents: hoveredIdx === idx ? "auto" : "none",
+            }}
+          >
+            <div className="flex items-center gap-10 lg:gap-16 flex-wrap">
+              {project.metrics?.map((m) => (
+                <div key={m.label} className="flex flex-col gap-0.5">
+                  <span
+                    className="font-akira text-xl sm:text-2xl font-black"
+                    style={{ color: project.color }}
+                  >
+                    {m.value}
+                  </span>
+                  <span className="font-mono text-[9px] text-off-white/45 uppercase tracking-widest">
+                    {m.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
+        ))}
+        <div
+          className="absolute inset-0 flex items-center px-6 sm:px-12 lg:px-20 transition-opacity duration-300"
+          style={{ opacity: hoveredIdx !== null ? 0 : 1 }}
+        >
+          <span className="font-mono text-xs text-off-white/[0.18] uppercase tracking-[0.3em]">
+            Hover a project to explore metrics
+          </span>
         </div>
       </div>
 
-      {/* ── CINEMA FULLSCREEN THEATRE MODAL ── */}
-      {cinemaProject && (
+      {/* ── MARQUEE STRIP ── */}
+      <div className="relative overflow-hidden border-t border-b border-white/[0.08] py-4 bg-[#0d0d0d]">
         <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-4 sm:p-8 animate-fadeIn"
+          ref={marqueeRef}
+          className="flex items-center whitespace-nowrap"
+          style={{ willChange: "transform" }}
         >
-          <div className="w-full max-w-6xl flex items-center justify-between pb-4 border-b border-white/10 mb-4 sm:mb-6 font-mono">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber animate-pulse" />
-              <span className="text-xs sm:text-sm text-off-white font-bold tracking-widest uppercase">
-                {cinemaProject.number} // {cinemaProject.title} CINEMA THEATRE
+          {[...Array(4)].flatMap((_, ri) =>
+            PROJECTS.map((p, i) => (
+              <span key={`${p.id}-m-${ri}-${i}`} className="inline-flex items-center">
+                <span className="font-akira text-sm font-black uppercase tracking-[0.15em] text-off-white/[0.15] px-8">
+                  {p.title}
+                </span>
+                <span
+                  className="w-1.5 h-1.5 rounded-full mx-2 flex-shrink-0"
+                  style={{ background: p.color, opacity: 0.5 }}
+                />
               </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setCinemaProject(null)}
-              className="p-2 rounded-full border border-white/20 hover:border-amber hover:text-amber text-off-white transition-all"
-              title="Close (Esc)"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="relative w-full max-w-6xl aspect-video rounded-2xl overflow-hidden bg-black border border-white/20 shadow-[0_0_80px_rgba(0,0,0,0.95)]">
-            {cinemaProject.videoUrl ? (
-              <video
-                src={cinemaProject.videoUrl}
-                poster={cinemaProject.posterUrl}
-                autoPlay
-                loop
-                controls
-                className="w-full h-full object-contain bg-black"
-              />
-            ) : (
-              <Image
-                src={cinemaProject.posterUrl}
-                alt={cinemaProject.title}
-                fill
-                className="object-contain"
-              />
-            )}
-          </div>
-
-          <div className="w-full max-w-6xl mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="font-body text-xs sm:text-sm text-off-white/75 max-w-xl text-center sm:text-left">
-              {cinemaProject.description}
-            </p>
-            <div className="flex items-center gap-3 font-mono text-xs">
-              <a
-                href={cinemaProject.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-full bg-amber text-charcoal font-bold tracking-wider uppercase hover:bg-off-white transition-all shadow-md flex items-center gap-1.5"
-              >
-                <span>OPEN PROJECT</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </a>
-              {cinemaProject.githubUrl && (
-                <a
-                  href={cinemaProject.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2.5 rounded-full border border-white/20 text-off-white tracking-wider uppercase hover:border-white/50 transition-all flex items-center gap-1.5"
-                >
-                  <GithubIcon className="w-3.5 h-3.5" />
-                  <span>CODE</span>
-                </a>
-              )}
-            </div>
-          </div>
+            ))
+          )}
         </div>
-      )}
+      </div>
+
+      {/* ── BOTTOM CTA ── */}
+      <div className="flex items-center justify-between px-6 sm:px-12 lg:px-20 py-8">
+        <span className="font-mono text-[10px] sm:text-xs text-off-white/20 uppercase tracking-widest">
+          {PROJECTS.length} case studies available
+        </span>
+        <Link
+          href="/projects"
+          className="group flex items-center gap-2.5 px-6 py-3 rounded-full border border-white/15 font-mono text-xs tracking-wider uppercase text-off-white/55 hover:text-off-white hover:border-amber/40 hover:bg-amber/5 transition-all duration-300"
+        >
+          <span>Full Project Archive</span>
+          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </Link>
+      </div>
     </section>
   );
 }

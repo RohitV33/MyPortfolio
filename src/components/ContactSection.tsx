@@ -72,6 +72,7 @@ export default function ContactSection() {
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Entrance animations & Magnetic Effect
   useEffect(() => {
@@ -110,7 +111,8 @@ export default function ContactSection() {
         );
 
         // Magnetic Hover Effect for cards
-        cards.forEach((card: any) => {
+        cards.forEach((cardNode) => {
+          const card = cardNode as HTMLElement;
           card.addEventListener("mousemove", (e: MouseEvent) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
@@ -132,12 +134,39 @@ export default function ContactSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formState.name || !formState.email || !formState.message) {
+      setErrorMessage("Please fill out all fields before sending.");
+      return;
+    }
+
     setSending(true);
-    // Simulate send — wire to any form backend (Formspree, Resend, etc.)
-    await new Promise((r) => setTimeout(r, 1500));
-    setSending(false);
-    setSent(true);
-    setFormState({ name: "", email: "", message: "" });
+    setErrorMessage("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          subject: `Portfolio Message from ${formState.name}`,
+          message: formState.message,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSent(true);
+        setFormState({ name: "", email: "", message: "" });
+      } else {
+        setErrorMessage(data.error || "Unable to send message. Please retry.");
+      }
+    } catch (err) {
+      console.error("Transmission error:", err);
+      setErrorMessage("Network error. Please try again or email directly.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const headline = ["LET'S", "BUILD", "SOMETHING", "REAL."];
@@ -264,6 +293,12 @@ export default function ContactSection() {
                     className="w-full bg-white/[0.02] border-b border-white/[0.15] px-2 py-3 font-body text-base text-off-white placeholder:text-off-white/20 focus:outline-none focus:border-amber focus:bg-white/[0.05] transition-all duration-300 resize-none"
                   />
                 </div>
+
+                {errorMessage && (
+                  <p className="font-mono text-xs text-red-400 bg-red-400/10 border border-red-400/20 px-4 py-2.5 rounded-xl">
+                    {errorMessage}
+                  </p>
+                )}
 
                 <button
                   type="submit"

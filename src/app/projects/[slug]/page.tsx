@@ -206,9 +206,19 @@ export default function ProjectDetailsPage({ params }: { params: Promise<{ slug:
                     <path d="M1 7h12M9 3l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </a>
+                {project.githubUrl && (
+                  <a 
+                    href={project.githubUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-3 py-4 rounded-full border border-white/20 bg-white/5 font-mono text-xs tracking-widest uppercase text-off-white hover:text-amber hover:border-amber/50 transition-colors"
+                  >
+                    Source Code (GitHub) ↗
+                  </a>
+                )}
                 <Link 
                   href="/projects"
-                  className="flex items-center justify-center gap-3 py-4 rounded-full border border-off-white/10 font-mono text-xs tracking-widest uppercase transition-colors hover:bg-off-white/5"
+                  className="flex items-center justify-center gap-3 py-4 rounded-full border border-off-white/10 font-mono text-xs tracking-widest uppercase transition-colors hover:bg-off-white/5 text-off-white/70 hover:text-off-white"
                 >
                   Back to Archive
                 </Link>

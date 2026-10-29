@@ -83,17 +83,15 @@ function StatCard({ value, label, icon }: { value: string | number; label: strin
   );
 }
 
+function formatUpdated(dateString: string): string {
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 // ─── Repo Card ───────────────────────────────────────────────────────────────
 function RepoCard({ repo }: { repo: Repo }) {
-  const updated = new Date(repo.updated_at);
-  const ago = (() => {
-    const diff = Date.now() - updated.getTime();
-    const d = Math.floor(diff / 86400000);
-    if (d < 1) return "Today";
-    if (d < 7) return `${d}d ago`;
-    if (d < 30) return `${Math.floor(d / 7)}w ago`;
-    return `${Math.floor(d / 30)}mo ago`;
-  })();
+  const updatedStr = formatUpdated(repo.updated_at);
 
   return (
     <a
@@ -136,7 +134,7 @@ function RepoCard({ repo }: { repo: Repo }) {
             {repo.forks_count}
           </span>
         </div>
-        <span className="font-mono text-[9px] text-off-white/30 shrink-0">{ago}</span>
+        {updatedStr && <span className="font-mono text-[9px] text-off-white/30 shrink-0">Updated {updatedStr}</span>}
       </div>
     </a>
   );

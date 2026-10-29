@@ -9,6 +9,7 @@ export interface Project {
   color: string;
   accentColor: string;
   liveUrl: string;
+  githubUrl?: string;
   gradient: string;
   svgPattern: string;
   videoUrl?: string;
@@ -28,7 +29,8 @@ export const projects: Project[] = [
       "CivicLens-AI is an AI-powered municipal reporting platform engineered to eliminate manual complaint verification. The React and Tailwind frontend enables citizens to capture and submit geotagged photos of civic issues. The Node.js + Express backend orchestrates authentication, report telemetry, and MongoDB storage, while dispatching images to a dedicated Python FastAPI service running a YOLOv8 computer vision model. The model classifies waste categories and bounding coordinates in under 800ms with 94% accuracy, surfacing actionable intelligence on the municipal admin dashboard.",
     color: "#E58A13",
     accentColor: "#92400E",
-    liveUrl: "https://github.com/RohitV33",
+    liveUrl: "https://civic-lens-blush.vercel.app/",
+    githubUrl: "https://github.com/RohitV33/CivicLens",
     gradient: "from-[#F59E0B] to-[#D97706]",
     svgPattern: "M10 30 Q30 10 50 30 Q70 50 90 30",
     posterUrl: "/images/civiclens_poster.png",
@@ -46,6 +48,7 @@ export const projects: Project[] = [
     color: "#8BA8C4",
     accentColor: "#2D4A6B",
     liveUrl: "https://bartr-blond.vercel.app/",
+    githubUrl: "https://github.com/RohitV33",
     gradient: "from-[#C5D8E8] to-[#D8C5E8]",
     svgPattern: "M10 70 Q30 20 50 60 Q70 90 90 40",
     videoUrl: "/videos/project2.mp4",
@@ -63,7 +66,8 @@ export const projects: Project[] = [
       "Fuzzr is a developer-grade web security and fuzzing tool. It performs concurrent HTTP requests against target URLs using customisable wordlists to detect directory traversal, SQL injection, and XSS vulnerabilities. Features include a concurrent fuzzer engine built in Node.js for automated payload injection (improving scan efficiency by 40%), custom header controls, rate limiting, and color-coded reporting. Additionally features a responsive React + Tailwind interface for real-time scan control and detailed vulnerability results reporting.",
     color: "#A8B8A0",
     accentColor: "#3A4A32",
-    liveUrl: "https://github.com/RohitV33/Web-Fuzzing-Tool",
+    liveUrl: "https://vulntest-three.vercel.app/",
+    githubUrl: "https://github.com/RohitV33/Web-Fuzzing-Tool",
     gradient: "from-[#C8D8C0] to-[#D8C8B0]",
     svgPattern: "M10 50 L30 20 L50 60 L10 50 L30 20 L50 60 L70 15 L90 50",
     videoUrl: "/videos/project3.mp4",

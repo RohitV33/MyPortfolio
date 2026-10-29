@@ -80,8 +80,8 @@ export default function ResumePage() {
         "Connected the Python AI service with the Node.js backend to send image results to the React frontend.",
       ],
       technologies: ["React.js", "Node.js", "Express.js", "Python", "FastAPI", "YOLOv8", "MongoDB", "Tailwind CSS"],
-      liveUrl: "https://github.com/RohitV33",
-      githubUrl: "https://github.com/RohitV33",
+      liveUrl: "https://civic-lens-blush.vercel.app/",
+      githubUrl: "https://github.com/RohitV33/CivicLens",
     },
     {
       title: "Web Fuzzing Tool",
@@ -95,6 +95,7 @@ export default function ResumePage() {
         "Worked with team members to connect backend services with the scanning engine and result interface.",
       ],
       technologies: ["Node.js", "Express.js", "REST APIs", "React.js", "Tailwind CSS"],
+      liveUrl: "https://vulntest-three.vercel.app/",
       githubUrl: "https://github.com/RohitV33/Web-Fuzzing-Tool",
     },
     {

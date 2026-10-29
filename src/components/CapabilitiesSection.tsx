@@ -5,6 +5,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { CAPABILITIES } from "@/data/portfolioData";
 import { ArrowUpRight } from "lucide-react";
+import SplitTextReveal from "@/components/SplitTextReveal";
 
 export default function CapabilitiesSection() {
   const containerRef = useRef<HTMLElement>(null);
@@ -24,13 +25,14 @@ export default function CapabilitiesSection() {
 
         gsap.fromTo(
           [num, title, tag, ...Array.from(details)],
-          { opacity: 0.25, y: 25 },
+          { opacity: 0.15, y: 30, scale: 0.97 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            stagger: 0.08,
+            scale: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            stagger: 0.06,
             scrollTrigger: {
               trigger: card,
               start: "top 80%",
@@ -39,6 +41,29 @@ export default function CapabilitiesSection() {
             },
           }
         );
+
+        // 3D tilt effect on hover
+        card.addEventListener("mousemove", (e: MouseEvent) => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          gsap.to(card, {
+            rotateY: x * 5,
+            rotateX: -y * 5,
+            duration: 0.3,
+            ease: "power2.out",
+            transformPerspective: 800,
+          });
+        });
+
+        card.addEventListener("mouseleave", () => {
+          gsap.to(card, {
+            rotateY: 0,
+            rotateX: 0,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.5)",
+          });
+        });
       });
     }, containerRef);
 
@@ -70,10 +95,12 @@ export default function CapabilitiesSection() {
               Ch. 02 — What I Do
             </p>
           </div>
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95]">
-            FROM IDEA <br />
-            <span className="text-amber">TO INTERFACE.</span>
-          </h2>
+          <SplitTextReveal
+            as="h2"
+            className="font-display text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-off-white uppercase leading-[0.95]"
+          >
+            FROM IDEA TO INTERFACE.
+          </SplitTextReveal>
           <p className="font-body text-sm md:text-base font-light text-foreground/70 mt-4 leading-relaxed max-w-lg">
             Engineering capabilities covering the full lifecycle of modern digital products, from low-latency databases to fluid user interfaces.
           </p>
@@ -87,9 +114,13 @@ export default function CapabilitiesSection() {
               ref={(el) => {
                 cardRefs.current[idx] = el;
               }}
-              className="p-6 md:p-10 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md transition-all duration-500 hover:border-amber/40 shadow-xl will-change-transform"
+              className="tilt-card p-6 md:p-10 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md transition-all duration-500 hover:border-amber/40 shadow-xl will-change-transform"
+              style={{ transformStyle: "preserve-3d" }}
             >
-              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6">
+              {/* Tilt gloss overlay */}
+              <div className="tilt-gloss" />
+
+              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6 relative z-20">
                 <div>
                   <span className="cap-num font-mono text-xs text-amber font-bold tracking-[0.25em] block mb-2">
                     {cap.number} - CAPABILITY
@@ -103,13 +134,13 @@ export default function CapabilitiesSection() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 border-t border-white/10 pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 border-t border-white/10 pt-6 relative z-20">
                 {cap.details.map((detail, dIdx) => (
                   <div
                     key={dIdx}
-                    className="cap-detail flex items-center gap-3 text-foreground/70 font-mono text-xs md:text-sm tracking-wide p-2 rounded-lg bg-white/[0.015] border border-white/5 hover:border-amber/20 transition-colors"
+                    className="cap-detail flex items-center gap-3 text-foreground/70 font-mono text-xs md:text-sm tracking-wide p-2 rounded-lg bg-white/[0.015] border border-white/5 hover:border-amber/20 hover:bg-white/[0.04] transition-all duration-300 group"
                   >
-                    <ArrowUpRight className="w-4 h-4 text-amber shrink-0" />
+                    <ArrowUpRight className="w-4 h-4 text-amber shrink-0 group-hover:rotate-45 transition-transform duration-300" />
                     <span>{detail}</span>
                   </div>
                 ))}

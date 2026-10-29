@@ -205,7 +205,7 @@ export default function StorySection() {
                   <div className="story-badge flex items-center gap-2.5 mb-2.5 sm:mb-4">
                     <span className={`w-2 h-2 rounded-full ${isCurrent ? "bg-amber shadow-[0_0_10px_var(--amber)] animate-pulse" : "bg-white/30"}`} />
                     <span className="font-mono text-[11px] sm:text-xs text-amber font-semibold tracking-[0.25em] uppercase">
-                      {item.phase} // {item.title}
+                      {item.phase} {"//"} {item.title}
                     </span>
                   </div>
 

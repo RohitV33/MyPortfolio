@@ -42,7 +42,14 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
     const timer = setTimeout(() => {
       setLenis(lenisInstance);
       ScrollTrigger.refresh();
-    }, 100);
+
+      if (typeof window !== "undefined" && window.location.hash) {
+        const el = document.querySelector(window.location.hash);
+        if (el) {
+          lenisInstance.scrollTo(el as HTMLElement, { offset: -30, duration: 1.2 });
+        }
+      }
+    }, 150);
 
     return () => {
       clearTimeout(timer);

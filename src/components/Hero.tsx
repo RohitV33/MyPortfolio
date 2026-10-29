@@ -6,7 +6,42 @@ import { ArrowDown } from "lucide-react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useLenis } from "@/components/SmoothScrollProvider";
+import Magnetic from "@/components/Magnetic";
 import { HERO_DATA } from "@/data/portfolioData";
+
+// Typewriter hook
+function useTypewriter(words: string[], typingSpeed = 80, deletingSpeed = 40, pauseDuration = 2000) {
+  const [displayText, setDisplayText] = useState("");
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = words[wordIndex];
+
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          setDisplayText(currentWord.substring(0, displayText.length + 1));
+          if (displayText.length === currentWord.length) {
+            setTimeout(() => setIsDeleting(true), pauseDuration);
+            return;
+          }
+        } else {
+          setDisplayText(currentWord.substring(0, displayText.length - 1));
+          if (displayText.length === 0) {
+            setIsDeleting(false);
+            setWordIndex((prev) => (prev + 1) % words.length);
+          }
+        }
+      },
+      isDeleting ? deletingSpeed : typingSpeed
+    );
+
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, wordIndex, words, typingSpeed, deletingSpeed, pauseDuration]);
+
+  return displayText;
+}
 
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
@@ -17,6 +52,9 @@ export default function Hero() {
   const photoContainerRef = useRef<HTMLDivElement>(null);
   const bottomUIRef = useRef<HTMLDivElement>(null);
   const { lenis } = useLenis();
+
+  // Typewriter cycling subtitle
+  const typewriterText = useTypewriter(HERO_DATA.subtitleParts, 70, 35, 2200);
 
   // Mouse parallax coordinates (smooth normalized -1 to 1)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -208,19 +246,14 @@ export default function Hero() {
           </div>
         </h1>
 
-        {/* Supporting Layer: Web Developer • Competitive Programmer • Problem Solver */}
+        {/* Supporting Layer: Typewriter cycling subtitle */}
         <p
           ref={subtitleRef}
-          className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto font-normal flex items-center justify-center gap-2 flex-wrap select-none mt-4 sm:mt-5 will-change-transform"
+          className="font-mono text-[11px] sm:text-xs md:text-[13px] text-off-white/70 tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] max-w-xl pointer-events-auto font-normal flex items-center justify-center gap-1 select-none mt-4 sm:mt-5 will-change-transform h-[1.5em]"
         >
-          {HERO_DATA.subtitleParts.map((part, idx) => (
-            <span key={part} className="inline-flex items-center gap-2">
-              <span>{part}</span>
-              {idx < HERO_DATA.subtitleParts.length - 1 && (
-                <span className="text-amber font-bold select-none text-[10px]">•</span>
-              )}
-            </span>
-          ))}
+          <span className="text-amber">&gt;</span>
+          <span className="text-off-white/90">{typewriterText}</span>
+          <span className="typewriter-cursor" />
         </p>
       </div>
 
@@ -248,16 +281,18 @@ export default function Hero() {
             ))}
           </span>
 
-          <button
-            type="button"
-            onClick={scrollToCapabilities}
-            data-cursor-interactive
-            className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/20 bg-black/25 backdrop-blur-md flex items-center justify-center text-off-white hover:border-amber hover:bg-amber/10 hover:text-amber hover:scale-105 active:scale-95 transition-all shadow-md"
-            aria-label="Scroll to explore"
-            title="Scroll to explore"
-          >
-            <ArrowDown className="w-4 h-4 text-off-white group-hover:text-amber transition-colors duration-300 group-hover:translate-y-0.5" />
-          </button>
+          <Magnetic strength={0.4}>
+            <button
+              type="button"
+              onClick={scrollToCapabilities}
+              data-cursor-interactive
+              className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-white/20 bg-black/25 backdrop-blur-md flex items-center justify-center text-off-white hover:border-amber hover:bg-amber/10 hover:text-amber hover:scale-105 active:scale-95 transition-all shadow-md"
+              aria-label="Scroll to explore"
+              title="Scroll to explore"
+            >
+              <ArrowDown className="w-4 h-4 text-off-white group-hover:text-amber transition-colors duration-300 group-hover:translate-y-0.5" />
+            </button>
+          </Magnetic>
         </div>
       </div>
 

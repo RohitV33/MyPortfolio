@@ -42,6 +42,7 @@ export const metadata: Metadata = {
 };
 
 import ScrollIndicator from "@/components/ScrollIndicator";
+import BackToTop from "@/components/BackToTop";
 
 export default function RootLayout({
   children,
@@ -65,6 +66,7 @@ export default function RootLayout({
           <Navbar />
           <PageTransition>{children}</PageTransition>
           <Footer />
+          <BackToTop />
         </SmoothScrollProvider>
       </body>
     </html>
